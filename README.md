@@ -1,50 +1,70 @@
-# Welcome to your Expo app 👋
+# EduLink
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Table of Contents
+
+- [Get started](#get-started)
+- [References](#references)
+- [Standards](#standards)
 
 ## Get started
 
-1. Install dependencies
+1. Use Node LTS Version, Basic Docker File is included for development.
+
+2. Install dependencies using npm, yarn or pnpm
 
    ```bash
    npm install
+   yarn i
+   pnpm i
    ```
 
-2. Start the app
+   - NOTE: There is a problem with pnpm and expo, so it is recommended to use npm or yarn.
+
+3. Start the app using expo, npm, yarn or pnpm
 
    ```bash
-    npx expo start
+   npx expo start
+   npm run dev
+   yarn run dev
+   pnpm run dev
    ```
 
-In the output, you'll find options to open the app in a
+   To remove the cache and start fresh, use the following command:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   npx expo start -c
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. In Local Development, Request the `.env` file from the project owner.
 
-## Get a fresh project
+## References
 
-When you're ready, run:
+- [Prisma](https://www.prisma.io/docs/)
+- [Figma](https://www.figma.com/design/5k8xTl5jkWyIShEKXxdNOM/Senior-Project)
+- [Expo](https://docs.expo.dev/)
+- [React Native](https://reactnative.dev/docs/getting-started)
+- [NativeWind](https://www.nativewind.dev/v4/overview/)
+- [Testing React Native Apps](https://reactnative.dev/docs/testing-overview)
+- [Zustand](https://zustand-demo.pmnd.rs/)
+- [Clerk](https://clerk.com/docs/quickstarts/expo)
+- [React Query](https://tanstack.com/query/latest/docs/framework/react/react-native)
+- [React Native Reusable](https://rnr-docs.vercel.app/getting-started/introduction/)
 
-```bash
-npm run reset-project
-```
+## Standards
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+#### Workflow
 
-## Learn more
+- Each feature should be developed in a separate branch
+- Each feature should have some tests before merging to the main branch
+- Try to make commits descriptive and concise.
+- Try to make commits atomic
+- Each PR should have a breif description of which feature is being added or fixed, changed files, issue number if available.
+- After submitting a PR, assign [@JaafarAlMuallim](https://www.github.com/JaafarAlMuallim) as a reviewer.
 
-To learn more about developing your project with Expo, look at the following resources:
+#### Branching
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Branches should be named in the following format: `type/feature-fe|be-description`.
+- Type Includes: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`.
+- BE or FE indicates whether the feature is a front-end or back-end feature.
+- Description should be a brief description of the feature.
+- Example: `feat/login-fe-form`, `refactor/schedule-be-fetchInfo`.
