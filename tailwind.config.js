@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        PoppinsBlack: ["PoppinsBlack", "sans-serif"],
-        PoppinsBlackItalic: ["PoppinsBlackItalic", "sans-serif"],
+        Poppins: ["Poppins", "sans-serif"],
+        PoppinItalic: ["Poppinstalic", "sans-serif"],
         PoppinsBold: ["PoppinsBold", "sans-serif"],
         PoppinsBoldItalic: ["PoppinsBoldItalic", "sans-serif"],
         PoppinsExtraBold: ["PoppinsExtraBold", "sans-serif"],
@@ -25,7 +25,7 @@ module.exports = {
       },
       colors: {
         primary: {
-          main: "#3044FFE", // Primary Blue
+          default: "#3044FF", // Primary Blue
           dark: "#4561FF", // Darker Blue
           light: "#4561FF", // Lighter Blue (use opacity class)
           white: "#FFF", // Primary White
@@ -36,20 +36,20 @@ module.exports = {
           lightGray: "#D9D9D9", // Light Gray
         },
         black: {
-          80: "rgba(0, 0, 0, 0.8)", // Black with 80% opacity
+          40: "rgba(0, 0, 0, 0.4)", // Black with 40% opacity 
           50: "rgba(0, 0, 0, 0.5)", // Black with 50% opacity
-          40: "rgba(0, 0, 0, 0.4)", // Black with 40% opacity
+          80: "rgba(0, 0, 0, 0.8)", // Black with 80% opacity
         },
         gray: {
-          dark: "#3F3D3D", // Dark Gray
-          medium: "rgba(63, 61, 61, 0.5)", // Medium Gray with 50% opacity
           light: "rgba(60, 60, 67, 0.6)", // Light Gray with 60% opacity
+          medium: "rgba(63, 61, 61, 0.5)", // Medium Gray with 50% opacity
+          dark: "#3F3D3D", // Dark Gray
         },
         blue: {
           default: "#304FFE", // Primary Blue
-          def100: "rgba(69, 97, 255, 0.8)", // Lighter Blue with 80% opacity
+          def100: "rgba(69, 97, 255, 0.7)", // Lightest Blue with 70% opacity
           def200: "rgba(69, 97, 255, 0.75)", // Even Lighter Blue with 75% opacity
-          def300: "rgba(69, 97, 255, 0.7)", // Lightest Blue with 70% opacity
+          def300: "rgba(69, 97, 255, 0.8)", // Lightest Blue with 80% opacity
           def400: "rgba(69, 97, 255, 0.9)", // Even Darker Blue with 90% opacity
           def500: "#4561FF", // Darker Blue
           def600: "#3865E0", // Accent Blue
@@ -70,6 +70,23 @@ module.exports = {
           default: "#FFF", // White
           light: "#D9D9D9", // Light White
           alt: "#E3DBDB", // Alternative White
+        },
+        // widget: {
+        //   default: "#8F98FF", // Blue for widgets
+        // },
+        fill: {
+          default: "#4561FF" // for any fill object
+        },
+        chat: {
+          default: "4561FF", // fill color of user chat
+          replies: "rgba(69, 97, 255, 0.7)", // replies fill color
+          notification: "rgba(69, 97, 255, 0.8)" // replies fill color
+        },
+        schedule: {
+          term: "rgba(69, 97, 255, 0.1)", // color for term select and day
+          fill: "4561FF", //class time or day
+          nofill: "F6F6F5" // not class time or not that day
+
         },
 
         success: {
