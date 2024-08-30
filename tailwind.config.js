@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        Poppins: ["Poppins", "sans-serif"],
-        PoppinItalic: ["Poppinstalic", "sans-serif"],
+        PoppinsBlack: ["PoppinsBlack", "sans-serif"],
+        PoppinsBlackItalic: ["PoppinsBlackItalic", "sans-serif"],
         PoppinsBold: ["PoppinsBold", "sans-serif"],
         PoppinsBoldItalic: ["PoppinsBoldItalic", "sans-serif"],
         PoppinsExtraBold: ["PoppinsExtraBold", "sans-serif"],

@@ -14,9 +14,6 @@ export default function App() {
         <Text className="text-chat-replies text-3xl font-bold">app replies chat fill color</Text>
         <Text className="text-chat-notification text-3xl font-bold">app notification chat fill color</Text>
         <Text className="text-schedule-term text-3xl font-bold">app main color for term and day background color</Text>
-        <Text className="text-schedule-term text-3xl font-bold">app main color for term and day background color</Text>
-        <Text className="text-blue-default text-3xl font-bold">700</Text>
-        <Text className="text-warning-default text-3xl font-bold">700</Text>
       </View>
     </SafeAreaView>
   );
