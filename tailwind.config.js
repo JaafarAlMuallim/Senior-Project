@@ -4,31 +4,19 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        PoppinsBlack: ["PoppinsBlack", "sans-serif"],
-        PoppinsBlackItalic: ["PoppinsBlackItalic", "sans-serif"],
-        PoppinsBold: ["PoppinsBold", "sans-serif"],
-        PoppinsBoldItalic: ["PoppinsBoldItalic", "sans-serif"],
-        PoppinsExtraBold: ["PoppinsExtraBold", "sans-serif"],
-        PoppinsExtraBoldItalic: ["PoppinsExtraBoldItalic", "sans-serif"],
-        PoppinsExtraLight: ["PoppinsExtraLight", "sans-serif"],
-        PoppinsExtraLightItalic: ["PoppinsExtraLightItalic", "sans-serif"],
-        PoppinsItalic: ["PoppinsItalic", "sans-serif"],
-        PoppinsLight: ["PoppinsLight", "sans-serif"],
-        PoppinsLightItalic: ["PoppinsLightItalic", "sans-serif"],
-        PoppinsMedium: ["PoppinsMedium", "sans-serif"],
-        PoppinsMediumItalic: ["PoppinsMediumItalic", "sans-serif"],
-        PoppinsRegular: ["PoppinsRegular", "sans-serif"],
-        PoppinsSemiBold: ["PoppinsSemiBold", "sans-serif"],
-        PoppinsSemiBoldItalic: ["PoppinsSemiBoldItalic", "sans-serif"],
-        PoppinsThin: ["PoppinsThin", "sans-serif"],
-        PoppinsThinItalic: ["PoppinsThinItalic", "sans-serif"],
+        poppins: ["Poppins", "sans-serif"],
+        poppinsBold: ["Poppins-Bold", "sans-serif"],
+        poppinsItalic: ["Poppins-Italic", "sans-serif"],
+        poppinsRegular: ["Poppins-Regular", "sans-serif"],
+        poppinsSemiBold: ["Poppins-SemiBold", "sans-serif"],
       },
       colors: {
         primary: {
-          default: "#3044FF", // Primary Blue
-          dark: "#4561FF", // Darker Blue
+          default: "#4561FF", // Primary Blue
+          dark: "#3044FF", // Darker Blue
           light: "#4561FF", // Lighter Blue (use opacity class)
           white: "#FFF", // Primary White
+          black: "#000000", // Primary White
         },
         secondary: {
           main: "#9E86FF", // Violet
@@ -36,7 +24,7 @@ module.exports = {
           lightGray: "#D9D9D9", // Light Gray
         },
         black: {
-          40: "rgba(0, 0, 0, 0.4)", // Black with 40% opacity 
+          40: "rgba(0, 0, 0, 0.4)", // Black with 40% opacity
           50: "rgba(0, 0, 0, 0.5)", // Black with 50% opacity
           80: "rgba(0, 0, 0, 0.8)", // Black with 80% opacity
         },
@@ -71,24 +59,19 @@ module.exports = {
           light: "#D9D9D9", // Light White
           alt: "#E3DBDB", // Alternative White
         },
-        // widget: {
-        //   default: "#8F98FF", // Blue for widgets
-        // },
         fill: {
-          default: "#4561FF" // for any fill object
+          default: "#4561FF", // for any fill object
         },
         chat: {
           default: "4561FF", // fill color of user chat
           replies: "rgba(69, 97, 255, 0.7)", // replies fill color
-          notification: "rgba(69, 97, 255, 0.8)" // replies fill color
+          notification: "rgba(69, 97, 255, 0.8)", // replies fill color
         },
         schedule: {
           term: "rgba(69, 97, 255, 0.1)", // color for term select and day
           fill: "4561FF", //class time or day
-          nofill: "F6F6F5" // not class time or not that day
-
+          nofill: "F6F6F5", // not class time or not that day
         },
-
         success: {
           100: "#F0FFF4",
           200: "#C6F6D5",
