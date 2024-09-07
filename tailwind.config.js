@@ -12,10 +12,11 @@ module.exports = {
       },
       colors: {
         primary: {
-          default: "#3044FF", // Primary Blue
-          dark: "#4561FF", // Darker Blue
+          default: "#4561FF", // Primary Blue
+          dark: "#3044FF", // Darker Blue
           light: "#4561FF", // Lighter Blue (use opacity class)
           white: "#FFF", // Primary White
+          black: "#000" // primary black
         },
         secondary: {
           main: "#9E86FF", // Violet

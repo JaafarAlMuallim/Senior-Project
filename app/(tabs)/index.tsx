@@ -2,11 +2,13 @@ import { Text, View } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import Welcome from "@/components/Welcom";
+
 export default function App() {
   return (
     <SafeAreaView className="flex-1 items-center justify-center bg-white">
       <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-primary-default text-3xl font-poppins">
+        {/* <Text className="text-primary-default text-3xl font-poppins">
           Poppins
         </Text>
         <Text className="text-primary-default text-3xl font-poppinsBold">
@@ -44,7 +46,8 @@ export default function App() {
         </Text>
         <Text className="text-schedule-term text-3xl font-bold">
           app main color for term and day background color
-        </Text>
+        </Text> */}
+        <Welcome/>
       </View>
     </SafeAreaView>
   );
