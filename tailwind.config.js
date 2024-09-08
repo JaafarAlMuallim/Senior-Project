@@ -16,7 +16,7 @@ module.exports = {
           dark: "#3044FF", // Darker Blue
           light: "#4561FF", // Lighter Blue (use opacity class)
           white: "#FFF", // Primary White
-          black: "#000" // primary black
+          black: "#000", // primary black
         },
         secondary: {
           main: "#9E86FF", // Violet
@@ -35,6 +35,7 @@ module.exports = {
         },
         blue: {
           default: "#304FFE", // Primary Blue
+          def50: "rgba(69, 97, 255, 0.05)",
           def100: "rgba(69, 97, 255, 0.7)", // Lightest Blue with 70% opacity
           def200: "rgba(69, 97, 255, 0.75)", // Even Lighter Blue with 75% opacity
           def300: "rgba(69, 97, 255, 0.8)", // Lightest Blue with 80% opacity
