@@ -8,7 +8,6 @@ import "react-native-reanimated";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEffect } from "react";
-import WelcomePage from "./(root)/WelcomePage";
 import { Stack } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
@@ -27,15 +26,18 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+    console.log(loaded);
   }, [loaded]);
 
   if (!loaded) {
+    console.log(loaded);
     return null;
   }
+  console.log(loaded);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
+      <Stack initialRouteName="index">
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(root)" options={{ headerShown: false }} />
