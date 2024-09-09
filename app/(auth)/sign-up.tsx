@@ -1,10 +1,53 @@
 import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
-import { Link, router } from "expo-router";
-import { Mail, UserRound, LockKeyhole } from "lucide-react-native";
-import { TouchableOpacity, View } from "react-native";
+import { useSignUp } from "@clerk/clerk-expo";
+import { Link, useRouter } from "expo-router";
+import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
+import { useState } from "react";
+import { Modal, TouchableOpacity, View } from "react-native";
 
 const SignUp = () => {
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
+
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+
+    try {
+      await signUp.create({
+        emailAddress: email,
+        password: password,
+      });
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPendingVerification(true);
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    }
+    setPendingVerification(true);
+  };
+
+  const onPressVerifiy = async () => {
+    if (!isLoaded) return;
+    try {
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+      if (completeSignUp.status === "complete") {
+        await setActive({ session: completeSignUp.createdSessionId });
+        router.replace("/");
+      } else {
+        console.error(JSON.stringify(completeSignUp, null, 2));
+      }
+    } catch (err: any) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
@@ -28,6 +71,9 @@ const SignUp = () => {
           label={"Email"}
           inputConfig={{
             placeholder: "Ex: abc@example.com",
+            value: email,
+            textContentType: "emailAddress",
+            onChangeText: setEmail,
           }}
         >
           <Mail />
@@ -36,8 +82,10 @@ const SignUp = () => {
           label={"Name"}
           inputConfig={{
             placeholder: "Ex: Mohammad Ali",
+            value: name,
+            textContentType: "name",
+            onChangeText: setName,
           }}
-          styles="backgroundColor: 'red'"
         >
           <UserRound />
         </Input>
@@ -45,19 +93,51 @@ const SignUp = () => {
           label={"Password"}
           inputConfig={{
             placeholder: "**********",
-          }} 
+            secureTextEntry: true,
+            value: password,
+            textContentType: "password",
+            onChangeText: setPassword,
+          }}
         >
           <LockKeyhole />
         </Input>
       </View>
-      <TouchableOpacity className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
-      onPress={() => {
-        router.push("/create-account");
-      }}>
+      <TouchableOpacity
+        className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+        onPress={() => {
+          onSignUpPress();
+        }}
+      >
         <CustomText styles="text-primary-white font-poppinsBold text-lg">
           Submit
         </CustomText>
       </TouchableOpacity>
+      <Modal visible={pendingVerification}>
+        <View className="h-full w-full px-4 flex-1 bg-white-default py-8 justify-center">
+          <CustomText styles={"text-lg font-poppins mb-6"}>
+            You will receive a verification code on your email. Please enter the
+            code below.
+          </CustomText>
+          <Input
+            label={"Verification Code"}
+            inputConfig={{
+              placeholder: "Enter the code",
+              value: code,
+              onChangeText: setCode,
+            }}
+          >
+            <ShieldCheck />
+          </Input>
+          <TouchableOpacity
+            className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+            onPress={onPressVerifiy}
+          >
+            <CustomText styles="text-primary-white font-poppinsBold text-lg">
+              Verify
+            </CustomText>
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <View className="flex-1">
         <CustomText styles={"text-l mt-4 text-center"}>
           Already have an account?{" "}
