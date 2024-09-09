@@ -2,15 +2,9 @@ import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
 import { Link, router } from "expo-router";
 import { Mail, UserRound, LockKeyhole } from "lucide-react-native";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 const SignUp = () => {
-
-  const inputprops = {
-    placeholder: 'Enter text',
-    maxLength: 20,
-    style: { color: 'red' }
-  }
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
@@ -32,7 +26,6 @@ const SignUp = () => {
       <View className="flex flex-col mt-5">
         <Input
           label={"Email"}
-          {...inputprops}
           inputConfig={{
             placeholder: "Ex: abc@example.com",
           }}
