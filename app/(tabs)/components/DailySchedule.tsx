@@ -1,6 +1,6 @@
 // DailySchedule.tsx
 import React from "react";
-import { View, ScrollView, StyleSheet, Text } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import CourseCard from "./CourseCard";
 
 const dailyData = [
@@ -9,7 +9,7 @@ const dailyData = [
     course: "MATH 101",
     startTime: "10:00",
     endTime: "10:50",
-    duration: 50,
+    duration: (50 / 60) * 128,
     location: "5-135",
     instructor: "TAMEM AL-SHORMAN",
   },
@@ -18,37 +18,38 @@ const dailyData = [
     course: "PHYS 101",
     startTime: "11:00",
     endTime: "13:40",
-    duration: 160,
+    duration: (160 / 60) * 128,
     location: "6-236",
     instructor: "A GHANNAM",
   },
 ];
 
+// Create time slots starting from 7 AM to 10 PM for better alignment
 const timeSlots = Array.from(
-  { length: 16 },
-  (_, i) => `${8 + Math.floor(i / 2)}:${i % 2 === 0 ? "00" : "30"}`,
+  { length: 28 },
+  (_, i) => `${7 + Math.floor(i / 2)}:${i % 2 === 0 ? "00" : "30"}`,
 );
 
 const getTopPosition = (startTime: string) => {
   const [hours, minutes] = startTime.split(":").map(Number);
-  return (hours - 8) * 60 + minutes; // Converts time to position based on a start of 8:00 AM
+  // Ensure that each hour translates correctly relative to 7:00 AM as base
+  return (hours - 7 + minutes / 60) * 128; // Starting from 7:00 AM = -7,,,,,, 1hour = 128PX
 };
 
 const DailySchedule: React.FC = () => {
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <View style={styles.scheduleContainer}>
-        <View style={styles.timeSlotsContainer}>
+    <ScrollView className="flex-1">
+      <View className="flex-row items-start">
+        <View className="w-16 items-end mr-2">
           {timeSlots.map((slot, index) => (
-            <Text key={index} style={styles.timeSlot}>
+            <Text key={index} className="text-xs h-16 text-gray">
+              {" "}
+              {/* Increase slot height for proper scaling */}
               {slot}
             </Text>
           ))}
         </View>
-        <View style={styles.courseContainer}>
+        <View className="flex-1 relative">
           {dailyData.map((item) => (
             <CourseCard
               key={item.id}
@@ -66,33 +67,5 @@ const DailySchedule: React.FC = () => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 0,
-  },
-  contentContainer: {
-    paddingHorizontal: 0, // Removed padding to align with schedule
-  },
-  scheduleContainer: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  timeSlotsContainer: {
-    width: 60,
-    alignItems: "flex-end",
-    marginRight: 5,
-  },
-  timeSlot: {
-    fontSize: 12,
-    height: 60, // Consistent height for 30-minute intervals
-    color: "#888",
-  },
-  courseContainer: {
-    flex: 1,
-    position: "relative",
-  },
-});
 
 export default DailySchedule;

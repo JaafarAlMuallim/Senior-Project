@@ -1,19 +1,14 @@
 // DateNavigation.tsx
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
 const DateNavigation: React.FC = () => {
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today.getDate());
 
+  // Calculate the start of the current week (Sunday)
   const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay()); // Start from Sunday
+  startOfWeek.setDate(today.getDate() - today.getDay());
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(startOfWeek);
     date.setDate(startOfWeek.getDate() + i);
@@ -25,87 +20,43 @@ const DateNavigation: React.FC = () => {
   };
 
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      style={styles.dateContainer}
-      contentContainerStyle={styles.contentContainer} // Added to manage inner content
-    >
-      {days.map((date, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.dateItem,
-            selectedDate === date.getDate() && styles.selectedDateItem,
-          ]}
-          onPress={() => handleDatePress(date.getDate())}
-        >
-          <Text
-            style={
-              selectedDate === date.getDate()
-                ? styles.selectedDayText
-                : styles.dayText
-            }
+    <View className="h-14">
+      {/* Container with fixed height to control layout */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ alignItems: "center" }} // Align items to center vertically
+        className="flex-shrink-0" // Prevent the ScrollView from stretching unnecessarily
+      >
+        {days.map((date, index) => (
+          <TouchableOpacity
+            key={index}
+            className={`items-center px-3 py-1 rounded-md ${
+              selectedDate === date.getDate() ? "bg-primary-default" : ""
+            }`}
+            onPress={() => handleDatePress(date.getDate())}
           >
-            {date.toLocaleDateString("en-US", { weekday: "short" })}
-          </Text>
-          <Text
-            style={
-              selectedDate === date.getDate()
-                ? styles.selectedDateText
-                : styles.dateText
-            }
-          >
-            {date.getDate()}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+            {/* Ensure all strings are rendered within <Text> components */}
+            <Text
+              className={
+                selectedDate === date.getDate() ? "text-white" : "text-gray"
+              }
+            >
+              {date.toLocaleDateString("en-US", { weekday: "short" })}{" "}
+              {/* Day name */}
+            </Text>
+            <Text
+              className={
+                selectedDate === date.getDate() ? "text-white" : "text-gray"
+              }
+            >
+              {date.getDate()} {/* Day number */}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  dateContainer: {
-    paddingHorizontal: 16,
-    height: 60, // Fixed height to prevent stretching
-    flexGrow: 0, // Prevents it from stretching to fill space
-    flexShrink: 1, // Allows it to shrink appropriately
-    flexDirection: "row", // Ensures proper layout direction
-  },
-  contentContainer: {
-    alignItems: "center", // Center align items within the container
-    height: 60, // Keep consistent height to match content
-  },
-  dateItem: {
-    alignItems: "center",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
-    height: 50,
-    justifyContent: "center",
-  },
-  selectedDateItem: {
-    backgroundColor: "#4a90e2",
-    borderRadius: 10,
-  },
-  dayText: {
-    fontSize: 14,
-    color: "#888",
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
-  },
-  selectedDayText: {
-    fontSize: 14,
-    color: "#fff",
-  },
-  selectedDateText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-});
 
 export default DateNavigation;

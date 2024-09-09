@@ -1,6 +1,6 @@
 // CourseCard.tsx
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 
 type CourseCardProps = {
   course: string;
@@ -23,43 +23,37 @@ const CourseCard: React.FC<CourseCardProps> = ({
 }) => {
   return (
     <View
-      style={[
-        styles.courseCard,
-        { height: (duration / 60) * 60, top: topPosition },
-      ]}
+      className="absolute left-0 right-0 p-2 bg-gray-200 rounded-md border border-gray-300 overflow-hidden"
+      style={{
+        height: duration, // Adjusted scaling to ensure duration matches visual representation
+        top: topPosition, // Correctly aligns the card based on the calculated position
+        marginVertical: 2, // Add margin to avoid overlap
+      }}
     >
-      <Text style={styles.courseTitle}>{course}</Text>
-      <Text style={styles.courseInfo}>{`${startTime} - ${endTime}`}</Text>
-      <Text style={styles.courseInfo}>{location}</Text>
-      <Text style={styles.courseInfo} numberOfLines={1} ellipsizeMode="tail">
+      <Text className="font-normal" numberOfLines={1} ellipsizeMode="tail">
+        {course}
+      </Text>
+      <Text
+        className="text-sm text-gray-600"
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >{`${startTime} - ${endTime}`}</Text>
+      <Text
+        className="text-sm text-gray-600"
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {location}
+      </Text>
+      <Text
+        className="text-sm text-gray-600"
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
         {instructor}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  courseCard: {
-    backgroundColor: "#f0f0f0",
-    padding: 8,
-    borderRadius: 8,
-    justifyContent: "center",
-    position: "absolute",
-    left: 0,
-    right: 0,
-    marginVertical: 2,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    overflow: "hidden", // Ensures text does not overflow
-  },
-  courseTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  courseInfo: {
-    fontSize: 14,
-    color: "#555",
-  },
-});
 
 export default CourseCard;

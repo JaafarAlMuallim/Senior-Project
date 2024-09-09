@@ -1,27 +1,15 @@
 // WeeklySchedule.tsx
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 
 const WeeklySchedule: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.placeholderText}>
+    <View className="flex-1 justify-center items-center">
+      <Text className="text-gray-medium">
         Weekly Schedule View (To be implemented)
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: "#888",
-  },
-});
 
 export default WeeklySchedule;

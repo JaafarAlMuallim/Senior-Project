@@ -8,7 +8,7 @@ import "react-native-reanimated";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEffect } from "react";
-import WelcomePage from "./(root)/WelcomePage";
+//import WelcomePage from "./(root)/WelcomePage";
 import { Stack } from "expo-router";
 
 SplashScreen.preventAutoHideAsync();
