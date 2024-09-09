@@ -2,7 +2,7 @@ import CustomText from "@/components/CustomText";
 import { images } from "@/constants/images";
 import { Link, router } from "expo-router";
 import React from "react";
-import { TouchableOpacity, Image, View, Text, Pressable } from "react-native";
+import { TouchableOpacity, Image, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomePage() {
@@ -33,15 +33,16 @@ export default function WelcomePage() {
               router.push("/sign-up");
             }}
           >
-            <Text className="text-primary-default text-xl font-extrabold mx-2">
-              @
-            </Text>
+           
             <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
               Continue with Email{" "}
             </CustomText>
+            <Text className="text-primary-default text-xl font-extrabold mx-2">
+              @
+            </Text>
           </TouchableOpacity>
         </View>
-        <CustomText styles={"text-xl text-center mt-4"}>
+        <CustomText styles={"text-lg text-center mt-4"}>
           Already have an account?{" "}
           <Link
             href={"/sign-in"}
