@@ -12,7 +12,7 @@ const SignIn = () => {
         Login
       </CustomText>
       <View className="mt-4">
-        <CustomText styles={"text-xl font-poppins"}>
+        <CustomText styles={"text-lg font-poppins"}>
           Login to your{" "}
           <CustomText styles="text-x text-primary-default font-poppinsSemiBold">
             account
