@@ -33,15 +33,16 @@ export default function WelcomePage() {
               router.push("/sign-up");
             }}
           >
-            <Text className="text-primary-default text-xl font-extrabold mx-2">
-              @
-            </Text>
+           
             <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
               Continue with Email{" "}
             </CustomText>
+            <Text className="text-primary-default text-xl font-extrabold mx-2">
+              @
+            </Text>
           </TouchableOpacity>
         </View>
-        <CustomText styles={"text-xl text-center mt-4"}>
+        <CustomText styles={"text-l text-center mt-4"}>
           Already have an account?{" "}
           <Link
             href={"/sign-in"}
