@@ -39,14 +39,6 @@ const Layout = () => {
           headerTintColor: "#304FFE",
         }}
       />
-      <Stack.Screen
-        name="verification"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
     </Stack>
   );
 };

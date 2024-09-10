@@ -1,4 +1,5 @@
 import CustomText from "@/components/CustomText";
+import GoogleAuth from "@/components/GoogleAuth";
 import { images } from "@/constants/images";
 import { Link, router } from "expo-router";
 import React from "react";
@@ -20,20 +21,13 @@ export default function WelcomePage() {
         </View>
         <Text className={"text-xl"}>Let’s Get Started...</Text>
         <View>
-          <TouchableOpacity className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50">
-            <Image source={images.google} className="w-4 h-4 mx-2" />
-            <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
-              Continue with Google
-            </CustomText>
-          </TouchableOpacity>
-
+          <GoogleAuth />
           <TouchableOpacity
             className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
             onPress={() => {
               router.push("/sign-up");
             }}
           >
-           
             <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
               Continue with Email{" "}
             </CustomText>

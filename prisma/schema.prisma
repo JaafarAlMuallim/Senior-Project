@@ -17,7 +17,7 @@ model User {
     id           String         @id @default(cuid())
     email        String         @unique
     name         String
-    password     String?
+    clerkId      String
     phone        String?
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
@@ -25,13 +25,12 @@ model User {
     Student      Student[]
     Admin        Admin[]
     Profile      Profile[]
-    Group        Group?         @relation(fields: [groupId], references: [id])
-    groupId      String?
     Participant  Participant[]
     Message      Message[]
     Notification Notification[]
     Feedback     Feedback[]
     Registration Registration[]
+    Group        Group[]
 }
 
 model Tutor {

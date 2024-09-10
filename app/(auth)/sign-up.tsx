@@ -5,6 +5,7 @@ import { Link, useRouter } from "expo-router";
 import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
 import { useState } from "react";
 import { Modal, TouchableOpacity, View } from "react-native";
+import { signUpUser } from "./actions";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -20,9 +21,12 @@ const SignUp = () => {
     if (!isLoaded) return;
 
     try {
+      const [firstName, lastName] = name.split(" ");
       await signUp.create({
         emailAddress: email,
-        password: password,
+        password,
+        firstName,
+        lastName,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
@@ -40,6 +44,7 @@ const SignUp = () => {
       });
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        await signUpUser({ name, email, password });
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));
