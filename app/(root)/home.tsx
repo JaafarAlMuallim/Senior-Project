@@ -1,6 +1,6 @@
 import CustomText from "@/components/CustomText";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { Link, Redirect } from "expo-router";
+import { Redirect } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useClerk } from "@clerk/clerk-expo";
 

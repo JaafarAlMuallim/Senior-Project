@@ -1,4 +1,3 @@
-import { signUpUser } from "@/app/(auth)/actions";
 import * as Linking from "expo-linking";
 
 export const googleOAuth = async (startOAuthFlow: any) => {
@@ -12,11 +11,11 @@ export const googleOAuth = async (startOAuthFlow: any) => {
         await setActive({ session: createdSessionId });
         if (signUp.createdUserId) {
           try {
-            await signUpUser({
-              name: signUp.user?.fullName,
-              email: signUp.user?.emailAddresses[0]?.email,
-              clerkId: signUp.created,
-            });
+            // await signUpUser({
+            //   name: signUp.user?.fullName,
+            //   email: signUp.user?.emailAddresses[0]?.email,
+            //   clerkId: signUp.created,
+            // });
           } catch (error) {
             console.error("Fetch error:", error);
             throw error;

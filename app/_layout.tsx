@@ -11,6 +11,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import "reflect-metadata";
 
 SplashScreen.preventAutoHideAsync();
 

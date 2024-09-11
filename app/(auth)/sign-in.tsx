@@ -18,12 +18,12 @@ const SignIn = () => {
     if (!isLoaded) return;
 
     try {
-      const signInAttempt = await signIn.create({
+      const signInAttempt = await signIn?.create({
         identifier: email,
         password,
       });
-      if (signInAttempt.status === "complete") {
-        await setActive({ session: signInAttempt.createdSessionId });
+      if (signInAttempt?.status === "complete") {
+        await setActive!({ session: signInAttempt.createdSessionId });
         router.push("/(root)/home");
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling for more info on error handling
