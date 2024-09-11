@@ -5,6 +5,7 @@ import { Link, useRouter } from "expo-router";
 import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
 import { useState } from "react";
 import { Modal, TouchableOpacity, View } from "react-native";
+import { onSignUp } from "./actions";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -43,6 +44,7 @@ const SignUp = () => {
       });
       if (completeSignUp?.status === "complete") {
         await setActive!({ session: completeSignUp?.createdSessionId });
+        await onSignUp({ email, name, clerkId: completeSignUp?.createdUserId });
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

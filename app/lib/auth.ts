@@ -1,6 +1,15 @@
 import * as Linking from "expo-linking";
+import { onSignUp } from "@/app/(auth)/actions";
+import {
+  StartOAuthFlowParams,
+  StartOAuthFlowReturnType,
+} from "@clerk/clerk-expo";
 
-export const googleOAuth = async (startOAuthFlow: any) => {
+export const googleOAuth = async (
+  startOAuthFlow: (
+    startOAuthFlowParams?: StartOAuthFlowParams,
+  ) => Promise<StartOAuthFlowReturnType>,
+) => {
   try {
     const { createdSessionId, setActive, signUp } = await startOAuthFlow({
       redirectUrl: Linking.createURL("/(root)/home"),
@@ -10,12 +19,13 @@ export const googleOAuth = async (startOAuthFlow: any) => {
       if (setActive) {
         await setActive({ session: createdSessionId });
         if (signUp.createdUserId) {
+          console.log("signUp.createdUserId", signUp.createdUserId);
           try {
-            // await signUpUser({
-            //   name: signUp.user?.fullName,
-            //   email: signUp.user?.emailAddresses[0]?.email,
-            //   clerkId: signUp.created,
-            // });
+            await onSignUp({
+              name: signUp.firstName + " " + signUp.lastName,
+              email: signUp.emailAddress,
+              clerkId: signUp.createdUserId,
+            });
           } catch (error) {
             console.error("Fetch error:", error);
             throw error;
@@ -37,7 +47,7 @@ export const googleOAuth = async (startOAuthFlow: any) => {
     console.error(err);
     return {
       success: false,
-      code: err.code,
+      code: err.code ?? "error",
       message: err?.errors[0]?.longMessage,
     };
   }

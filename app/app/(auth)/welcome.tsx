@@ -1,9 +1,8 @@
 import CustomText from "@/components/CustomText";
 import GoogleAuth from "@/components/GoogleAuth";
-import { images } from "@/constants/images";
 import { Link, router } from "expo-router";
 import React from "react";
-import { TouchableOpacity, Image, View, Text } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomePage() {
@@ -49,12 +48,3 @@ export default function WelcomePage() {
     </SafeAreaView>
   );
 }
-// <TouchableOpacity className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50">
-//   <Image
-//     source={require("@/assets/images/google.png")}
-//     className="w-4 h-4 mx-2"
-//   />
-//   <Text className="text-primary-black font-medium">
-//     Continue with Google
-//   </Text>
-// </TouchableOpacity>
