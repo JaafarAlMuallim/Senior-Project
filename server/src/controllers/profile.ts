@@ -1,22 +1,41 @@
-import { Request, Response, NextFunction } from "express";
 import { db } from "../db";
+import { trpc } from "../trpc";
+import { z } from "zod";
 
-export const updateProfile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id, ...rest } = req.body;
-    const data = await db.profile.update({
-      where: {
-        id: id,
-      },
-      data: rest,
-    });
-    res.send(data);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
+const proflieSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  major: z.string(),
+  standing: z.string(),
+});
+
+export const updateProfile = trpc.procedure
+  .input(
+    z.object({
+      id: z.string(),
+      data: proflieSchema.partial(),
+    })
+  )
+  .mutation(async ({ input }) => {
+    const { id, data } = input;
+    try {
+      const profile = await db.profile.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!profile) {
+        throw new Error("Profile does not exist");
+      }
+      await db.profile.update({
+        where: {
+          id,
+        },
+        data,
+      });
+      return profile;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  });

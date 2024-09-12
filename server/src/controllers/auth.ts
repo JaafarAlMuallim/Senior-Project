@@ -1,43 +1,48 @@
-import { Request, Response, NextFunction } from "express";
 import { db } from "../db";
-export const signUp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { email, name, clerkId } = req.body;
-  console.log(req.body);
-  try {
-    if (!email || !name || !clerkId) {
-      return res.status(400).send("Missing required fields");
-    }
-    const checker = await db.user.findUnique({
-      where: {
-        clerkId,
-      },
-    });
-    if (checker) {
-      return res.status(400).send("Clerk ID already exists, Login");
-    }
-    const data = await db.user.create({
-      data: {
-        email,
-        name,
-        clerkId,
-      },
-    });
-    const profile = await db.profile.create({
-      data: {
-        user: {
-          connect: {
-            id: data.id,
+import { trpc } from "../trpc";
+import { z } from "zod";
+
+export const signUp = trpc.procedure
+  .input(
+    z.object({
+      email: z.string(),
+      name: z.string(),
+      clerkId: z.string(),
+    })
+  )
+  .mutation(async ({ input }) => {
+    const { email, name, clerkId } = input;
+    try {
+      if (!email || !name || !clerkId) {
+        throw new Error("Missing required fields");
+      }
+      const checker = await db.user.findUnique({
+        where: {
+          clerkId,
+        },
+      });
+      if (checker) {
+        throw new Error("Clerk ID already exists, Login");
+      }
+      const data = await db.user.create({
+        data: {
+          email,
+          name,
+          clerkId,
+        },
+      });
+      await db.profile.create({
+        data: {
+          user: {
+            connect: {
+              id: data.id,
+            },
           },
         },
-      },
-    });
-    return res.send(data);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
+      });
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  });
