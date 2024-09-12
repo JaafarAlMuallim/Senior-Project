@@ -1,6 +1,12 @@
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
+import { useAuth } from "@clerk/clerk-expo";
 
 const Layout = () => {
+  const { isSignedIn } = useAuth();
+  if (isSignedIn) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <Stack>
       <Stack.Screen
@@ -28,14 +34,6 @@ const Layout = () => {
       />
       <Stack.Screen
         name="forget-password"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
-      <Stack.Screen
-        name="verification"
         options={{
           headerShown: true,
           title: "",

@@ -1,8 +1,8 @@
 import CustomText from "@/components/CustomText";
-import { images } from "@/constants/images";
+import GoogleAuth from "@/components/GoogleAuth";
 import { Link, router } from "expo-router";
 import React from "react";
-import { TouchableOpacity, Image, View, Text } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomePage() {
@@ -15,25 +15,18 @@ export default function WelcomePage() {
         </Text>
         <View>
           <CustomText styles={"text-xl text-wrap"}>
-            A place where you can learn learn, grow and connect with others.
+            A place where you can learn, grow and connect with others.
           </CustomText>
         </View>
         <Text className={"text-xl"}>Let’s Get Started...</Text>
         <View>
-          <TouchableOpacity className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50">
-            <Image source={images.google} className="w-4 h-4 mx-2" />
-            <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
-              Continue with Google
-            </CustomText>
-          </TouchableOpacity>
-
+          <GoogleAuth />
           <TouchableOpacity
             className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
             onPress={() => {
               router.push("/sign-up");
             }}
           >
-           
             <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
               Continue with Email{" "}
             </CustomText>
@@ -55,12 +48,3 @@ export default function WelcomePage() {
     </SafeAreaView>
   );
 }
-// <TouchableOpacity className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50">
-//   <Image
-//     source={require("@/assets/images/google.png")}
-//     className="w-4 h-4 mx-2"
-//   />
-//   <Text className="text-primary-black font-medium">
-//     Continue with Google
-//   </Text>
-// </TouchableOpacity>

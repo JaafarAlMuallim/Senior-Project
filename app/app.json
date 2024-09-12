@@ -13,13 +13,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.EduLink"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/SplashNew.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.EduLink"
     },
     "web": {
       "bundler": "metro",
