@@ -4,8 +4,9 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
 import { useState } from "react";
-import { Modal, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, TouchableOpacity, View } from "react-native";
 import { onSignUp } from "./actions";
+import { useMutation } from "@tanstack/react-query";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -16,6 +17,14 @@ const SignUp = () => {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+
+  const { mutate: addUser } = useMutation({
+    mutationKey: ["signUp", email],
+    mutationFn: (clerkId: string) => onSignUp({ email, name, clerkId }),
+    onSuccess: () => {
+      Alert.alert("Success", "You have successfully signed up!");
+    },
+  });
 
   const onSignUpPress = async () => {
     if (!isLoaded) return;
@@ -44,7 +53,7 @@ const SignUp = () => {
       });
       if (completeSignUp?.status === "complete") {
         await setActive!({ session: completeSignUp?.createdSessionId });
-        await onSignUp({ email, name, clerkId: completeSignUp?.createdUserId });
+        addUser(signUp.createdUserId!);
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));
