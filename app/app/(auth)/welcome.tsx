@@ -15,7 +15,7 @@ export default function WelcomePage() {
         </Text>
         <View>
           <CustomText styles={"text-xl text-wrap"}>
-            A place where you can learn learn, grow and connect with others.
+            A place where you can learn, grow and connect with others.
           </CustomText>
         </View>
         <Text className={"text-xl"}>Let’s Get Started...</Text>

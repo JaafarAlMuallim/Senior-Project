@@ -6,6 +6,7 @@ const Layout = () => {
   if (isSignedIn) {
     return <Redirect href="/" />;
   }
+
   return (
     <Stack>
       <Stack.Screen
