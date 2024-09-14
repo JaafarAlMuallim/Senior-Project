@@ -1,25 +1,14 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { ChevronRight, UserRound } from "lucide-react-native";
+import React, { ReactNode } from "react";
+import { View } from "react-native";
+import { ChevronRight } from "lucide-react-native";
+import CustomText from "./CustomText";
 
-const ProfileOption = ({
-  label,
-
-}:{
-  label: string,
-
-}) => {
-
-  
+const ProfileOption = ({ label, icon }: { label: string; icon: ReactNode }) => {
   return (
-    <View className="basis-3/12 flex-row items-center" >
-      <View className="flex-none">
-        <UserRound className="w-10 h-10 mx-2" />
-      </View>
-      <Text className="flex-initial font-poppinsSemiBold text-lg w-64 ml-2">
-        {label}
-      </Text>
-      <View className="flex-initial">
+    <View className="w-full flex-row items-center mt-4">
+      <View className="flex-none">{icon}</View>
+      <CustomText styles="flex-1 text-lg w-64 ml-2">{label}</CustomText>
+      <View className="">
         <ChevronRight className="w-10 h-10" />
       </View>
     </View>
