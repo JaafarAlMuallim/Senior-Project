@@ -1,6 +1,10 @@
 import { initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { getProfile, updateProfile } from "./controllers/profile";
+import {
+  getProfile,
+  updateOnboarding,
+  updateProfile,
+} from "./controllers/profile";
 import { z } from "zod";
 import { signUp } from "./controllers/auth";
 import { profileSchema } from "./controllers/profile";
@@ -38,10 +42,20 @@ const updateProfileProc = trpc.procedure
   )
   .mutation(updateProfile);
 
+const onboardingProc = trpc.procedure
+  .input(
+    z.object({
+      clerkId: z.string(),
+      data: profileSchema.partial(),
+    })
+  )
+  .mutation(updateOnboarding);
+
 export const appRouter = trpc.router({
   signUpProc,
   getProfileProc,
   updateProfileProc,
+  onboardingProc,
 });
 
 export type AppRouter = typeof appRouter;

@@ -6,10 +6,14 @@ export const profileSchema = z.object({
   userId: z.string(),
   major: z.string(),
   standing: z.string(),
+  university: z.string(),
+  phone: z.string(),
 });
 
 export const getProfile = async ({ input }: { input: { clerkId: string } }) => {
   const { clerkId } = input;
+  console.log("GET PROFILE");
+
   const profile = await db.profile.findUnique({
     where: {
       userId: clerkId,
@@ -21,6 +25,26 @@ export const getProfile = async ({ input }: { input: { clerkId: string } }) => {
   return profile;
 };
 
+export const updateOnboarding = async ({
+  input,
+}: {
+  input: { clerkId: string; data: Partial<z.infer<typeof profileSchema>> };
+}) => {
+  const { clerkId, data } = input;
+  console.log("UPDATE ONBOARDING");
+  try {
+    const profile = await db.profile.update({
+      where: {
+        userId: clerkId,
+      },
+      data,
+    });
+    return profile;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
 export const updateProfile = async ({
   input,
 }: {
