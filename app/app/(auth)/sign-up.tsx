@@ -65,13 +65,13 @@ const SignUp = () => {
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
-      <CustomText styles={"text-primary-default text-4xl font-poppinsBold"}>
+      <CustomText styles={"text-primary-light text-4xl font-poppinsBold"}>
         Register
       </CustomText>
       <View className="mt-4">
         <CustomText styles={"text-lg font-poppins"}>
           Create an{" "}
-          <CustomText styles="text-xl text-primary-default font-poppinsSemiBold">
+          <CustomText styles="text-xl text-primary-light font-poppinsSemiBold">
             account
           </CustomText>{" "}
           to access all the features of{" "}
@@ -157,7 +157,7 @@ const SignUp = () => {
           Already have an account?{" "}
           <Link
             href={"/sign-in"}
-            className={"text-primary-default underline font-poppinsBold"}
+            className={"text-primary-light underline font-poppinsBold"}
           >
             Login
           </Link>

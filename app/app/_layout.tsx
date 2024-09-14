@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
@@ -50,6 +51,7 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  console.log("RootLayout");
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),

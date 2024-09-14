@@ -40,6 +40,12 @@ const Layout = () => {
           headerTintColor: "#304FFE",
         }}
       />
+      <Stack.Screen
+        name="onboarding"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

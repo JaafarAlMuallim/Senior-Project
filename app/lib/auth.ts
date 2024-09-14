@@ -1,5 +1,4 @@
 import * as Linking from "expo-linking";
-import { onSignUp } from "@/app/(auth)/actions";
 import {
   StartOAuthFlowParams,
   StartOAuthFlowReturnType,
@@ -12,7 +11,7 @@ export const googleOAuth = async (
 ) => {
   try {
     const { createdSessionId, setActive, signUp } = await startOAuthFlow({
-      redirectUrl: Linking.createURL("/(auth)/onboarding"),
+      redirectUrl: Linking.createURL("/(root)/onboarding"),
     });
 
     if (createdSessionId) {
