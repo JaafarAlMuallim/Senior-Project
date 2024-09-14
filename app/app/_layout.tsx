@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import "reflect-metadata";
+import React from "react";
 
 SplashScreen.preventAutoHideAsync();
 

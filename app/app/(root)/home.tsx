@@ -3,6 +3,7 @@ import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
 import { Text, Image, TouchableOpacity, View } from "react-native";
 import { useClerk } from "@clerk/clerk-expo";
+import React from "react";
 
 const Page = () => {
   const { user } = useUser();

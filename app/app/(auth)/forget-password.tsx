@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { LockKeyhole, Mail } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import { Alert, TouchableOpacity, View } from "react-native";
+import React from "react";
 
 const ForgetPassword = () => {
   const { isLoaded, signIn, setActive } = useSignIn();

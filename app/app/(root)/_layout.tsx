@@ -1,5 +1,7 @@
 import { Tabs } from "expo-router";
 import { Home } from "lucide-react-native";
+import React from "react";
+
 const RootLayout = () => {
   return (
     <Tabs initialRouteName="home">

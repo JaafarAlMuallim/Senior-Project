@@ -1,5 +1,6 @@
 import { Redirect, Stack } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
+import React from "react";
 
 const Layout = () => {
   const { isSignedIn } = useAuth();
@@ -38,6 +39,13 @@ const Layout = () => {
           headerShown: true,
           title: "",
           headerTintColor: "#304FFE",
+        }}
+      />
+      <Stack.Screen
+        name="profile"
+        options={{
+          headerShown: false,
+          title: "profile",
         }}
       />
     </Stack>

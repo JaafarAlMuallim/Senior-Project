@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Alert, Modal, TouchableOpacity, View } from "react-native";
 import { onSignUp } from "./actions";
 import { useMutation } from "@tanstack/react-query";
+import React from "react";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();

@@ -34,6 +34,14 @@ export default function WelcomePage() {
               @
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
+            onPress={() => {
+              router.push("/profile");
+            }}
+          >
+            
+          </TouchableOpacity>
         </View>
         <CustomText styles={"text-lg text-center mt-4"}>
           Already have an account?{" "}
