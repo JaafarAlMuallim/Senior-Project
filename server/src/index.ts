@@ -1,6 +1,7 @@
-import express from "express";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { appRouter, createContext } from "./trpc";
+import express from "express";
+import { appRouter } from "./routers";
+import { createContext } from "./trpc";
 
 const port = 3000;
 
