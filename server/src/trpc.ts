@@ -1,13 +1,13 @@
 import { initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
+import { z } from "zod";
+import { signUp } from "./controllers/auth";
 import {
   getProfile,
+  profileSchema,
   updateOnboarding,
   updateProfile,
 } from "./controllers/profile";
-import { z } from "zod";
-import { signUp } from "./controllers/auth";
-import { profileSchema } from "./controllers/profile";
 
 export const createContext =
   ({}: trpcExpress.CreateExpressContextOptions) => ({});
@@ -15,6 +15,8 @@ export const createContext =
 export type Context = Awaited<ReturnType<typeof createContext>>;
 
 export const trpc = initTRPC.context<Context>().create();
+
+export const publicProcedure = trpc.procedure;
 
 const signUpProc = trpc.procedure
   .input(
