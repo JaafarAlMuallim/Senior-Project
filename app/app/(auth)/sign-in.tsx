@@ -38,7 +38,7 @@ const SignIn = () => {
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
-      <CustomText styles={"text-primary-default text-4xl font-poppinsBold"}>
+      <CustomText styles={"text-primary-light text-4xl font-poppinsBold"}>
         Login
       </CustomText>
       <View className="mt-4">
@@ -79,13 +79,13 @@ const SignIn = () => {
         </Input>
         <Link
           href={"/forget-password"}
-          className={"text-primary-default underline font-poppinsBold"}
+          className={"text-primary-light underline font-poppinsBold"}
         >
           Forget Password?
         </Link>
       </View>
       <TouchableOpacity
-        className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+        className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
         onPress={onSignIn}
       >
         <CustomText styles="text-primary-white font-poppinsBold text-lg">

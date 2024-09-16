@@ -1,15 +1,32 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+<<<<<<< HEAD
     "jsx": "react",
+=======
+>>>>>>> bfd76232c09b0016b72fada89f48c103fb0ecfcf
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "paths": {
+<<<<<<< HEAD
       "@/*": ["./*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }
+=======
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts"
+  ]
+}
+>>>>>>> bfd76232c09b0016b72fada89f48c103fb0ecfcf

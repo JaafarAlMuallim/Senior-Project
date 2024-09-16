@@ -86,7 +86,7 @@ const ForgetPassword = () => {
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
-      <CustomText styles={"text-primary-default text-4xl font-poppinsBold"}>
+      <CustomText styles={"text-primary-light text-4xl font-poppinsBold"}>
         Forget Password?
       </CustomText>
       <View className="mt-4">

@@ -1,5 +1,4 @@
 import * as Linking from "expo-linking";
-import { onSignUp } from "@/app/(auth)/actions";
 import {
   StartOAuthFlowParams,
   StartOAuthFlowReturnType,
@@ -12,33 +11,29 @@ export const googleOAuth = async (
 ) => {
   try {
     const { createdSessionId, setActive, signUp } = await startOAuthFlow({
-      redirectUrl: Linking.createURL("/(root)/home"),
+      redirectUrl: Linking.createURL("/(root)/onboarding"),
     });
 
     if (createdSessionId) {
+      console.log("createdSessionId", createdSessionId);
       if (setActive) {
         await setActive({ session: createdSessionId });
-        if (signUp.createdUserId) {
+        if (signUp?.createdUserId) {
           console.log("signUp.createdUserId", signUp.createdUserId);
-          try {
-            await onSignUp({
-              name: signUp.firstName + " " + signUp.lastName,
-              email: signUp.emailAddress,
-              clerkId: signUp.createdUserId,
-            });
-          } catch (error) {
-            console.error("Fetch error:", error);
-            throw error;
-          }
         }
         return {
           success: true,
           code: "success",
           message: "You have successfully signed in with Google",
+          data: {
+            clerkId: signUp?.createdUserId,
+            name: signUp?.firstName + " " + signUp?.lastName,
+            email: signUp?.emailAddress,
+          },
         };
       }
     }
-
+    console.log("createdSessionId", createdSessionId || "No session created");
     return {
       success: false,
       message: "An error occurred while signing in with Google",

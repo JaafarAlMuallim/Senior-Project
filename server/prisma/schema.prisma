@@ -19,14 +19,14 @@ model User {
     name         String
     clerkId      String         @unique @default(cuid())
     password     String?
-    phone        String?
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
     Tutor        Tutor[]
     Student      Student[]
     Admin        Admin[]
-    Profile      Profile[]
-    Group        Group?         @relation(fields: [groupId], references: [id])
+    profileId    String?
+    Profile      Profile?
+    Group        Group[]
     groupId      String?
     Participant  Participant[]
     Message      Message[]
@@ -86,13 +86,15 @@ model Admin {
 }
 
 model Profile {
-    id        String   @id @default(cuid())
-    user      User     @relation(fields: [userId], references: [id])
-    userId    String
-    major     String?
-    standing  String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id         String   @id @default(cuid())
+    user       User     @relation(fields: [userId], references: [clerkId])
+    userId     String   @unique
+    major      String?
+    phone      String?
+    university String?
+    standing   String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }
 
 model Material {

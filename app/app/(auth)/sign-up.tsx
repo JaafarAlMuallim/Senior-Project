@@ -4,8 +4,9 @@ import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
 import { useState } from "react";
-import { Modal, TouchableOpacity, View } from "react-native";
+import { Alert, Modal, TouchableOpacity, View } from "react-native";
 import { onSignUp } from "./actions";
+import { useMutation } from "@tanstack/react-query";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -16,6 +17,14 @@ const SignUp = () => {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+
+  const { mutate: addUser } = useMutation({
+    mutationKey: ["signUp", email],
+    mutationFn: (clerkId: string) => onSignUp({ email, name, clerkId }),
+    onSuccess: () => {
+      Alert.alert("Success", "You have successfully signed up!");
+    },
+  });
 
   const onSignUpPress = async () => {
     if (!isLoaded) return;
@@ -44,7 +53,7 @@ const SignUp = () => {
       });
       if (completeSignUp?.status === "complete") {
         await setActive!({ session: completeSignUp?.createdSessionId });
-        await onSignUp({ email, name, clerkId: completeSignUp?.createdUserId });
+        addUser(signUp.createdUserId!);
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));
@@ -56,13 +65,13 @@ const SignUp = () => {
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
-      <CustomText styles={"text-primary-default text-4xl font-poppinsBold"}>
+      <CustomText styles={"text-primary-light text-4xl font-poppinsBold"}>
         Register
       </CustomText>
       <View className="mt-4">
         <CustomText styles={"text-lg font-poppins"}>
           Create an{" "}
-          <CustomText styles="text-xl text-primary-default font-poppinsSemiBold">
+          <CustomText styles="text-xl text-primary-light font-poppinsSemiBold">
             account
           </CustomText>{" "}
           to access all the features of{" "}
@@ -148,7 +157,7 @@ const SignUp = () => {
           Already have an account?{" "}
           <Link
             href={"/sign-in"}
-            className={"text-primary-default underline font-poppinsBold"}
+            className={"text-primary-light underline font-poppinsBold"}
           >
             Login
           </Link>
