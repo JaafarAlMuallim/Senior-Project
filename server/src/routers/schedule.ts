@@ -3,7 +3,7 @@ import { db } from "../db";
 import { publicProcedure } from "../trpc";
 
 export const scheduleRouter = {
-  createSchedule: publicProcedure
+  createSchedule: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
         courseId: z.string(),
@@ -11,11 +11,11 @@ export const scheduleRouter = {
         userId: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const registration = await db.registration.findFirst({
         where: {
           courseId: input.courseId,
-          userId: input.userId,
+          userId: input.userId, // TODO: Need to replace with ctx.user.id later
           semester: input.semester,
         },
       });
@@ -27,7 +27,7 @@ export const scheduleRouter = {
       return await db.registration.create({
         data: {
           courseId: input.courseId,
-          userId: input.userId,
+          userId: input.userId, // TODO: Need to replace with ctx.user.id later
           semester: input.semester,
         },
       });
