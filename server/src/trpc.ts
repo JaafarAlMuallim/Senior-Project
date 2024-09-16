@@ -15,6 +15,8 @@ export const authProcedure = trpc.procedure.use(({ ctx, next }) => {
   // if (!(ctx as any).user) {
   //   throw new Error("Unauthorized");
   // }
+  // TODO: Uncomment the above code and replace the below code with the actual implementation
+  // const user = db.user.findFirst({ id: ctx.req.userId });
   const user = {} as User;
   return next({ ctx: { ...ctx, user } });
 });
