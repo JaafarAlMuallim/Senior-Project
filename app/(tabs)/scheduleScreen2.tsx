@@ -1,5 +1,5 @@
 // ScheduleScreen.tsx
-import React, { useCallback, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -10,16 +10,10 @@ import {
 } from "react-native";
 import { styled } from "nativewind";
 import {
-  Agenda,
-  AgendaList,
   WeekCalendar,
-  CalendarList,
   CalendarProvider,
-  ExpandableCalendar,
-  Timeline,
+  LocaleConfig,
 } from "react-native-calendars";
-import { LocaleConfig } from "react-native-calendars";
-import ScheduleHeader from "./components/ScheduleHeader";
 import { format, parseISO } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -58,63 +52,32 @@ LocaleConfig.locales["fr"] = {
 };
 LocaleConfig.defaultLocale = "fr";
 
-const agendaItems = [
-  {
-    title: "2024-09-10",
-    data: [
-      {
-        id: "1",
-        name: "MATH 101",
-        startTime: "10:00",
-        endTime: "10:50",
-        location: "5-135",
-        instructor: "TAMEM AL-SHORMAN",
-      },
-      {
-        id: "3",
-        name: "MATH 102",
-        startTime: "11:00",
-        endTime: "11:50",
-        location: "5-135",
-        instructor: "TAMEM AL-SHORMAN",
-      },
-    ],
-  },
-  {
-    title: "2024-09-11",
-    data: [
-      {
-        id: "2",
-        name: "PHYS 101",
-        startTime: "11:00",
-        endTime: "13:40",
-        location: "6-236",
-        instructor: "A GHANNAM",
-      },
-    ],
-  },
-];
+const timeToMinutes = (time: string) => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return hours * 60 + minutes;
+};
 
-const ItemContainer = styled(
-  SafeAreaView,
-  "bg-default-white p-4 my-2 rounded-xl flex-row",
-);
-const HiddenSection = styled(SafeAreaView, "h-0 overflow-hidden");
+const calculatePositionAndHeight = (start: string, end: string) => {
+  const startMinutes = timeToMinutes(start);
+  const endMinutes = timeToMinutes(end);
+  const top = (startMinutes - timeToMinutes("08:00")) * 1.4;
+  const height = (endMinutes - startMinutes) * 1.25;
+  return { top, height };
+};
 
-const AgendaItem = ({ item }: { item: any }) => (
-  <ItemContainer>
-    <Text className="w-20 text-gray-500 text-sm">{`${item.startTime} - ${item.endTime}`}</Text>
-    <SafeAreaView className="bg-white-default shadow flex-1 ml-2">
-      <Text className=" text-primary-dark text-lg">{item.name}</Text>
-      <Text className="text-secondary-gray">{item.location}</Text>
-      <Text className="text-secondary-gray">{item.instructor}</Text>
-    </SafeAreaView>
-  </ItemContainer>
-);
+const calculateDuration = (start: string, end: string) => {
+  const [startHour, startMinute] = start.split(":").map(Number);
+  const [endHour, endMinute] = end.split(":").map(Number);
+
+  const startInMinutes = startHour * 60 + startMinute;
+  const endInMinutes = endHour * 60 + endMinute;
+
+  return endInMinutes - startInMinutes;
+};
 
 const ScheduleScreen2: React.FC = () => {
   const [viewMode, setViewMode] = useState<"Today" | "Weekly">("Today");
-  const [selectedDate, setSelectedDate] = useState("2024-09-10");
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   const dateObject = parseISO(selectedDate);
   const dayNum = format(dateObject, "dd");
   const dayName = dateObject.toLocaleDateString("en-US", {
@@ -125,89 +88,285 @@ const ScheduleScreen2: React.FC = () => {
   const [isTermModalVisible, setIsTermModalVisible] = useState(false);
   const terms = ["231", "232", "241"];
 
+  const fullDayName = format(parseISO(selectedDate), "EEEE");
+  const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+  const timeSlots = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "01:00",
+    "02:00",
+    "03:00",
+    "04:00",
+    "05:00",
+    "06:00",
+  ];
   const events = [
     {
-      start: new Date("2024-09-24 09:00"),
-      end: new Date("2024-09-24 10:00"),
-      title: "MATH 101",
-      location: "6-135",
+      day: "Sunday",
+      classes: [
+        {
+          id: "1",
+          title: "MATH 101",
+          section: "06",
+          start: "09:00",
+          end: "9:50",
+          location: "6-135",
+          instructor: "TAMEM AL-SHORMAN",
+        },
+        {
+          id: "2",
+          title: "PHYS 101",
+          section: "06",
+          start: "10:00",
+          end: "10:50",
+          location: "6-235",
+          instructor: "A GHANNAM",
+        },
+      ],
     },
     {
-      start: new Date("2024-09-24 10:00"),
-      end: new Date("2024-09-24 11:00"),
-      title: "PHYS 101",
-      location: "6-235",
+      day: "Monday",
+      classes: [
+        {
+          id: "1",
+          title: "MATH 101",
+          section: "06",
+          start: "09:00",
+          end: "09:50",
+          location: "6-135",
+          instructor: "TAMEM AL-SHORMAN",
+        },
+        {
+          id: "2",
+          title: "PHYS 101",
+          section: "06",
+          start: "10:00",
+          end: "10:50",
+          location: "6-235",
+          instructor: "A GHANNAM",
+        },
+      ],
     },
     {
-      start: new Date("2024-09-24 11:00"),
-      end: new Date("2024-09-24 13:00"),
-      title: "PE 101",
-      location: "11-131",
+      day: "Tuesday",
+      classes: [
+        {
+          id: "3",
+          title: "MATH 101",
+          section: "06",
+          start: "09:00",
+          end: "09:50",
+          location: "6-135",
+          instructor: "TAMEM AL-SHORMAN",
+        },
+        {
+          id: "4",
+          title: "PHYS 101",
+          section: "06",
+          start: "10:00",
+          end: "10:50",
+          location: "6-235",
+          instructor: "A GHANNAM",
+        },
+      ],
     },
     {
-      start: new Date("2024-09-24 12:00"),
-      end: new Date("2024-09-24 13:00"),
-      title: "ICS 104",
-      location: "22-321",
+      day: "Wednesday",
+      classes: [
+        {
+          id: "1",
+          title: "MATH 101",
+          section: "06",
+          start: "09:00",
+          end: "09:50",
+          location: "6-135",
+          instructor: "TAMEM AL-SHORMAN",
+        },
+        {
+          id: "2",
+          title: "PHYS 101",
+          section: "57",
+          start: "10:00",
+          end: "13:30",
+          location: "6-235",
+          instructor: "A GHANNAM",
+        },
+      ],
     },
     {
-      start: new Date("2024-09-25 09:00"),
-      end: new Date("2024-09-25 10:00"),
-      title: "MATH 101",
-      location: "6-135",
-    },
-    {
-      start: new Date("2024-09-25 10:00"),
-      end: new Date("2024-09-25 11:00"),
-      title: "PHYS 101",
-      location: "6-235",
-    },
-    {
-      start: new Date("2024-09-26 09:00"),
-      end: new Date("2024-09-26 10:00"),
-      title: "MATH 101",
-      location: "6-135",
-    },
-    {
-      start: new Date("2024-09-26 10:00"),
-      end: new Date("2024-09-26 12:00"),
-      title: "PHYS 101",
-      location: "6-266",
-    },
-    {
-      start: new Date("2024-09-27 10:00"),
-      end: new Date("2024-09-27 11:00"),
-      title: "MATH 101",
-      location: "5-135",
-    },
-    {
-      start: new Date("2024-09-27 11:00"),
-      end: new Date("2024-09-27 13:00"),
-      title: "PHYS 101",
-      location: "6-266",
+      day: "Thursday",
+      classes: [
+        {
+          id: "1",
+          title: "MATH 101",
+          section: "06",
+          start: "09:00",
+          end: "09:50",
+          location: "6-135",
+          instructor: "TAMEM AL-SHORMAN",
+        },
+        {
+          id: "2",
+          title: "PHYS 101",
+          section: "06",
+          start: "10:00",
+          end: "10:50",
+          location: "6-235",
+          instructor: "A GHANNAM",
+        },
+      ],
     },
   ];
+
+  const renderClassItem = ({ item, day }: { item: any; day: string }) => {
+    const currentDay = format(new Date(), "EEEE");
+    const isCurrentDay = day === currentDay;
+    const { top, height } = calculatePositionAndHeight(item.start, item.end);
+
+    return (
+      <View
+        className={`absolute left-0 right-0 py-1 rounded-lg shadow-lg ${isCurrentDay ? "bg-primary-default" : "bg-white-light"}`}
+        style={{ top, height }}
+      >
+        <Text
+          className={`${isCurrentDay ? "text-primary-white" : "text-primary-black"} text-center tracking-tighter font-bold text-xs`}
+        >
+          {item.title}
+        </Text>
+        <Text
+          className={`${isCurrentDay ? "text-primary-white" : "text-primary-black"} text-xs p-1`}
+        >
+          {item.location}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderDailyClassItem = ({
+    item,
+    isCurrentClass,
+  }: {
+    item: any;
+    isCurrentClass: boolean;
+  }) => {
+    const duration = calculateDuration(item.start, item.end);
+    const height = duration * 3;
+
+    return (
+      <View
+        className={`flex-row justify-center p-3 mb-4 rounded-lg shadow`}
+        style={{ height: height }}
+      >
+        {/* Time section */}
+        <View className="w-16">
+          <Text className="text-primary-black text-sm">{item.start}</Text>
+          <Text className="text-gray-medium text-sm">{item.end}</Text>
+        </View>
+
+        {/* Course section */}
+        <View
+          className={`flex-1 ml-4 rounded-2xl p-4 shadow ${isCurrentClass ? "bg-primary-default" : "bg-white-light"}`}
+          style={{ height: height }}
+        >
+          <Text
+            className={`font-bold text-lg ${isCurrentClass ? "text-primary-white" : "text-primary-black"}`}
+          >
+            {item.title}
+          </Text>
+          <Text
+            className={`text-sm font-semibold ${isCurrentClass ? "text-primary-white" : "text-primary-black"}`}
+          >
+            Section: {item.section}
+          </Text>
+          <View className="flex-row items-center pt-3">
+            <Ionicons
+              name="location-outline"
+              size={12}
+              color={isCurrentClass ? "white" : "gray"}
+            />
+            <Text
+              className={`text-sm ml-2 font-light ${isCurrentClass ? "text-primary-white" : "text-primary-black"}`}
+            >
+              {item.location}
+            </Text>
+          </View>
+          <View className="flex-row items-center mt-2">
+            <Ionicons
+              name="person-outline"
+              size={12}
+              color={isCurrentClass ? "white" : "gray"}
+            />
+            <Text
+              className={`text-sm ml-2 font-light ${isCurrentClass ? "text-primary-white" : "text-primary-black"}`}
+            >
+              {item.instructor}
+            </Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderDayColumn = ({ item }: { item: any }) => {
+    return (
+      <View className="flex-1 relative" style={{ height: 600 }}>
+        {item.classes.map(
+          (classItem: {
+            id: string;
+            title: string;
+            start: string;
+            end: string;
+            location: string;
+          }) => (
+            <View key={classItem.id}>
+              {renderClassItem({ item: classItem, day: item.day })}
+            </View>
+          ),
+        )}
+      </View>
+    );
+  };
+
+  const renderDaySchedule = (selectedDay: string) => {
+    const daySchedule = events.find((event) => event.day === selectedDay);
+
+    if (daySchedule) {
+      return (
+        <View className="py-4">
+          {daySchedule.classes.map((classItem) => {
+            const isCurrentClass = false;
+            return renderDailyClassItem({ item: classItem, isCurrentClass });
+          })}
+        </View>
+      );
+    } else {
+      return (
+        <Text className="flex-1 justify-center p-5">
+          No classes for {selectedDay}
+        </Text>
+      );
+    }
+  };
+
+  const renderTimeSlot = () => (
+    <View className="py-4">
+      {timeSlots.map((time) => (
+        <Text key={time} className="text-xs font-bold text-center mb-14">
+          {time}
+        </Text>
+      ))}
+    </View>
+  );
 
   const markedDates = {
     [selectedDate]: { selected: true, selectedColor: "#4561FF" },
   };
 
-  const filteredAgendaItems = agendaItems.filter(
-    (section: any) => section.title === selectedDate,
-  );
-
-  const renderItem = useCallback(({ item }: { item: any }) => {
-    return <AgendaItem item={item} />;
-  }, []);
-
-  const isCurrentDayEvent = (eventDate: any) => {
-    const selected = new Date(selectedDate).toDateString();
-    const eventDay = new Date(eventDate).toDateString();
-    return selected === eventDay;
-  };
-
   return (
-    <SafeAreaView className="flex-1 bg-primary-white">
+    <SafeAreaView className="flex-1 pt-12 bg-primary-white">
       <View className="flex-column justify-between items-center px-4 pb-3 bg-primary-white w-screen">
         <View className="flex flex-row items-center justify-between w-screen p-2">
           <TouchableOpacity
@@ -268,34 +427,41 @@ const ScheduleScreen2: React.FC = () => {
           }}
         />
         {viewMode === "Weekly" ? (
-          <Timeline
-            format24h={true} 
-            eventTapped={(event) => console.log(event)}
-            events={events.map((event) => ({
-              start: event.start,
-              end: event.end,
-              title: event.title,
-              summary: event.location,
-              color: isCurrentDayEvent(event.start) ? "#4561FF" : "#E0E7FF",
-              textColor: isCurrentDayEvent(event.start) ? "white" : "black",
-            }))}
-            columns={5}
-            dayStartHour={8}
-            style={{
-              eventContainerStyle: {
-                borderRadius: 10,
-              },
-              eventTitleStyle: {
-                fontSize: 12,
-                fontWeight: "bold",
-              },
-              eventSummaryStyle: {
-                fontSize: 10,
-              },
-            }}
-          />
+          <ScrollView horizontal={false}>
+            <View className="flex-row">
+              <View className="w-16">{renderTimeSlot()}</View>
+              <ScrollView
+                style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+              >
+                <View className="flex-1 flex-row">
+                  {daysOfWeek.map((day, index) => (
+                    <View key={index} className="flex-1 px-0.5">
+                      {renderDayColumn({
+                        item: events.find((e) => e.day === day) || {
+                          day,
+                          classes: [],
+                        },
+                      })}
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          </ScrollView>
         ) : (
-          <AgendaList sections={filteredAgendaItems} renderItem={renderItem} />
+          <View>
+            <View className="flex-row px-3 bg-primary-white w-screen">
+              <Text className="mr-10 text-gray-medium">Time</Text>
+              <Text className="text-gray-medium">Course</Text>
+            </View>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ height: 600, position: "relative" }}
+            >
+              {renderDaySchedule(fullDayName)}
+            </ScrollView>
+          </View>
         )}
       </CalendarProvider>
       <Modal
@@ -330,10 +496,12 @@ const ScheduleScreen2: React.FC = () => {
             </ScrollView>
 
             <TouchableOpacity
-              className="mt-4 bg-blue-500 py-2 rounded-lg"
+              className="mt-4 bg-primary-default py-2 rounded-lg"
               onPress={() => setIsTermModalVisible(false)}
             >
-              <Text className="text-center text-white text-lg">Close</Text>
+              <Text className="text-center text-primary-white text-lg">
+                Close
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
