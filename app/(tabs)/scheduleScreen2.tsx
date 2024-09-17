@@ -8,7 +8,6 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-import { styled } from "nativewind";
 import {
   WeekCalendar,
   CalendarProvider,
