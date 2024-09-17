@@ -23,6 +23,8 @@ import ScheduleHeader from "./components/ScheduleHeader";
 import { format, parseISO } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
 
+
+
 LocaleConfig.locales["fr"] = {
   monthNames: [
     "January",
@@ -269,7 +271,7 @@ const ScheduleScreen2: React.FC = () => {
         />
         {viewMode === "Weekly" ? (
           <Timeline
-            format24h={true} 
+            format24h={true}
             eventTapped={(event) => console.log(event)}
             events={events.map((event) => ({
               start: event.start,
