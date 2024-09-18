@@ -6,7 +6,8 @@ import {
   updateOnboarding,
   updateProfile,
 } from "../controllers/profile";
-import { publicProcedure, trpc } from "../trpc";
+import { publicProcedure, router, trpc } from "../trpc";
+import { tutorRouter } from "./tutoring";
 
 const signUpProc = publicProcedure
   .input(
@@ -43,11 +44,12 @@ const onboardingProc = publicProcedure
   )
   .mutation(updateOnboarding);
 
-export const appRouter = trpc.router({
+export const appRouter = router({
   signUpProc,
   getProfileProc,
   updateProfileProc,
   onboardingProc,
+  addTutor: tutorRouter.addTutor,
 });
 
 export type AppRouter = typeof appRouter;

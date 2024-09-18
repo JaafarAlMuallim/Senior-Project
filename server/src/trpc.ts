@@ -11,6 +11,8 @@ export const trpc = initTRPC.context<Context>().create();
 
 export const publicProcedure = trpc.procedure;
 
+export const router = trpc.router;
+
 export const authProcedure = trpc.procedure.use(({ ctx, next }) => {
   // if (!(ctx as any).user) {
   //   throw new Error("Unauthorized");
