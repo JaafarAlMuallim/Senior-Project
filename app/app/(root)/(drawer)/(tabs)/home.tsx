@@ -28,7 +28,7 @@ const Page = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
-    queryFn: () => trpc.getProfileProc.query({ clerkId: user?.id! }),
+    queryFn: () => trpc.getProfile.query({ clerkId: user?.id! }),
   });
 
   useEffect(() => {
@@ -42,7 +42,6 @@ const Page = () => {
         }),
       ).start();
     } else {
-      // Reset spin value when loading stops
       spinValue.setValue(0);
     }
   }, [isLoading]);

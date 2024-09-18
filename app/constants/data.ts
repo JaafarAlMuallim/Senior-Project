@@ -2,7 +2,7 @@
    Here Should be the imports of images and icons and other data objects exporting them 
  */
 
-const universities = [
+const UNIVERSITIES = [
   {
     label: "KFUPM",
     value: "kfupm",
@@ -25,7 +25,7 @@ const universities = [
   },
 ];
 
-const majors = [
+const MAJORS = [
   {
     label: "Computer Science",
     value: "cs",
@@ -120,7 +120,7 @@ const majors = [
   },
 ];
 
-const standings = [
+const STANDINGS = [
   {
     label: "Freshman",
     value: "freshman",
@@ -171,4 +171,70 @@ const standings = [
   },
 ];
 
-export { universities, majors, standings };
+const COURSES = [
+  {
+    label: "Big Data Analytics",
+    value: "ics474",
+  },
+  {
+    label: "Quality Engineering",
+    value: "swe439",
+  },
+  {
+    label: "Software Design",
+    value: "swe316",
+  },
+  {
+    label: "Software Testing",
+    value: "swe326",
+  },
+  {
+    label: "Software Architecture",
+    value: "swe416",
+  },
+  {
+    label: "Software Project Management",
+    value: "swe387",
+  },
+];
+
+const GRADES = [
+  {
+    label: "A+",
+    value: "A+",
+  },
+  {
+    label: "A",
+    value: "A",
+  },
+  {
+    label: "B+",
+    value: "B+",
+  },
+  {
+    label: "B",
+    value: "B",
+  },
+  {
+    label: "C+",
+    value: "C+",
+  },
+  {
+    label: "C",
+    value: "C",
+  },
+  {
+    label: "D+",
+    value: "D+",
+  },
+  {
+    label: "D",
+    value: "D",
+  },
+  {
+    label: "F",
+    value: "F",
+  },
+];
+
+export { UNIVERSITIES, MAJORS, STANDINGS, COURSES, GRADES };

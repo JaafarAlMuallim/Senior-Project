@@ -2,7 +2,11 @@ import { Tabs } from "expo-router";
 import { Home } from "lucide-react-native";
 const RootLayout = () => {
   return (
-    <Tabs initialRouteName="home">
+    <Tabs
+      initialRouteName="home"
+      screenOptions={{ headerShown: false }}
+      backBehavior="history"
+    >
       <Tabs.Screen
         name="home"
         options={{

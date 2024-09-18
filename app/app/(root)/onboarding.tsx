@@ -14,8 +14,8 @@ import {
 import { useEffect, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { majors, standings, universities } from "@/constants/data";
 import Dropdown from "@/components/Dropdown";
+import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 
 const OnBoarding = () => {
   const { user } = useUser();
@@ -33,12 +33,12 @@ const OnBoarding = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["profile", user?.id],
     enabled: !!user?.id,
-    queryFn: () => trpc.getProfileProc.query({ clerkId: user?.id! }),
+    queryFn: () => trpc.getProfile.query({ clerkId: user?.id! }),
   });
 
   useEffect(() => {
     if (!isLoading && data?.university) {
-      router.replace("/(root)/(tabs)/home");
+      router.replace("/(root)/(drawer)/(tabs)/home");
     }
     if (isLoading) {
       Animated.loop(
@@ -65,12 +65,12 @@ const OnBoarding = () => {
       major: string;
       standing: string;
     }) =>
-      trpc.onboardingProc.mutate({
+      trpc.updateProfile.mutate({
         clerkId: data.clerkId,
         data: data,
       }),
     onSuccess: () => {
-      router.push("/(root)/(tabs)/home");
+      router.push("/(root)/(drawer)/(tabs)/home");
     },
   });
 
@@ -136,21 +136,21 @@ const OnBoarding = () => {
             <Phone />
           </Input>
           <Dropdown
-            data={universities}
+            data={UNIVERSITIES}
             onChange={(item) => setUniversity(item.value)}
             placeholder={"University"}
             icon={<University />}
             label={"University"}
           />
           <Dropdown
-            data={majors}
+            data={MAJORS}
             onChange={(item) => setMajor(item.value)}
             placeholder={"Major"}
             icon={<Bolt />}
             label={"Major"}
           />
           <Dropdown
-            data={standings}
+            data={STANDINGS}
             onChange={(item) => setStand(item.value)}
             placeholder={"Standing"}
             icon={<GraduationCap />}
