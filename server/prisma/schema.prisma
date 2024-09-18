@@ -56,7 +56,19 @@ model Course {
     Quiz         Quiz[]
     Session      Session[]
     Assistant    Assistant[]
-    Registration Registration[]
+    Section      Section[]
+}
+
+model Section {
+    id        String   @id @default(cuid())
+    title     String
+    course    Course   @relation(fields: [courseId], references: [id])
+    courseId  String
+    startTime DateTime
+    endTime   DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    registration Registration[]
 }
 
 model CourseTutor {
@@ -219,8 +231,10 @@ model Tag {
 
 model Registration {
     id        String   @id @default(cuid())
-    course    Course   @relation(fields: [courseId], references: [id])
-    courseId  String
+    // course    Course   @relation(fields: [courseId], references: [id])
+    // courseId  String
+    sectionId String
+    section  Section @relation(fields: [sectionId], references: [id])
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     semester  String   @default("241")
