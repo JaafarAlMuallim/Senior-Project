@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "EduLink",
+    "slug": "EduLink",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/SplashNew.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.EduLink"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/SplashNew.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.EduLink"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": ["expo-router"]
+  },
+  "experiments": {
+    "typedRoutes": true
+  }
+}
