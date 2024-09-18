@@ -18,12 +18,13 @@ const Input = ({
   return (
     <View className="flex flex-col h-28">
       <CustomText styles="text-lg text-black-default mb-2">{label}</CustomText>
-      <View className={`flex h-14 flex-row items-center bg-blue-def50 rounded-xl px-4 focus:border border-blue-600`}>
+      <View
+        className={`flex h-14 flex-row items-center bg-blue-def50 rounded-xl px-4 border focus:border-blue-600`}
+      >
         {children}
         <TextInput
           className={`text-lg h-14 px-4 flex-1  font-poppinsItalic active:font-poppins ${styles}`}
           {...inputConfig}
-          
         />
       </View>
     </View>

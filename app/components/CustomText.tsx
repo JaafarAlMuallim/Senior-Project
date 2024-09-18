@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { Text } from "react-native";
 import React from "react";
@@ -7,8 +8,8 @@ const CustomText = ({
   styles: className,
 }: {
   children: ReactNode;
-  styles: string;
+  styles?: string;
 }) => {
-  return <Text className={`font-poppins ${className}`}>{children}</Text>;
+  return <Text className={cn(`font-poppins`, className)}>{children}</Text>;
 };
 export default CustomText;

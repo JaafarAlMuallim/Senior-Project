@@ -3,6 +3,7 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import "../global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
@@ -51,6 +52,7 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
+  console.log("RootLayout");
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
@@ -79,10 +81,13 @@ export default function RootLayout() {
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
         <QueryClientProvider client={queryClient}>
           <ClerkLoaded>
-            <Stack initialRouteName="index">
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(root)" options={{ headerShown: false }} />
+            <Stack
+              initialRouteName="index"
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(root)" />
               <Stack.Screen
                 name="+not-found"
                 options={{ headerShown: false }}

@@ -21,7 +21,7 @@ const GoogleAuth = () => {
       name: string;
       clerkId: string;
     }) =>
-      trpc.signUpProc.mutate({
+      trpc.signUp.mutate({
         email,
         name,
         clerkId,

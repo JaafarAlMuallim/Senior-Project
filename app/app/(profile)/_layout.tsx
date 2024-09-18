@@ -11,36 +11,21 @@ const Layout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="welcome"
+        name="profile"
         options={{
           headerShown: false,
-          title: "Welcome",
+          title: "Profile",
         }}
       />
       <Stack.Screen
-        name="sign-up"
+        name="edit-profile"
         options={{
           headerShown: true,
           title: "",
           headerTintColor: "#304FFE",
         }}
       />
-      <Stack.Screen
-        name="sign-in"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
-      <Stack.Screen
-        name="forget-password"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
+      
     </Stack>
   );
 };

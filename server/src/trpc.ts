@@ -1,9 +1,6 @@
+import type { User } from "@prisma/client";
 import { initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { getProfile, updateProfile } from "./controllers/profile";
-import { z } from "zod";
-import { signUp } from "./controllers/auth";
-import { profileSchema } from "./controllers/profile";
 
 export const createContext =
   ({}: trpcExpress.CreateExpressContextOptions) => ({});
@@ -12,36 +9,16 @@ export type Context = Awaited<ReturnType<typeof createContext>>;
 
 export const trpc = initTRPC.context<Context>().create();
 
-const signUpProc = trpc.procedure
-  .input(
-    z.object({
-      email: z.string(),
-      name: z.string(),
-      clerkId: z.string(),
-    })
-  )
-  .mutation(signUp);
-const getProfileProc = trpc.procedure
-  .input(
-    z.object({
-      clerkId: z.string(),
-    })
-  )
-  .query(getProfile);
+export const publicProcedure = trpc.procedure;
 
-const updateProfileProc = trpc.procedure
-  .input(
-    z.object({
-      clerkId: z.string(),
-      data: profileSchema.partial(),
-    })
-  )
-  .mutation(updateProfile);
+export const router = trpc.router;
 
-export const appRouter = trpc.router({
-  signUpProc,
-  getProfileProc,
-  updateProfileProc,
+export const authProcedure = trpc.procedure.use(({ ctx, next }) => {
+  // if (!(ctx as any).user) {
+  //   throw new Error("Unauthorized");
+  // }
+  // TODO: Uncomment the above code and replace the below code with the actual implementation
+  // const user = db.user.findFirst({ id: ctx.req.userId });
+  const user = {} as User;
+  return next({ ctx: { ...ctx, user } });
 });
-
-export type AppRouter = typeof appRouter;

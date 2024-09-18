@@ -49,6 +49,7 @@ model Tutor {
 model Course {
     id           String         @id @default(cuid())
     name         String
+    code         String
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
     CourseTutor  CourseTutor[]
@@ -65,6 +66,7 @@ model CourseTutor {
     courseId  String
     tutor     Tutor    @relation(fields: [tutorId], references: [id])
     tutorId   String
+    grade     String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }

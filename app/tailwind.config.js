@@ -12,7 +12,6 @@ module.exports = {
       },
       colors: {
         primary: {
-          default: "#4561FF", // Primary Blue
           dark: "#3044FF", // Darker Blue
           light: "#4561FF", // Lighter Blue (use opacity class)
           white: "#FFF", // Primary White
