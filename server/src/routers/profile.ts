@@ -19,6 +19,7 @@ export const profileRouter = {
       })
     )
     .query(async ({ input, ctx }) => {
+      console.log("GET PROFILE");
       const { clerkId } = input;
       const profile = await db.profile.findFirst({
         where: {
