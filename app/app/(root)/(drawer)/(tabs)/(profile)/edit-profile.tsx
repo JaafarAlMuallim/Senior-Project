@@ -3,12 +3,11 @@ import Input from "@/components/Input";
 import { useUser } from "@clerk/clerk-expo";
 import { Mail, UserRound, LockKeyhole } from "lucide-react-native";
 import { useState } from "react";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View, Image, Modal } from "react-native";
 import { images } from "@/constants/images";
 import React from "react";
 import Dropdown from "@/components/Dropdown";
 import { UNIVERSITIES } from "@/constants/data";
-import Modal from "react-native-modal";
 
 const EditProfile = () => {
   const [email, setEmail] = useState("");
@@ -84,10 +83,12 @@ const EditProfile = () => {
       </TouchableOpacity>
       {isModalVisible && (
         <Modal
-          isVisible={isModalVisible}
-          animationIn={"fadeInUpBig"}
-          backdropOpacity={0.5}
-          backdropColor="white"
+          // isVisible={isModalVisible}
+          visible={isModalVisible}
+          // animationIn={"fadeInUpBig"}
+          animationType="slide"
+          // backdropOpacity={0.5}
+          // backdropColor="white"
           className="mx-3 my-4"
         >
           <View className="flex h-full justify-end">

@@ -4,8 +4,8 @@ import React from "react";
 
 const Layout = () => {
   const { isSignedIn } = useAuth();
-  if (isSignedIn) {
-    return <Redirect href="/" />;
+  if (!isSignedIn) {
+    return <Redirect href="/(auth)/welcome" />;
   }
 
   return (
@@ -25,7 +25,6 @@ const Layout = () => {
           headerTintColor: "#304FFE",
         }}
       />
-      
     </Stack>
   );
 };
