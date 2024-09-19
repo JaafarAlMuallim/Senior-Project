@@ -9,6 +9,8 @@ module.exports = {
         poppinsItalic: ["Poppins-Italic", "sans-serif"],
         poppinsRegular: ["Poppins-Regular", "sans-serif"],
         poppinsSemiBold: ["Poppins-SemiBold", "sans-serif"],
+        poppinsBlack: ["Poppins-Black", "sans-serif"],
+        poppineMedium: ["Poppins-Medium", "sans-serif"],
       },
       colors: {
         primary: {

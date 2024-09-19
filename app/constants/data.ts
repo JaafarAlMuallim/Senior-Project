@@ -236,5 +236,33 @@ const GRADES = [
     value: "F",
   },
 ];
+const AVAILABLE_TIMES = [
+  {
+    date: new Date("2022-10-07"),
+    time: "10:00 AM",
+    duration: "2",
+  },
 
-export { UNIVERSITIES, MAJORS, STANDINGS, COURSES, GRADES };
+  {
+    date: new Date("2022-10-07"),
+    time: "14:00 PM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-10"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-11"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-12"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+];
+
+export { UNIVERSITIES, MAJORS, STANDINGS, COURSES, GRADES, AVAILABLE_TIMES };

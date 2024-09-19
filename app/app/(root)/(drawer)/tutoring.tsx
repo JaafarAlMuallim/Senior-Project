@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import CustomText from "@/components/CustomText";
-import { Alert, Animated, TouchableOpacity, View } from "react-native";
+import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { Book, BriefcaseBusiness, GraduationCap } from "lucide-react-native";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import trpc from "@/utils/trpc";
 import { Loader2 } from "lucide-react-native";
 import { Redirect, router } from "expo-router";
 import Dropdown from "@/components/Dropdown";
-import { COURSES, GRADES } from "@/constants/data";
+import { GRADES } from "@/constants/data";
 
 const Tutoring = () => {
   const { user } = useUser();
@@ -40,7 +40,6 @@ const Tutoring = () => {
         courseId: data.course,
         grade,
       }),
-
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/home");
     },
@@ -60,6 +59,21 @@ const Tutoring = () => {
       value: course.id,
     }));
   }, [courses])!;
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinValue.setValue(0);
+    }
+  }, [data, isLoading]);
 
   if (isLoading || coursesLoading) {
     return (

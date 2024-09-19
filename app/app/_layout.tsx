@@ -9,12 +9,12 @@ import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
 import "react-native-reanimated";
 import * as SplashScreen from "expo-splash-screen";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
 import "reflect-metadata";
 import React from "react";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -52,12 +52,13 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
-  console.log("RootLayout");
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
+    PoppinsBlack: require("../assets/fonts/Poppins-Black.ttf"),
     Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
     PoppinsBold: require("../assets/fonts/Poppins-Bold.ttf"),
     PoppinsItalic: require("../assets/fonts/Poppins-Italic.ttf"),
+    PoppinsMedium: require("../assets/fonts/Poppins-Medium.ttf"),
     PoppinsRegular: require("../assets/fonts/Poppins-Regular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
   });
