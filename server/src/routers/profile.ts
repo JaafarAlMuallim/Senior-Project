@@ -44,12 +44,17 @@ export const profileRouter = {
     )
     .mutation(async ({ input, ctx }) => {
       const { clerkId, data } = input;
-      const profile = await db.profile.update({
-        where: {
-          userId: clerkId,
-        },
-        data,
-      });
-      return profile;
+      try {
+        const profile = await db.profile.update({
+          where: {
+            userId: clerkId,
+          },
+          data,
+        });
+        return profile;
+      } catch (e) {
+        console.log(e);
+        throw new Error("Profile not found");
+      }
     }),
 };
