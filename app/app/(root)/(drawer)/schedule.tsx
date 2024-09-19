@@ -13,7 +13,7 @@ import {
     CalendarProvider,
     LocaleConfig,
 } from "react-native-calendars";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, isWithinInterval } from "date-fns";
 import { Ionicons } from "@expo/vector-icons";
 
 LocaleConfig.locales["fr"] = {
@@ -227,7 +227,7 @@ const ScheduleScreen2: React.FC = () => {
 
         return (
             <View
-                className={`absolute left-0 right-0 py-1 rounded-lg shadow-lg ${isCurrentDay ? "bg-primary-default" : "bg-white-light"}`}
+                className={`absolute left-0 right-0 py-1 rounded-lg shadow-lg ${isCurrentDay ? "bg-primary-light" : "bg-white-light"}`}
                 style={{ top, height }}
             >
                 <Text
@@ -244,15 +244,25 @@ const ScheduleScreen2: React.FC = () => {
         );
     };
 
+    const isClassCurrent = (classDate: string, start: string, end: string) => {
+        const currentDate = new Date();
+        const classStartDate = parseISO(`${classDate}T${start}:00`);
+        const classEndDate = parseISO(`${classDate}T${end}:00`);
+
+        return isWithinInterval(currentDate, { start: classStartDate, end: classEndDate });
+    };
+
     const renderDailyClassItem = ({
         item,
-        isCurrentClass,
+        day
     }: {
         item: any;
-        isCurrentClass: boolean;
+        day: string;
     }) => {
         const duration = calculateDuration(item.start, item.end);
         const height = duration * 3;
+        const isCurrentClass = isClassCurrent(day, item.start, item.end);
+
 
         return (
             <View
@@ -264,7 +274,7 @@ const ScheduleScreen2: React.FC = () => {
                     <Text className="text-gray-medium text-sm">{item.end}</Text>
                 </View>
                 <View
-                    className={`flex-1 ml-4 rounded-2xl p-4 shadow ${isCurrentClass ? "bg-primary-default" : "bg-white-light"}`}
+                    className={`flex-1 ml-4 rounded-2xl p-4 shadow ${isCurrentClass ? "bg-primary-light" : "bg-white-light"}`}
                     style={{ height: height }}
                 >
                     <Text
@@ -326,22 +336,22 @@ const ScheduleScreen2: React.FC = () => {
         );
     };
 
-    const renderDaySchedule = (selectedDay: string) => {
-        const daySchedule = events.find((event) => event.day === selectedDay);
+    const renderDaySchedule = (dayName: string, selectedDate: string) => {
+        const daySchedule = events.find((event) => event.day === dayName);
 
         if (daySchedule) {
             return (
                 <View className="py-4">
                     {daySchedule.classes.map((classItem) => {
                         const isCurrentClass = false;
-                        return renderDailyClassItem({ item: classItem, isCurrentClass });
+                        return renderDailyClassItem({ item: classItem, day: selectedDate });
                     })}
                 </View>
             );
         } else {
             return (
                 <Text className="flex-1 justify-center p-5">
-                    No classes for {selectedDay}
+                    No classes for {dayName}
                 </Text>
             );
         }
@@ -455,7 +465,7 @@ const ScheduleScreen2: React.FC = () => {
                             showsVerticalScrollIndicator={false}
                             style={{ height: 600, position: "relative" }}
                         >
-                            {renderDaySchedule(fullDayName)}
+                            {renderDaySchedule(fullDayName, selectedDate)}
                         </ScrollView>
                     </View>
                 )}
@@ -492,7 +502,7 @@ const ScheduleScreen2: React.FC = () => {
                         </ScrollView>
 
                         <TouchableOpacity
-                            className="mt-4 bg-primary-default py-2 rounded-lg"
+                            className="mt-4 bg-primary-light py-2 rounded-lg"
                             onPress={() => setIsTermModalVisible(false)}
                         >
                             <Text className="text-center text-primary-white text-lg">
