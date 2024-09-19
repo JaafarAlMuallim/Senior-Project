@@ -10,9 +10,14 @@
 
 1. Use Node LTS Version, Basic Docker File is included for development.
 
-2. Install dependencies using npm, yarn or pnpm
+2. Install dependencies using npm, yarn or pnpm in app and server
 
    ```bash
+   cd app/
+   npm install
+   yarn i
+   pnpm i
+   cd ../server
    npm install
    yarn i
    pnpm i
@@ -20,9 +25,10 @@
 
    - NOTE: There is a problem with pnpm and expo, so it is recommended to use npm or yarn.
 
-3. Start the app using expo, npm, yarn or pnpm
+3. Start the app using expo, npm, yarn or pnpm from the main directory
 
    ```bash
+   cd app/
    npx expo start
    npm run dev
    yarn run dev
@@ -35,7 +41,22 @@
    npx expo start -c
    ```
 
-4. In Local Development, Request the `.env` file from the project owner.
+4. Start the server using npm, yarn or pnpm from the main directory
+
+   ```bash
+   cd server/
+   npm run dev
+   yarn run dev
+   pnpm run dev
+   ```
+
+   To remove the cache and start fresh, use the following command:
+
+   ```bash
+   npx expo start -c
+   ```
+
+5. In Local Development, Request the `.env` file from the project owner.
 
 ## References
 
@@ -49,6 +70,7 @@
 - [Clerk](https://clerk.com/docs/quickstarts/expo)
 - [React Query](https://tanstack.com/query/latest/docs/framework/react/react-native)
 - [React Native Reusable](https://rnr-docs.vercel.app/getting-started/introduction/)
+- [tRPC](https://trpc.io/docs/quick-start)
 
 ## Standards
 
