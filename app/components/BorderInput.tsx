@@ -2,6 +2,7 @@ import { TextInput, TextInputProps } from "react-native";
 import { View } from "react-native";
 import CustomText from "./CustomText";
 import { ReactNode } from "react";
+import React from "react";
 
 const BorderInput = ({
   label,

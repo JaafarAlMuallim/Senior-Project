@@ -2,6 +2,7 @@ import { TextInput, TextInputProps } from "react-native";
 import { View } from "react-native";
 import CustomText from "./CustomText";
 import { ReactNode, useState } from "react";
+import React from "react";
 
 const Input = ({
   label,

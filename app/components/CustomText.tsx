@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import { Text } from "react-native";
+import React from "react";
 
 const CustomText = ({
   children,

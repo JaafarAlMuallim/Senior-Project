@@ -1,5 +1,6 @@
-import google from "@/assets/images/google.png";
-
+import googleAuth from "../assets/images/google.png";
+import profileImage from "../assets/images/profile-image.png";
 export const images = {
-  google: require("@/assets/images/google.png"),
+  googleAuth,
+  profileImage,
 };

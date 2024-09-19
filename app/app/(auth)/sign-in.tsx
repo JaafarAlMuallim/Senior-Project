@@ -4,6 +4,7 @@ import Input from "@/components/Input";
 import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Mail, LockKeyhole } from "lucide-react-native";
+import React from "react";
 import { useState, useCallback } from "react";
 import { Alert, TouchableOpacity, View } from "react-native";
 

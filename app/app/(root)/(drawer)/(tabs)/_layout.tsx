@@ -1,5 +1,6 @@
 import { Tabs } from "expo-router";
-import { Home } from "lucide-react-native";
+import { Home, UserIcon } from "lucide-react-native";
+import React from "react";
 const RootLayout = () => {
   return (
     <Tabs
@@ -13,6 +14,14 @@ const RootLayout = () => {
           headerShown: true,
           title: "Home",
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="(profile)"
+        options={{
+          headerShown: true,
+          title: "Profile",
+          tabBarIcon: ({ color }) => <UserIcon size={24} color={color} />,
         }}
       />
     </Tabs>
