@@ -146,6 +146,7 @@ model Question {
 model Session {
     id        String   @id @default(cuid())
     course    Course   @relation(fields: [courseId], references: [id])
+    date      DateTime
     courseId  String
     title     String
     startTime DateTime

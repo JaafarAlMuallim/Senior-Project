@@ -4,37 +4,21 @@ import React from "react";
 
 const Layout = () => {
   const { isSignedIn } = useAuth();
-  if (isSignedIn) {
-    return <Redirect href="/" />;
+  if (!isSignedIn) {
+    return <Redirect href="/(auth)/welcome" />;
   }
 
   return (
     <Stack>
       <Stack.Screen
-        name="welcome"
+        name="profile"
         options={{
           headerShown: false,
-          title: "Welcome",
+          title: "Profile",
         }}
       />
       <Stack.Screen
-        name="sign-up"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
-      <Stack.Screen
-        name="sign-in"
-        options={{
-          headerShown: true,
-          title: "",
-          headerTintColor: "#304FFE",
-        }}
-      />
-      <Stack.Screen
-        name="forget-password"
+        name="edit-profile"
         options={{
           headerShown: true,
           title: "",

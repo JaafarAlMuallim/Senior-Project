@@ -236,5 +236,175 @@ const GRADES = [
     value: "F",
   },
 ];
+const AVAILABLE_TIMES = [
+  {
+    date: new Date("2022-10-07"),
+    time: "10:00 AM",
+    duration: "2",
+  },
 
-export { UNIVERSITIES, MAJORS, STANDINGS, COURSES, GRADES };
+  {
+    date: new Date("2022-10-07"),
+    time: "14:00 PM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-10"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-11"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-12"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+];
+
+const DAYS_OF_WEEK = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+const TIME_SLOTS = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "01:00",
+  "02:00",
+  "03:00",
+  "04:00",
+  "05:00",
+  "06:00",
+];
+const EVENTS = [
+  {
+    day: "Sunday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "9:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Monday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Tuesday",
+    classes: [
+      {
+        id: "3",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "4",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Wednesday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "57",
+        start: "10:00",
+        end: "13:30",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Thursday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+];
+
+export {
+  UNIVERSITIES,
+  MAJORS,
+  STANDINGS,
+  COURSES,
+  GRADES,
+  AVAILABLE_TIMES,
+  DAYS_OF_WEEK,
+  TIME_SLOTS,
+  EVENTS,
+};
