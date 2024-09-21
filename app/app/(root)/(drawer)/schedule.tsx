@@ -6,6 +6,7 @@ import {
   Text,
   Modal,
   ScrollView,
+  Animated,
 } from "react-native";
 import {
   WeekCalendar,
@@ -19,6 +20,11 @@ import { DAYS_OF_WEEK, EVENTS } from "@/constants/data";
 import DayColumn from "@/components/DayColumn";
 import TimeSlot from "@/components/TimeSlot";
 import DaySchedule from "@/components/DaySchedule";
+import { useClerk } from "@clerk/clerk-expo";
+import trpc from "@/utils/trpc";
+import { useQuery } from "@tanstack/react-query";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { Redirect } from "expo-router";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -73,7 +79,43 @@ const ScheduleScreen2 = () => {
 
   const markedDates = {
     [selectedDate]: { selected: true, selectedColor: "#4561FF" },
-  };
+    };
+    const { user } = useUser();
+    const spinValue = new Animated.Value(0);
+
+    const rotate = spinValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["0deg", "360deg"],
+    });
+
+    const { data, isLoading } = useQuery({
+        queryKey: ["registration", user?.id],
+        enabled: !!user?.id,
+        queryFn: () => trpc.getSchedule.query({ userId: user?.id!, semester: term }),
+    });
+
+    const structuredEvents = data?.reduce((acc: any[], registration: any) => {
+        const { id, startTime, endTime, days, title, instructor, location, course } = registration.section;
+
+        days.forEach((day: string) => {
+            let dayEntry = acc.find((entry) => entry.day === day);
+            if (!dayEntry) {
+                dayEntry = { day, classes: [] };
+                acc.push(dayEntry);
+            }
+            dayEntry.classes.push({
+                id: id,
+                title: course.name,
+                section: title,
+                start: format(new Date(startTime), "HH:mm"),
+                end: format(new Date(endTime), "HH:mm"),
+                location: location,
+                instructor: instructor,
+            });
+        });
+        return acc;
+    }, []);
+
 
   return (
     <>
@@ -156,7 +198,7 @@ const ScheduleScreen2 = () => {
                     <View key={index} className="flex-1 px-0.5">
                       <DayColumn
                         item={
-                          EVENTS.find((e) => e.day === day) || {
+                          structuredEvents?.find((e) => e.day === day) || {
                             day,
                             classes: [],
                           }
@@ -171,7 +213,7 @@ const ScheduleScreen2 = () => {
         ) : (
           <View>
             <View className="flex-row px-3 bg-primary-white w-screen">
-              {EVENTS.find((event) => event.day === dayName)?.classes
+              {structuredEvents?.find((event) => event.day === dayName)?.classes
                 .length && (
                 <>
                   <CustomText styles="mr-10 text-gray-medium">Time</CustomText>

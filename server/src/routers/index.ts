@@ -4,6 +4,7 @@ import { courseRouter } from "./courses";
 import { profileRouter } from "./profile";
 import { authRouter } from "./auth";
 import { sessionRouter } from "./session";
+import { scheduleRouter } from "./schedule";
 
 export const appRouter = router({
   signUp: authRouter.signUp,
@@ -16,6 +17,7 @@ export const appRouter = router({
   getSessions: sessionRouter.getSessions,
   getTutorSessions: sessionRouter.getTutorSessions,
   getCourseSessions: sessionRouter.getCourseSessions,
+  getSchedule: scheduleRouter.getSchedule,
 });
 
 export type AppRouter = typeof appRouter;

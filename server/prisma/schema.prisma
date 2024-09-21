@@ -65,6 +65,9 @@ model Section {
     title     String
     course    Course   @relation(fields: [courseId], references: [id])
     courseId  String
+    instructor String
+    location  String
+    days	  String[]
     startTime DateTime
     endTime   DateTime
     createdAt DateTime @default(now())
