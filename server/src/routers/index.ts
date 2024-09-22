@@ -18,6 +18,7 @@ export const appRouter = router({
   getTutorSessions: sessionRouter.getTutorSessions,
   getCourseSessions: sessionRouter.getCourseSessions,
   getSchedule: scheduleRouter.getSchedule,
+  getTerms: scheduleRouter.getSemesters,
 });
 
 export type AppRouter = typeof appRouter;

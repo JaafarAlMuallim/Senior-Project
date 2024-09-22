@@ -65,7 +65,6 @@ const ScheduleScreen2 = () => {
   const [viewMode, setViewMode] = useState<"Today" | "Weekly">("Today");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   const dateObject = parseISO(selectedDate);
-  const [term, setTerm] = useState("241");
 
   const dayNum = format(dateObject, "dd");
   const dayName = dateObject.toLocaleDateString("en-US", {
@@ -73,7 +72,6 @@ const ScheduleScreen2 = () => {
   });
   const monthYear = format(dateObject, "MMM yyyy");
   const [isTermModalVisible, setIsTermModalVisible] = useState(false);
-  const terms = ["241", "242", "243"];
 
   const fullDayName = format(parseISO(selectedDate), "EEEE");
 
@@ -93,6 +91,14 @@ const ScheduleScreen2 = () => {
         enabled: !!user?.id,
         queryFn: () => trpc.getSchedule.query({ userId: user?.id!, semester: term }),
     });
+
+    const { data: terms, isLoading: termsLoading } = useQuery({
+        queryKey: ["uniqueSemesters", user?.id],
+        enabled: !!user?.id,
+        queryFn: () => trpc.getTerms.query({ userId: user?.id! }),
+    });
+
+    const [term, setTerm] = useState(terms?.[0] || "None");
 
     const structuredEvents = data?.reduce((acc: any[], registration: any) => {
         const { id, startTime, endTime, days, title, instructor, location, course } = registration.section;
@@ -241,7 +247,7 @@ const ScheduleScreen2 = () => {
           <View className="bg-primary-white w-3/4 rounded-lg p-4 z-10 shadow-lg">
             <Text className="text-xl font-bold mb-4">Select Term</Text>
             <ScrollView>
-              {terms.map((item) => (
+              {terms?.map((item) => (
                 <TouchableOpacity
                   key={item}
                   className="py-2"

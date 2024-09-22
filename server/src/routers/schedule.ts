@@ -56,4 +56,24 @@ export const scheduleRouter = {
 
             return registrations;
         }),
+
+    getSemesters: publicProcedure
+        .input(
+            z.object({
+                userId: z.string(),
+            })
+        )
+        .query(async ({ input }) => {
+            const uniqueSemesters = await db.registration.findMany({
+                where: {
+                    userId: input.userId,
+                },
+                select: {
+                    semester: true,
+                },
+                distinct: ['semester'],
+            });
+
+            return uniqueSemesters.map((registration) => registration.semester);
+        }),
 };
