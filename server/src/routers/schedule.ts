@@ -7,6 +7,7 @@ export const scheduleRouter = {
     .input(
       z.object({
         courseId: z.string(),
+        sectionId: z.string(),
         semester: z.string(),
         userId: z.string(),
       })
@@ -14,7 +15,10 @@ export const scheduleRouter = {
     .mutation(async ({ input, ctx }) => {
       const registration = await db.registration.findFirst({
         where: {
-          courseId: input.courseId,
+          section: {
+            courseId: input.courseId,
+          },
+
           userId: input.userId, // TODO: Need to replace with ctx.user.id later
           semester: input.semester,
         },
@@ -26,7 +30,7 @@ export const scheduleRouter = {
 
       return await db.registration.create({
         data: {
-          courseId: input.courseId,
+          sectionId: input.sectionId,
           userId: input.userId, // TODO: Need to replace with ctx.user.id later
           semester: input.semester,
         },
