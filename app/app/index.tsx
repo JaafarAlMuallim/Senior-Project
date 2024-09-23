@@ -11,7 +11,7 @@ const Page = () => {
   if (isSignedIn) {
     return <Redirect href="/(root)/onboarding" />;
   }
-  return <Redirect href="/(auth)/profile" />;
+  return <Redirect href="/(root)/(drawer)/(tabs)/home" />;
 };
 
 export default Page;

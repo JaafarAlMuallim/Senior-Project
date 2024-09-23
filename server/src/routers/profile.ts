@@ -9,6 +9,7 @@ export const profileSchema = z.object({
   standing: z.string(),
   university: z.string(),
   phone: z.string(),
+  name: z.string(),
 });
 
 export const profileRouter = {
@@ -50,7 +51,17 @@ export const profileRouter = {
           where: {
             userId: clerkId,
           },
-          data,
+          data: {
+            major: data.major,
+            standing: data.standing,
+            university: data.university,
+            phone: data.phone,
+            user: {
+              update: {
+                name: data.name,
+              },
+            },
+          },
         });
         return profile;
       } catch (e) {

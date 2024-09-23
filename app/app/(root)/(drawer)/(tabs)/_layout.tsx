@@ -19,7 +19,6 @@ const RootLayout = () => {
       <Tabs.Screen
         name="(profile)"
         options={{
-          headerShown: true,
           title: "Profile",
           tabBarIcon: ({ color }) => <UserIcon size={24} color={color} />,
         }}

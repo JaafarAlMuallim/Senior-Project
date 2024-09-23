@@ -14,10 +14,12 @@ import trpc from "@/utils/trpc";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react-native";
 import { useEffect } from "react";
+import { useUserStore } from "@/store/store";
 
 const Page = () => {
   const { user } = useUser();
   const { signOut } = useClerk();
+  const { setUser } = useUserStore();
   const spinValue = new Animated.Value(0);
 
   const rotate = spinValue.interpolate({
@@ -43,6 +45,9 @@ const Page = () => {
       ).start();
     } else {
       spinValue.setValue(0);
+      if (data) {
+        setUser(data);
+      }
     }
   }, [isLoading]);
 

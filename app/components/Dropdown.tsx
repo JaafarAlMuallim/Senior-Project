@@ -14,7 +14,7 @@ import CustomText from "./CustomText";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react-native";
 
-type OptionItem = {
+export type OptionItem = {
   value: string;
   label: string;
 };
@@ -25,18 +25,20 @@ interface DropdownProps {
   placeholder: string;
   icon?: ReactNode;
   label: string;
+  value?: OptionItem;
 }
 
 const Dropdown = ({
   data,
   onChange,
+  value,
   placeholder,
   icon,
   label,
 }: DropdownProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const [curr, setCurr] = useState<OptionItem | null>();
+  const [curr, setCurr] = useState<OptionItem | null>(value || null);
 
   const buttonRef = useRef<View>(null);
 
@@ -89,14 +91,14 @@ const Dropdown = ({
                   <FlatList
                     keyExtractor={(item) => item.value}
                     data={data}
-                    ItemSeparatorComponent={() => (
-                      <View className="border-0.5 border-black flex flex-row w-full self-center opacity-50" />
-                    )}
+                    // ItemSeparatorComponent={() => (
+                    //   <View className="border-0.5 border-black flex flex-row w-full self-center opacity-50" />
+                    // )}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         activeOpacity={0.8}
                         className={cn(
-                          "h-10 flex justify-start items-start bg-white flex-row py-1.5 rounded-md",
+                          "h-10 flex justify-start items-start bg-white flex-row py-1.5 px-1 rounded-md",
                           item.value === curr?.value ? "bg-zinc-200" : "",
                         )}
                         onPress={() => onSelect(item)}
