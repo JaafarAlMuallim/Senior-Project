@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, UserIcon } from "lucide-react-native";
+import { Calendar, Home, UserIcon } from "lucide-react-native";
 import React from "react";
 const RootLayout = () => {
   return (
@@ -16,6 +16,14 @@ const RootLayout = () => {
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="(schedule)"
+        options={{
+          title: "Schedule",
+          tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
+        }}
+      />
+
       <Tabs.Screen
         name="(profile)"
         options={{

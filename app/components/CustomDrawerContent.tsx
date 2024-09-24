@@ -57,7 +57,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 
       <CustomDrawerItem
         Icon={Calendar}
-        name={"Calendar"}
+        name={"Schedule"}
         description={"View your schedule and upcoming events"}
         link={"/schedule"}
       />

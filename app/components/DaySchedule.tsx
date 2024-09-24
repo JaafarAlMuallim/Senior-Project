@@ -15,7 +15,7 @@ const DaySchedule = ({
     return (
       <View className="py-4">
         {daySchedule.classes.map((classItem) => (
-          <DailyClass item={classItem} day={selectedDate} />
+          <DailyClass key={classItem.id} item={classItem} day={selectedDate} />
         ))}
       </View>
     );
