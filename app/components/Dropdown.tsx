@@ -42,8 +42,10 @@ const Dropdown = ({
 
   const toggleExpanded = useCallback(() => {
     if (buttonRef.current) {
-      buttonRef.current.measure((fx, fy, width, height, px, py) => {
-        setTop(py + height + 5); // Get the y-coordinate and add the button's height to position the dropdown below it
+      buttonRef.current?.measure((fx, fy, width, height, px, py) => {
+        if (typeof py === "number" && typeof height === "number") {
+          setTop(py + height + 5); // Only set top if valid numbers are returned
+        }
       });
     }
     setExpanded(!expanded);
@@ -63,7 +65,7 @@ const Dropdown = ({
         <TouchableOpacity
           className={cn(
             "h-14 flex flex-row justify-between items-center px-4 border rounded-lg",
-            expanded ? "border-blue-600" : "",
+            expanded ? "border-blue-600" : ""
           )}
           activeOpacity={0.8}
           onPress={toggleExpanded}
@@ -83,7 +85,7 @@ const Dropdown = ({
                 <View
                   style={{ position: "absolute", top: top }}
                   className={cn(
-                    "p-2 w-full h-[175px] bg-white rounded-lg border bg-white-default",
+                    "p-2 w-full h-[175px] bg-white rounded-lg border bg-white-default"
                   )}
                 >
                   <FlatList
@@ -97,7 +99,7 @@ const Dropdown = ({
                         activeOpacity={0.8}
                         className={cn(
                           "h-10 flex justify-start items-start bg-white flex-row py-1.5 rounded-md",
-                          item.value === curr?.value ? "bg-zinc-200" : "",
+                          item.value === curr?.value ? "bg-zinc-200" : ""
                         )}
                         onPress={() => onSelect(item)}
                       >
