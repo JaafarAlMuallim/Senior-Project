@@ -25,7 +25,11 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   // TODO: Change links to actual links
   return (
     <DrawerContentScrollView style={{ paddingHorizontal: 8 }} {...props}>
-      <Link replace href={"/(root)/(drawer)/(tabs)/home"} className="mb-8">
+      <Link
+        replace
+        href={"/(root)/(drawer)/(tabs)/(home)/home"}
+        className="mb-8"
+      >
         <View className="flex flex-row flex-1 px-8 justify-center items-center">
           <Image
             source={{ uri: user?.imageUrl }}

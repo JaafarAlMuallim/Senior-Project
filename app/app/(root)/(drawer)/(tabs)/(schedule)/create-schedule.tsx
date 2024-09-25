@@ -129,12 +129,10 @@ const checkConflict = (course: Course, courses: Course[]) => {
   let flag = false;
   courses?.forEach((c) => {
     const cDays = c.days.split("");
-    console.log(cDays, courseDays);
     if (
       courseDays.some((day) => cDays.includes(day)) &&
       c.time === course.time
     ) {
-      console.log("conflict");
       flag = true;
     }
   });
@@ -222,13 +220,11 @@ const Page = () => {
                           className="flex flex-row items-center justify-center"
                           onPress={() => {
                             const checker = checkConflict(item, courses!);
-                            console.log(checker);
                             if (
                               courses?.find(
                                 (course) => course.section === item.section,
                               )
                             ) {
-                              console.log("Removing Existing Course");
                               setCourses((prev) =>
                                 prev?.filter(
                                   (course) => course.section !== item.section,
@@ -260,7 +256,6 @@ const Page = () => {
                             }
 
                             if (checker) {
-                              console.log("conflict");
                               Alert.alert(
                                 "Conflict",
                                 "You have a conflict with this course",

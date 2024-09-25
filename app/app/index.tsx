@@ -7,7 +7,6 @@ import { images } from "@/constants/images";
 
 const Page = () => {
   const { isSignedIn } = useAuth();
-  console.log("isSignedIn", isSignedIn);
 
   if (isSignedIn) {
     return <Redirect href="/(root)/onboarding" />;

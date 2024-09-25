@@ -54,7 +54,7 @@ const GoogleAuth = () => {
       className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
       onPress={handleGoogleSignIn}
     >
-      <Image source={images.google} className="w-4 h-4 mx-2" />
+      <Image source={images.googleAuth} className="w-4 h-4 mx-2" />
       <CustomText styles="text-primary-black font-poppinsSemiBold text-lg">
         Continue with Google
       </CustomText>

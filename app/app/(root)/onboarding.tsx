@@ -70,7 +70,7 @@ const OnBoarding = () => {
         data: data,
       }),
     onSuccess: () => {
-      router.push("/(root)/(drawer)/(tabs)/home");
+      router.push("/(root)/(drawer)/(tabs)/(home)/home");
     },
   });
 

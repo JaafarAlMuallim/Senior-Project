@@ -49,7 +49,6 @@ const Tutoring = () => {
     if (!grade || !course) {
       Alert.alert("Please fill all fields");
     }
-    console.log({ id: data?.user.id, course, grade });
     addTutor({ userId: data?.user.id!, course, grade });
   };
 

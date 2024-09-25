@@ -3,15 +3,10 @@ import { Calendar, Home, UserIcon } from "lucide-react-native";
 import React from "react";
 const RootLayout = () => {
   return (
-    <Tabs
-      initialRouteName="home"
-      screenOptions={{ headerShown: false }}
-      backBehavior="history"
-    >
+    <Tabs screenOptions={{ headerShown: false }} backBehavior="history">
       <Tabs.Screen
-        name="home"
+        name="(home)"
         options={{
-          headerShown: true,
           title: "Home",
           tabBarIcon: ({ color }) => <Home size={24} color={color} />,
         }}

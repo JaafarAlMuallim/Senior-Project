@@ -39,15 +39,13 @@ const BookSession = () => {
 
     onSuccess: () => {
       Alert.alert("Session booked successfully");
-      router.push("/(root)/(drawer)/(tabs)/home");
+      router.push("/(root)/(drawer)/(tabs)/(home)/home");
     },
     onError: (e: any) => {
       console.log(e);
       Alert.alert("Error booking session");
     },
   });
-  console.log(isError);
-  console.log(date);
 
   const onSubmit = () => {
     if (!tutor || !course || !date || !time) {
