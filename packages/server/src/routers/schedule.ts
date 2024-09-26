@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "../db";
-import { publicProcedure } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 
-export const scheduleRouter = {
+export const scheduleRouter = router({
   createSchedule: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
@@ -36,4 +36,4 @@ export const scheduleRouter = {
         },
       });
     }),
-};
+});
