@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "../db";
-import { publicProcedure } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 
-export const sessionRouter = {
+export const sessionRouter = router({
   createSession: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
@@ -81,4 +81,4 @@ export const sessionRouter = {
       });
       return sessions;
     }),
-};
+});
