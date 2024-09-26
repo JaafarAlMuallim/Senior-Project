@@ -1,21 +1,20 @@
 import CustomText from "@/components/CustomText";
+import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
-import trpc from "@/utils/trpc";
+import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
+import { trpcReact } from "@/utils/trpc";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { Redirect, router } from "expo-router";
 import {
-  Phone,
-  GraduationCap,
   Bolt,
-  University,
+  GraduationCap,
   Loader2,
+  Phone,
+  University,
 } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Dropdown from "@/components/Dropdown";
-import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 
 const OnBoarding = () => {
   const { user } = useUser();
@@ -30,10 +29,8 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["profile", user?.id],
-    enabled: !!user?.id,
-    queryFn: () => trpc.getProfile.query({ clerkId: user?.id! }),
+  const { data, isLoading } = trpcReact.profiles.get.useQuery({
+    clerkId: user?.id!,
   });
 
   useEffect(() => {
@@ -47,7 +44,7 @@ const OnBoarding = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        }),
+        })
       ).start();
     } else {
       spinValue.setValue(0);
@@ -56,23 +53,23 @@ const OnBoarding = () => {
 
   useEffect(() => {}, [isLoading]);
 
-  const { mutate: updateProfile } = useMutation({
-    mutationKey: ["updateProfile", user?.id],
-    mutationFn: (data: {
-      clerkId: string;
-      phone: string;
-      university: string;
-      major: string;
-      standing: string;
-    }) =>
-      trpc.updateProfile.mutate({
-        clerkId: data.clerkId,
-        data: data,
-      }),
+  const { mutate } = trpcReact.profiles.update.useMutation({
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/(home)/home");
     },
   });
+
+  const updateProfile = (data: {
+    clerkId: string;
+    phone: string;
+    university: string;
+    major: string;
+    standing: string;
+  }) =>
+    mutate({
+      clerkId: data.clerkId,
+      data: data,
+    });
 
   const onSubmit = () => {
     if (!phone || !university || !major || !standing) {
