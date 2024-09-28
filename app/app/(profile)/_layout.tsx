@@ -25,7 +25,22 @@ const Layout = () => {
           headerTintColor: "#304FFE",
         }}
       />
-      
+      <Stack.Screen
+        name="notification"
+        options={{
+          headerShown: true,
+          title: "notification",
+          headerTintColor: "#304FFE",
+        }}
+          />
+       <Stack.Screen
+              name="support"
+              options={{
+                  headerShown: true,
+                  title: "support",
+                  headerTintColor: "#304FFE",
+              }}
+          />
     </Stack>
   );
 };
