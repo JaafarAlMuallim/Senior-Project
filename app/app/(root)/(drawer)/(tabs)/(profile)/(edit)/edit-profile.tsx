@@ -3,7 +3,7 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { useUserStore } from "@/store/store";
-import { trpcReact } from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
 import { useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import {
@@ -21,14 +21,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-
-type MutationProps = {
-  name: string;
-  phone: string;
-  university: string;
-  major: string;
-  standing: string;
-};
 
 const EditProfile = () => {
   const { user, setUser } = useUserStore();
@@ -48,7 +40,7 @@ const EditProfile = () => {
     setModalVisible((prevValue) => !prevValue);
   };
 
-  const { mutate } = trpcReact.profiles.update.useMutation({
+  const { mutate } = trpc.profiles.update.useMutation({
     onSuccess: async () => {
       await clerkUser?.update({
         firstName: name.split(" ")[0],
@@ -61,7 +53,7 @@ const EditProfile = () => {
   });
 
   const updateUser = (
-    data: any // update types
+    data: any, // update types
   ) =>
     mutate({
       clerkId: clerkUser?.id!,

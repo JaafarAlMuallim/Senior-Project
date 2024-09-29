@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import React from "react";
-import { TouchableOpacity, View, Image, Text } from "react-native";
+import { TouchableOpacity, View, Image } from "react-native";
+import CustomText from "./CustomText";
 
 const AiChat = ({
   chatName,
@@ -16,17 +17,17 @@ const AiChat = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row border-b border-gray-400 ${styles}`}
+      className={`items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400 ${styles}`}
       {...touchableProps}
       onPress={() => {
         router.push(routeTo);
       }}
     >
-      <View className="flex flex-row items-center justify-between">
-        <View className="flex flex-column items-start justify-start mr-44">
-          <Text className="text-blue-600 text-lg">{chatName}</Text>
-          <Text className="text-grag-700 text-base">{recentMessage}</Text>
-        </View>
+      <View className="flex flex-column items-start justify-start">
+        <CustomText styles="text-primary-light text-2xl">{chatName}</CustomText>
+        <CustomText styles="text-gray-light text-lg">
+          {recentMessage}
+        </CustomText>
       </View>
     </TouchableOpacity>
   );

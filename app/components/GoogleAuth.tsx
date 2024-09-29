@@ -4,32 +4,36 @@ import { Alert, Image, TouchableOpacity } from "react-native";
 import CustomText from "./CustomText";
 import { images } from "@/constants/images";
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
-import trpc from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
 
 const GoogleAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
-
-  const { mutate: addUser } = useMutation({
-    mutationKey: ["signUp"],
-    mutationFn: ({
-      email,
-      name,
-      clerkId,
-    }: {
-      email: string;
-      name: string;
-      clerkId: string;
-    }) =>
-      trpc.signUp.mutate({
-        email,
-        name,
-        clerkId,
-      }),
+  const { mutate: addUser } = trpc.auth.signUp.useMutation({
     onSuccess: () => {
       Alert.alert("Success", "You have successfully signed up!");
     },
   });
+
+  // const { mutate: addUser } = useMutation({
+  //   mutationKey: ["signUp"],
+  //   mutationFn: ({
+  //     email,
+  //     name,
+  //     clerkId,
+  //   }: {
+  //     email: string;
+  //     name: string;
+  //     clerkId: string;
+  //   }) =>
+  //     trpc.signUp.mutate({
+  //       email,
+  //       name,
+  //       clerkId,
+  //     }),
+  //   onSuccess: () => {
+  //     Alert.alert("Success", "You have successfully signed up!");
+  //   },
+  // });
 
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);

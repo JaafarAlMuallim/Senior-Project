@@ -2,7 +2,7 @@ import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
-import { trpcReact } from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
@@ -29,9 +29,12 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpcReact.profiles.get.useQuery({
+  console.log(user?.id);
+
+  const { data, isLoading } = trpc.profiles.get.useQuery({
     clerkId: user?.id!,
   });
+  console.log(data);
 
   useEffect(() => {
     if (!isLoading && data?.university) {
@@ -44,7 +47,7 @@ const OnBoarding = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        })
+        }),
       ).start();
     } else {
       spinValue.setValue(0);
@@ -53,7 +56,7 @@ const OnBoarding = () => {
 
   useEffect(() => {}, [isLoading]);
 
-  const { mutate } = trpcReact.profiles.update.useMutation({
+  const { mutate } = trpc.profiles.update.useMutation({
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/(home)/home");
     },

@@ -1,42 +1,49 @@
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import {
   Bubble,
+  BubbleProps,
   Composer,
+  ComposerProps,
   GiftedChat,
   IMessage,
   InputToolbar,
+  InputToolbarProps,
   Send,
+  SendProps,
   Time,
+  TimeProps,
 } from "react-native-gifted-chat";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 
 const Chat = () => {
-  const [messages, setMessages] = useState<IMessage[]>([]);
-
-  useEffect(() => {
-    setMessages([
-      {
-        _id: 1,
-        text: "Hello developer",
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: "React Native",
-          avatar:
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfXbh7mlikddoExnyLEsogtMhm-HpzamcCHSqMHJ_8uitlV0PviwsS3AEMMvsWR2sXo5w&usqp=CAU",
-        },
+  const [messages, setMessages] = useState<IMessage[]>([
+    {
+      _id: 1,
+      text: "Hello developer",
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: "React Native",
+        avatar:
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfXbh7mlikddoExnyLEsogtMhm-HpzamcCHSqMHJ_8uitlV0PviwsS3AEMMvsWR2sXo5w&usqp=CAU",
       },
-    ]);
-  }, []);
+    },
+  ]);
+  const { chatId } = useLocalSearchParams<{ chatId?: string }>();
+
+  if (!chatId) {
+    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
+  }
 
   const onSend = useCallback((newMessages: IMessage[] = []) => {
     setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages)
+      GiftedChat.append(previousMessages, newMessages),
     );
   }, []);
 
-  const renderBubble = (props: any) => {
+  const renderBubble = (props: BubbleProps<IMessage>) => {
     return (
       <Bubble
         {...props}
@@ -60,7 +67,7 @@ const Chat = () => {
     );
   };
 
-  const renderTime = (props: any) => {
+  const renderTime = (props: TimeProps<IMessage>) => {
     return (
       <Time
         {...props}
@@ -77,7 +84,7 @@ const Chat = () => {
   };
 
   // Custom InputToolbar
-  const renderInputToolbar = (props: any) => {
+  const renderInputToolbar = (props: InputToolbarProps<IMessage>) => {
     return (
       <InputToolbar
         {...props}
@@ -92,7 +99,7 @@ const Chat = () => {
   };
 
   // Custom Composer
-  const renderComposer = (props: any) => {
+  const renderComposer = (props: ComposerProps) => {
     return (
       <Composer
         {...props}
@@ -111,7 +118,7 @@ const Chat = () => {
   };
 
   // Custom Send button
-  const renderSend = (props: any) => {
+  const renderSend = (props: SendProps<IMessage>) => {
     return (
       <Send {...props}>
         <View style={{ marginRight: 10, marginBottom: 5 }}>
@@ -120,22 +127,41 @@ const Chat = () => {
       </Send>
     );
   };
+
   return (
-    <GiftedChat
-      renderUsernameOnMessage={true}
-      messages={messages}
-      alwaysShowSend={true}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: 1,
-      }}
-      renderBubble={renderBubble} // Use the custom bubble renderer
-      renderTime={renderTime} // Use custom time renderer
-      renderInputToolbar={renderInputToolbar}
-      renderComposer={renderComposer}
-      renderSend={renderSend}
-      //   renderMessage={(props) => <CustomMessage {...props} />}
-    />
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: chatId,
+          headerTitleStyle: {
+            color: "#4561FF",
+            fontSize: 20,
+            fontFamily: "Poppins-Bold",
+          },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <GiftedChat
+        renderUsernameOnMessage={true}
+        messages={messages}
+        alwaysShowSend={true}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: 1,
+        }}
+        renderBubble={renderBubble} // Use the custom bubble renderer
+        renderTime={renderTime} // Use custom time renderer
+        renderInputToolbar={renderInputToolbar}
+        renderComposer={renderComposer}
+        renderSend={renderSend}
+        //   renderMessage={(props) => <CustomMessage {...props} />}
+      />
+    </>
   );
 };
 export default Chat;

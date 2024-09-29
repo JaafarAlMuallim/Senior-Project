@@ -17,12 +17,6 @@ const Layout = () => {
           title: "Chats",
         }}
       />
-      <Stack.Screen
-        name="(message)"
-        options={{
-          headerShown: true,
-        }}
-      />
     </Stack>
   );
 };

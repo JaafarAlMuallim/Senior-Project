@@ -1,13 +1,12 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { trpc } from "@/lib/trpc";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -16,6 +15,7 @@ import React, { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "reflect-metadata";
 import "../global.css";
+import { httpBatchLink } from "@trpc/client";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,7 +48,7 @@ const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
 
 if (!publishableKey) {
   throw new Error(
-    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
   );
 }
 
@@ -70,7 +70,7 @@ export default function RootLayout() {
       links: [
         httpBatchLink({
           // transformer: superjson, <-- if you use a data transformer
-          url: "http://localhost:5000/trpc",
+          url: "http://localhost:3000/trpc",
         }),
       ],
       // optional
@@ -79,7 +79,7 @@ export default function RootLayout() {
       //     // authorization: getAuthCookie(),
       //   };
       // },
-    })
+    }),
   );
 
   useEffect(() => {

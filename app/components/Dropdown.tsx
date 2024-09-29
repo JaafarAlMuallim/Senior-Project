@@ -65,7 +65,7 @@ const Dropdown = ({
         <TouchableOpacity
           className={cn(
             "h-14 flex flex-row justify-between items-center px-4 border rounded-lg",
-            expanded ? "border-blue-600" : "",
+            expanded ? "border-primary-light" : "",
           )}
           activeOpacity={0.8}
           onPress={toggleExpanded}

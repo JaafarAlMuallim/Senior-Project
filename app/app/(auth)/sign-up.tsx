@@ -1,6 +1,6 @@
 import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
-import { trpcReact } from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react-native";
@@ -17,7 +17,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
 
-  const { mutate } = trpcReact.auth.signUp.useMutation();
+  const { mutate } = trpc.auth.signUp.useMutation();
   const addUser = (clerkId: string) => mutate({ email, name, clerkId });
   const onSignUpPress = async () => {
     if (!isLoaded) return;
