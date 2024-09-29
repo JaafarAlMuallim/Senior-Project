@@ -1,21 +1,17 @@
 import CustomText from "@/components/CustomText";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { useUserStore } from "@/store/store";
+import { trpcReact } from "@/utils/trpc";
+import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
+import { EllipsisVertical, FolderClosed, Loader2 } from "lucide-react-native";
+import { useEffect } from "react";
 import {
-  Text,
-  Image,
-  TouchableOpacity,
-  View,
   Animated,
   Easing,
   FlatList,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useClerk } from "@clerk/clerk-expo";
-import trpc from "@/utils/trpc";
-import { useQuery } from "@tanstack/react-query";
-import { EllipsisVertical, FolderClosed, Loader2 } from "lucide-react-native";
-import { useEffect } from "react";
-import { useUserStore } from "@/store/store";
 
 const COURSES = [
   {
@@ -55,10 +51,8 @@ const Page = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["profile", user?.id],
-    enabled: !!user?.id,
-    queryFn: () => trpc.getProfile.query({ clerkId: user?.id! }),
+  const { data, isLoading } = trpcReact.profiles.get.useQuery({
+    clerkId: user?.id!,
   });
 
   useEffect(() => {
@@ -69,7 +63,7 @@ const Page = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        }),
+        })
       ).start();
     } else {
       spinValue.setValue(0);

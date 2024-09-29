@@ -1,15 +1,14 @@
 import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import { AVAILABLE_TIMES } from "@/constants/data";
+import { cn } from "@/lib/utils";
+import { trpcReact } from "@/utils/trpc";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { Redirect, router } from "expo-router";
 import { Book, Loader2, UserIcon } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import trpc from "@/utils/trpc";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { Redirect, router } from "expo-router";
 import { FlatList } from "react-native-gesture-handler";
-import { cn } from "@/lib/utils";
 
 const BookSession = () => {
   const [course, setCourse] = useState("");
@@ -23,29 +22,20 @@ const BookSession = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data: courseTutor, isLoading: isLoading } = useQuery({
-    queryKey: ["coursesTutor"],
-    queryFn: () => trpc.getTutors.query(),
-  });
+  const { data: courseTutor, isLoading: isLoading } =
+    trpcReact.tutors.getTutorsCourse.useQuery();
 
-  const { mutate: addSession, isError } = useMutation({
-    mutationKey: ["createSession"],
-    mutationFn: (data: {
-      tutorId: string;
-      courseId: string;
-      date: Date;
-      time: string;
-    }) => trpc.createSession.mutate(data),
-
-    onSuccess: () => {
-      Alert.alert("Session booked successfully");
-      router.push("/(root)/(drawer)/(tabs)/(home)/home");
-    },
-    onError: (e: any) => {
-      console.log(e);
-      Alert.alert("Error booking session");
-    },
-  });
+  const { mutate: addSession, isError } =
+    trpcReact.sessions.createSession.useMutation({
+      onSuccess: () => {
+        Alert.alert("Session booked successfully");
+        router.push("/(root)/(drawer)/(tabs)/(home)/home");
+      },
+      onError: (e: any) => {
+        console.log(e);
+        Alert.alert("Error booking session");
+      },
+    });
 
   const onSubmit = () => {
     if (!tutor || !course || !date || !time) {
@@ -62,7 +52,7 @@ const BookSession = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        }),
+        })
       ).start();
     } else {
       spinValue.setValue(0);
@@ -163,7 +153,7 @@ const BookSession = () => {
                       "border h-28 w-20 rounded-lg",
                       date?.toISOString() === item.date.toISOString()
                         ? "bg-primary-light border-primary-light"
-                        : "bg-white border-gray-200",
+                        : "bg-white border-gray-200"
                     )}
                   >
                     <View className="h-full flex flex-col justify-between items-center py-4">
@@ -172,7 +162,7 @@ const BookSession = () => {
                           "text-lg flex font-poppinsBlack text-3xl pt-4",
                           date?.toISOString() === item.date.toISOString()
                             ? "text-white-default"
-                            : "text-gray-500",
+                            : "text-gray-500"
                         )}
                       >
                         {item.date.toDateString().slice(8, 10)}
@@ -182,7 +172,7 @@ const BookSession = () => {
                           "font-poppinsBlack text-lg",
                           date?.toISOString() === item.date.toISOString()
                             ? "text-white-default"
-                            : "text-gray-500",
+                            : "text-gray-500"
                         )}
                       >
                         {item.date.toDateString().slice(0, 3)}
@@ -205,7 +195,7 @@ const BookSession = () => {
               showsHorizontalScrollIndicator={false}
               data={AVAILABLE_TIMES.filter(
                 (availableDate) =>
-                  date?.toISOString() === availableDate.date.toISOString(),
+                  date?.toISOString() === availableDate.date.toISOString()
               )}
               renderItem={({ item }) => (
                 <TouchableOpacity
@@ -219,7 +209,7 @@ const BookSession = () => {
                       "border h-12 w-28 rounded-lg justify-center items-center",
                       time === item.time
                         ? "border-primary-light bg-primary-light"
-                        : "border-gray-200",
+                        : "border-gray-200"
                     )}
                   >
                     <CustomText
@@ -227,7 +217,7 @@ const BookSession = () => {
                         "text-lg font-poppinsBlack",
                         time === item.time
                           ? "text-white-default"
-                          : "text-gray-500",
+                          : "text-gray-500"
                       )}
                     >
                       {item.time}

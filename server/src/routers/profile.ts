@@ -1,6 +1,6 @@
-import { db } from "../db";
 import { z } from "zod";
-import { publicProcedure } from "../trpc";
+import { db } from "../db";
+import { publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -12,7 +12,7 @@ export const profileSchema = z.object({
   name: z.string(),
 });
 
-export const profileRouter = {
+export const profileRouter = router({
   get: publicProcedure
     .input(
       z.object({
@@ -69,4 +69,4 @@ export const profileRouter = {
         throw new Error("Profile not found");
       }
     }),
-};
+});
