@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useClerk } from "@clerk/clerk-expo";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
@@ -17,7 +17,7 @@ import CustomText from "./CustomText";
 import { Link } from "expo-router";
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { user } = useUser();
-
+const {signOut} = useClerk();
   if (!user) {
     return null;
   }
@@ -80,7 +80,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         link={"/homex"}
       />
 
-      <TouchableOpacity onPress={() => {}} className="my-20 p-4">
+      <TouchableOpacity onPress={() => {signOut({ redirectUrl: '/' })}} className="my-20 p-4">
         <View className="flex flex-row flex-1 items-center">
           <LogOut size={40} color={"#C21D1A"} />
           <View className="flex flex-col ml-4">
