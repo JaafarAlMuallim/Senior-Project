@@ -1,7 +1,7 @@
 import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import { GRADES } from "@/constants/data";
-import { trpcReact } from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
@@ -25,13 +25,13 @@ const Tutoring = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpcReact.profiles.get.useQuery({
+  const { data, isLoading } = trpc.profiles.get.useQuery({
     clerkId: user?.id!,
   });
   const { data: courses, isLoading: coursesLoading } =
-    trpcReact.courses.getCourses.useQuery();
+    trpc.courses.getCourses.useQuery();
 
-  const { mutate } = trpcReact.tutors.addTutor.useMutation({
+  const { mutate } = trpc.tutors.addTutor.useMutation({
     mutationKey: ["addTutor", user?.id],
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/home");
@@ -63,7 +63,7 @@ const Tutoring = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        })
+        }),
       ).start();
     } else {
       spinValue.setValue(0);

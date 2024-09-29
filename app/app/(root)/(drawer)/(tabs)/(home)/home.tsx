@@ -1,7 +1,7 @@
 import CustomText from "@/components/CustomText";
 import { useUserStore } from "@/store/store";
-import { trpcReact } from "@/utils/trpc";
-import { SignedIn, SignedOut, useClerk, useUser } from "@clerk/clerk-expo";
+import { trpc } from "@/lib/trpc";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import { EllipsisVertical, FolderClosed, Loader2 } from "lucide-react-native";
 import { useEffect } from "react";
@@ -42,7 +42,6 @@ const COURSES = [
 
 const Page = () => {
   const { user } = useUser();
-  const { signOut } = useClerk();
   const { setUser } = useUserStore();
   const spinValue = new Animated.Value(0);
 
@@ -51,7 +50,7 @@ const Page = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpcReact.profiles.get.useQuery({
+  const { data, isLoading } = trpc.profiles.get.useQuery({
     clerkId: user?.id!,
   });
 
@@ -63,7 +62,7 @@ const Page = () => {
           duration: 1000,
           easing: Easing.linear,
           useNativeDriver: true,
-        })
+        }),
       ).start();
     } else {
       spinValue.setValue(0);

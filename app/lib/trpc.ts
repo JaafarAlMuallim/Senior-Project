@@ -1,5 +1,15 @@
-// utils/trpc.ts
-import { createReactQueryHooks } from "@trpc/react";
-import { AppRouter } from "../../server/src/routers";
+import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import { createTRPCReact } from "@trpc/react-query";
+import type { AppRouter } from "../../server/src/routers/index.ts";
 
-export const trpc = createReactQueryHooks<AppRouter>();
+// export const trpc = createTRPCProxyClient<AppRouter>({
+//   links: [
+//     httpBatchLink({
+//       url: "http://localhost:3000/trpc",
+//     }),
+//   ],
+// });
+//
+export const trpc = createTRPCReact<AppRouter>();
+
+// export const trpcReactQuery = createReactQueryHooks<AppRouter>();
