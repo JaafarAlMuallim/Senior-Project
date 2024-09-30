@@ -19,7 +19,7 @@ const FAQPage = () => {
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
         <View className="px-6 pt-6">
-          <Text className="text-primary-dark font-poppinsBold text-2xl mb-4">
+          <Text className="text-primary-dark font-poppinsBold text-2xl mb-4 text-center">
             FAQs
           </Text>
 
