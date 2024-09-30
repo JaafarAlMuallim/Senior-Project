@@ -20,7 +20,7 @@ const PrivacyPolicyPage = () => {
       <ScrollView contentContainerStyle={{ paddingBottom: 50 }}>
         <View className="px-6 pt-6">
           <Text className="text-primary-dark font-poppinsBold text-2xl mb-4">
-            Privacy & Policy
+            Privacy Policy
           </Text>
 
           <Accordion
@@ -32,15 +32,13 @@ const PrivacyPolicyPage = () => {
             <AccordionItem value="item-1">
               <AccordionTrigger>
                 <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  What is the use of this app?
+                  1. Types of Data We Collect
                 </Text>
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  This application is designed to help undergraduate students
-                  manage their studying career. By providing an AI assistant and
-                  general groups along with features to manage files and tasks,
-                  studying becomes easier and more enjoyable.
+                  we collect genaral data according to the usage of the app to
+                  help maintain it and improve it.
                 </Text>
               </AccordionContent>
             </AccordionItem>
@@ -48,16 +46,15 @@ const PrivacyPolicyPage = () => {
             <AccordionItem value="item-2">
               <AccordionTrigger>
                 <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  How can I become a tutor?
+                  2. Use Of Your Personal Data
                 </Text>
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  You can apply to become a tutor from the settings under
-                  tutoring. You need to fill out the required information. Our
-                  team will review each application. Based on your GPA and
-                  grades, we will make a decision on your application and notify
-                  you of the status.
+                  the use of your personal data is to help you manage your
+                  studying career. By providing an AI assistant and general
+                  groups along with features to manage files and tasks, studying
+                  becomes easier and more enjoyable.
                 </Text>
               </AccordionContent>
             </AccordionItem>
@@ -65,42 +62,19 @@ const PrivacyPolicyPage = () => {
             <AccordionItem value="item-3">
               <AccordionTrigger>
                 <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  Is it accessible?
+                  3. Disclosure Of Your Personal Data
                 </Text>
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  Yes. It adheres to the WAI-ARIA design pattern.
-                </Text>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4">
-              <AccordionTrigger>
-                <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  What are universal components?
-                </Text>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  In the world of React Native, universal components are
-                  components that work on both web and native platforms.
+                  we use your personal data to help you manage your studying
+                  career. By providing an AI assistant and general groups along
+                  with features to manage files and tasks, studying becomes
+                  easier and more enjoyable.
                 </Text>
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-
-          {/* remove this when finished */}
-          <TouchableOpacity
-            className="mt-8"
-            onPress={() => {
-              router.push("/FAQ");
-            }}
-          >
-            <Text className="font-poppinsSemiBold text-blue-default">
-              Cannot find your question? Click here to ask your question.
-            </Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

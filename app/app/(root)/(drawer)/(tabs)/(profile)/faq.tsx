@@ -61,33 +61,6 @@ const FAQPage = () => {
                 </Text>
               </AccordionContent>
             </AccordionItem>
-
-            <AccordionItem value="item-3">
-              <AccordionTrigger>
-                <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  Is it accessible?
-                </Text>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  Yes. It adheres to the WAI-ARIA design pattern.
-                </Text>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="item-4">
-              <AccordionTrigger>
-                <Text className="font-poppinsSemiBold text-base text-primary-dark">
-                  What are universal components?
-                </Text>
-              </AccordionTrigger>
-              <AccordionContent>
-                <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  In the world of React Native, universal components are
-                  components that work on both web and native platforms.
-                </Text>
-              </AccordionContent>
-            </AccordionItem>
           </Accordion>
 
           <TouchableOpacity
