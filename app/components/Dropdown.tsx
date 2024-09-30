@@ -42,6 +42,8 @@ const Dropdown = ({
 
   const buttonRef = useRef<View>(null);
 
+  const [top, setTop] = useState(0);
+  
   const toggleExpanded = useCallback(() => {
     if (buttonRef.current) {
       buttonRef.current.measure((fx, fy, width, height, px, py) => {
@@ -51,7 +53,7 @@ const Dropdown = ({
     setExpanded(!expanded);
   }, [expanded]);
 
-  const [top, setTop] = useState(0);
+  
 
   const onSelect = useCallback((item: OptionItem) => {
     onChange(item);
