@@ -37,8 +37,11 @@ const PrivacyPolicyPage = () => {
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  we collect genaral data according to the usage of the app to
-                  help maintain it and improve it.
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                  accusantium doloremque laudantium, totam rem aperiam, eaque
+                  ipsa quae ab illo inventore veritatis et quasi architecto
+                  beatae vitae. Sed ut perspiciatis unde omnis iste natus error
+                  sit voluptatem accusantium doloremqu.
                 </Text>
               </AccordionContent>
             </AccordionItem>
@@ -51,10 +54,10 @@ const PrivacyPolicyPage = () => {
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  the use of your personal data is to help you manage your
-                  studying career. By providing an AI assistant and general
-                  groups along with features to manage files and tasks, studying
-                  becomes easier and more enjoyable.
+                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+                  accusantium doloremque laudantium, totam rem aperiam, eaque
+                  ipsa quae ab illo inventore veritatis et quasi architecto
+                  beatae vitae.
                 </Text>
               </AccordionContent>
             </AccordionItem>
@@ -67,10 +70,13 @@ const PrivacyPolicyPage = () => {
               </AccordionTrigger>
               <AccordionContent>
                 <Text className="font-poppinsRegular text-base text-secondary-gray">
-                  we use your personal data to help you manage your studying
-                  career. By providing an AI assistant and general groups along
-                  with features to manage files and tasks, studying becomes
-                  easier and more enjoyable.
+                  At vero eos et accusamus et iusto odio dignissimos ducimus qui
+                  blanditiis praesentium voluptatum deleniti atque corrupti quos
+                  dolores et quas molestias excepturi sint occaecati cupiditate
+                  non provident, similique sunt in culpa qui officia deserunt
+                  mollitia animi, id est laborum et dolorum fuga. Et harum
+                  quidem rerum facilis est et expedita distinctio. Nam libero
+                  tempore, cum soluta
                 </Text>
               </AccordionContent>
             </AccordionItem>
