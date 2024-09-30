@@ -32,7 +32,7 @@ export const calculateDuration = (start: string, end: string) => {
 export const isClassCurrent = (
   classDate: string,
   start: string,
-  end: string,
+  end: string
 ) => {
   const currentDate = new Date();
   const classStartDate = parseISO(`${classDate}T${start}:00`);
@@ -42,4 +42,9 @@ export const isClassCurrent = (
     start: classStartDate,
     end: classEndDate,
   });
+};
+
+export const separateNameNum = (name: string) => {
+  const split = name.match(/([a-zA-Z]+)([0-9]+)/);
+  return split ? `${split[1]} ${split[2]}` : name;
 };

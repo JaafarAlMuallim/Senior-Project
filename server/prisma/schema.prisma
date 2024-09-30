@@ -47,29 +47,33 @@ model Tutor {
 }
 
 model Course {
-    id           String         @id @default(cuid())
-    name         String
-    code         String
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
-    CourseTutor  CourseTutor[]
-    Material     Material[]
-    Quiz         Quiz[]
-    Session      Session[]
-    Assistant    Assistant[]
-    Section      Section[]
+    id          String        @id @default(cuid())
+    name        String
+    code        String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    CourseTutor CourseTutor[]
+    Material    Material[]
+    Quiz        Quiz[]
+    Session     Session[]
+    Assistant   Assistant?
+    Section     Section[]
+    Group       Group?
 }
 
 model Section {
-    id        String   @id @default(cuid())
-    title     String
-    course    Course   @relation(fields: [courseId], references: [id])
-    courseId  String
-    startTime DateTime
-    endTime   DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           String         @id @default(cuid())
+    title        String
+    course       Course         @relation(fields: [courseId], references: [id])
+    courseId     String
+    startTime    DateTime
+    endTime      DateTime
+    recurrence   String?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
     registration Registration[]
+    Group        Group?         @relation(fields: [groupId], references: [id])
+    groupId      String?
 }
 
 model CourseTutor {
@@ -185,9 +189,12 @@ model Group {
     name        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
+    course      Course        @relation(fields: [courseId], references: [id])
+    courseId    String        @unique
     Participant Participant[]
     User        User[]
     Message     Message[]
+    Section     Section[]
 }
 
 model Notification {
@@ -212,7 +219,7 @@ model Feedback {
 model Assistant {
     id        String   @id @default(cuid())
     course    Course   @relation(fields: [courseId], references: [id])
-    courseId  String
+    courseId  String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -237,7 +244,7 @@ model Registration {
     // course    Course   @relation(fields: [courseId], references: [id])
     // courseId  String
     sectionId String
-    section  Section @relation(fields: [sectionId], references: [id])
+    section   Section  @relation(fields: [sectionId], references: [id])
     user      User     @relation(fields: [userId], references: [id])
     userId    String
     semester  String   @default("241")

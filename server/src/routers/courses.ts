@@ -15,11 +15,27 @@ export const courseRouter = router({
       return course;
     }),
 
-  getUserCourses: authProcedure.query(async ({ ctx: { user } }) => {
-    const enrolledCourses = await db.registration.findMany({
-      where: { userId: user.id },
-      include: { section: { include: { course: true } } },
-    });
-    return enrolledCourses;
-  }),
+  getUserCourses: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input: { id }, ctx }) => {
+      console.log(id);
+      console.log(ctx);
+      try {
+        const enrolled = await db.registration.findMany({
+          where: { userId: id },
+          include: { section: { include: { course: true } } },
+        });
+        return enrolled;
+      } catch (e) {
+        console.log(e);
+        throw new Error("Error");
+      }
+    }),
+  // getUserCourses: authProcedure.query(async ({ ctx: { user } }) => {
+  //   const enrolledCourses = await db.registration.findMany({
+  //     where: { userId: user.id },
+  //     include: { section: { include: { course: true } } },
+  //   });
+  //   return enrolledCourses;
+  // }),
 });

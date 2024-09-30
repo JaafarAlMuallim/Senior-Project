@@ -29,12 +29,9 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  console.log(user?.id);
-
   const { data, isLoading } = trpc.profiles.get.useQuery({
     clerkId: user?.id!,
   });
-  console.log(data);
 
   useEffect(() => {
     if (!isLoading && data?.university) {
