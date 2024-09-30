@@ -6,10 +6,9 @@ const RootLayout = () => {
   return (
     <>
       <Stack
-        initialRouteName="FAQ"
+        initialRouteName="onboarding"
         screenOptions={{ headerShown: false }}
       >
-        <Stack.Screen name="FAQ" />
         <Stack.Screen name="onboarding" />
         <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
       </Stack>

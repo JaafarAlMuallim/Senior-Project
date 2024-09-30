@@ -9,7 +9,7 @@ const Page = () => {
   const { isSignedIn } = useAuth();
 
   if (isSignedIn) {
-    return <Redirect href="/(root)/FAQ" />;
+    return <Redirect href="/(root)/onboarding" />;
   }
   return <Redirect href="/(auth)/welcome" />;
 };
