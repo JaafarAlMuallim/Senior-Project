@@ -1,20 +1,21 @@
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { trpc } from "@/lib/trpc";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import "../global.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
-import "react-native-reanimated";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
 import { Stack } from "expo-router";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import * as SecureStore from "expo-secure-store";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect, useState } from "react";
+import "react-native-reanimated";
 import "reflect-metadata";
-import React from "react";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import "../global.css";
+import { httpBatchLink } from "@trpc/client";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,7 +63,24 @@ export default function RootLayout() {
     PoppinsRegular: require("../assets/fonts/Poppins-Regular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
   });
-  const queryClient = new QueryClient();
+
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          // transformer: superjson, <-- if you use a data transformer
+          url: "http://localhost:3000/trpc",
+        }),
+      ],
+      // optional
+      // headers() {
+      //   return {
+      //     // authorization: getAuthCookie(),
+      //   };
+      // },
+    }),
+  );
 
   useEffect(() => {
     if (loaded) {
@@ -76,22 +94,24 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-        <QueryClientProvider client={queryClient}>
-          <ClerkLoaded>
-            <Stack
-              initialRouteName="index"
-              screenOptions={{ headerShown: false }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(root)" />
-              <Stack.Screen
-                name="+not-found"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-          </ClerkLoaded>
-        </QueryClientProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <ClerkLoaded>
+              <Stack
+                initialRouteName="index"
+                screenOptions={{ headerShown: false }}
+              >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(root)" />
+                <Stack.Screen
+                  name="+not-found"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </ClerkLoaded>
+          </QueryClientProvider>
+        </trpc.Provider>
       </ClerkProvider>
     </ThemeProvider>
   );

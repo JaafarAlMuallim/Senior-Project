@@ -1,37 +1,26 @@
 import CustomText from "@/components/CustomText";
+import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
-import { useUser } from "@clerk/clerk-expo";
-import {
-  Mail,
-  UserRound,
-  LockKeyhole,
-  University,
-  GraduationCap,
-  Bolt,
-} from "lucide-react-native";
-import { useState } from "react";
-import {
-  TouchableOpacity,
-  View,
-  Modal,
-  TouchableWithoutFeedback,
-  Alert,
-} from "react-native";
-import React from "react";
-import Dropdown, { OptionItem } from "@/components/Dropdown";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { useUserStore } from "@/store/store";
-import { useMutation } from "@tanstack/react-query";
-import trpc from "@/utils/trpc";
+import { trpc } from "@/lib/trpc";
+import { useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
-
-type MutationProps = {
-  name: string;
-  phone: string;
-  university: string;
-  major: string;
-  standing: string;
-};
+import {
+  Bolt,
+  GraduationCap,
+  LockKeyhole,
+  University,
+  UserRound,
+} from "lucide-react-native";
+import React, { useState } from "react";
+import {
+  Alert,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 const EditProfile = () => {
   const { user, setUser } = useUserStore();
@@ -51,13 +40,7 @@ const EditProfile = () => {
     setModalVisible((prevValue) => !prevValue);
   };
 
-  const { mutate: updateUser } = useMutation({
-    mutationKey: ["updateUser", user?.id],
-    mutationFn: async (data: MutationProps) =>
-      trpc.updateProfile.mutate({
-        clerkId: clerkUser?.id!,
-        data,
-      }),
+  const { mutate } = trpc.profiles.update.useMutation({
     onSuccess: async () => {
       await clerkUser?.update({
         firstName: name.split(" ")[0],
@@ -69,6 +52,13 @@ const EditProfile = () => {
     },
   });
 
+  const updateUser = (
+    data: any, // update types
+  ) =>
+    mutate({
+      clerkId: clerkUser?.id!,
+      data,
+    });
   const onUpdatePassword = async () => {
     try {
       const res = await clerkUser?.updatePassword({

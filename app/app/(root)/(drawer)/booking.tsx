@@ -1,15 +1,14 @@
 import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import { AVAILABLE_TIMES } from "@/constants/data";
+import { cn } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { Redirect, router } from "expo-router";
 import { Book, Loader2, UserIcon } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import trpc from "@/utils/trpc";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { Redirect, router } from "expo-router";
 import { FlatList } from "react-native-gesture-handler";
-import { cn } from "@/lib/utils";
 
 const BookSession = () => {
   const [course, setCourse] = useState("");
@@ -23,29 +22,20 @@ const BookSession = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data: courseTutor, isLoading: isLoading } = useQuery({
-    queryKey: ["coursesTutor"],
-    queryFn: () => trpc.getTutors.query(),
-  });
+  const { data: courseTutor, isLoading: isLoading } =
+    trpc.tutors.getTutorsCourse.useQuery();
 
-  const { mutate: addSession, isError } = useMutation({
-    mutationKey: ["createSession"],
-    mutationFn: (data: {
-      tutorId: string;
-      courseId: string;
-      date: Date;
-      time: string;
-    }) => trpc.createSession.mutate(data),
-
-    onSuccess: () => {
-      Alert.alert("Session booked successfully");
-      router.push("/(root)/(drawer)/(tabs)/(home)/home");
-    },
-    onError: (e: any) => {
-      console.log(e);
-      Alert.alert("Error booking session");
-    },
-  });
+  const { mutate: addSession, isError } =
+    trpc.sessions.createSession.useMutation({
+      onSuccess: () => {
+        Alert.alert("Session booked successfully");
+        router.push("/(root)/(drawer)/(tabs)/(home)/home");
+      },
+      onError: (e: any) => {
+        console.log(e);
+        Alert.alert("Error booking session");
+      },
+    });
 
   const onSubmit = () => {
     if (!tutor || !course || !date || !time) {
