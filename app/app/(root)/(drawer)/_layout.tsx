@@ -46,7 +46,6 @@ const RootLayout = () => {
             ),
           }}
         />
-        <Drawer.Screen name="schedule" />
         <Drawer.Screen
           name="booking"
           options={{

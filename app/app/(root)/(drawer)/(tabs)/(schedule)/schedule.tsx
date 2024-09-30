@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   TouchableOpacity,
-  SafeAreaView,
-  Text,
   Modal,
   ScrollView,
+  Animated,
+  Easing,
 } from "react-native";
 import {
   WeekCalendar,
@@ -13,12 +13,17 @@ import {
   LocaleConfig,
 } from "react-native-calendars";
 import { format, parseISO } from "date-fns";
-import { Ionicons } from "@expo/vector-icons";
 import CustomText from "@/components/CustomText";
-import { DAYS_OF_WEEK, EVENTS } from "@/constants/data";
+import { DAYS_OF_WEEK } from "@/constants/data";
 import DayColumn from "@/components/DayColumn";
 import TimeSlot from "@/components/TimeSlot";
 import DaySchedule from "@/components/DaySchedule";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { trpc } from "@/lib/trpc";
+import { Loader2 } from "lucide-react-native";
+import { Redirect } from "expo-router";
+import { useUserStore } from "@/store/store";
+import { cn } from "@/lib/utils";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -50,16 +55,55 @@ LocaleConfig.locales["en"] = {
     "Dec",
   ],
   dayNames: ["SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT"],
-  dayNamesShort: ["S", "M", "T", "W", "T", "F", "S"],
+  dayNamesShort: ["U", "M", "T", "W", "R", "F", "S"],
   today: "Today",
 };
+const DayMapper = {
+  Sunday: "SUN",
+  Monday: "MON",
+  Tuesday: "TUE",
+  Wednesday: "WEN",
+  Thursday: "THU",
+  Friday: "FRI",
+  Saturday: "SAT",
+};
+const MAPPER = {
+  U: "SUN",
+  M: "MON",
+  T: "TUE",
+  W: "WEN",
+  R: "THU",
+  F: "FRI",
+  S: "SAT",
+};
+
+const DAYS = ["U", "M", "T", "W", "R", "F", "S"];
 LocaleConfig.defaultLocale = "en";
 
-const ScheduleScreen2 = () => {
+const Schedule = () => {
   const [viewMode, setViewMode] = useState<"Today" | "Weekly">("Today");
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   const dateObject = parseISO(selectedDate);
-  const [term, setTerm] = useState("241");
+
+  const { user } = useUserStore();
+  const spinValue = new Animated.Value(0);
+
+  const rotate = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  const { data: semesters, isLoading: semestersLoading } =
+    trpc.schedule.getSemesters.useQuery({
+      userId: user?.id!,
+    });
+
+  const [semester, setTerm] = useState(semesters?.[0] || "241");
+
+  const { data, isLoading } = trpc.schedule.getSchedule.useQuery({
+    userId: user?.user.id!,
+    semester: semester,
+  });
 
   const dayNum = format(dateObject, "dd");
   const dayName = dateObject.toLocaleDateString("en-US", {
@@ -67,13 +111,90 @@ const ScheduleScreen2 = () => {
   });
   const monthYear = format(dateObject, "MMM yyyy");
   const [isTermModalVisible, setIsTermModalVisible] = useState(false);
-  const terms = ["241", "242", "243"];
-
-  const fullDayName = format(parseISO(selectedDate), "EEEE");
 
   const markedDates = {
     [selectedDate]: { selected: true, selectedColor: "#4561FF" },
   };
+  console.log(
+    selectedDate,
+    new Date().toISOString().substring(0, 10),
+    selectedDate == new Date().toISOString().substring(0, 10),
+  );
+
+  useEffect(() => {
+    if (isLoading || semestersLoading) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinValue.setValue(0);
+    }
+  }, [isLoading, semestersLoading]);
+
+  const structuredEvents = useMemo(() => {
+    if (!data) return [];
+    return DAYS.map((day) => {
+      const classes = data.filter((entry) =>
+        entry.section.recurrence?.includes(day),
+      );
+      const mappedDay = MAPPER[day as keyof typeof MAPPER];
+
+      return {
+        day: mappedDay,
+        classes: classes.map((entry) => ({
+          id: entry.id,
+          title: entry.section.course.name,
+          section: entry.section.title,
+          start: format(new Date(entry.section.startTime), "HH:mm"),
+          end: format(new Date(entry.section.endTime), "HH:mm"),
+          location: entry.section.location,
+          instructor: entry.section.instructor,
+        })),
+      };
+    });
+  }, [data]);
+
+  if (isLoading || semestersLoading) {
+    return (
+      <View className="h-full flex flex-col p-8 bg-white-default">
+        <SignedIn>
+          <Animated.View
+            style={{
+              transform: [{ rotate }],
+            }}
+            className="flex-1 items-center justify-center"
+          >
+            <Loader2 className="h-48 w-48" size={96} />
+          </Animated.View>
+        </SignedIn>
+        <SignedOut>
+          <Redirect href={"/(auth)/welcome"} />
+        </SignedOut>
+      </View>
+    );
+  }
+
+  if (!data || !data.length || !structuredEvents.length) {
+    return (
+      <View className="h-full flex flex-col p-8 bg-white-default">
+        <SignedIn>
+          <View className="flex-1 items-center justify-center">
+            <CustomText styles="text-2xl font-poppinsMedium text-primary-black text-center">
+              Add your classes to view your schedule
+            </CustomText>
+          </View>
+        </SignedIn>
+        <SignedOut>
+          <Redirect href={"/(auth)/welcome"} />
+        </SignedOut>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -109,11 +230,14 @@ const ScheduleScreen2 = () => {
           firstDay={0}
           current={selectedDate}
           markedDates={markedDates}
+          initialDate={selectedDate}
           onDayPress={(day) => setSelectedDate(day.dateString)}
           theme={{
-            todayTextColor: "red",
+            todayTextColor: `${new Date(selectedDate).toISOString().substring(0, 10) === new Date().toISOString().substring(0, 10) ? "white" : "black"}`,
             dayTextColor: "black",
             textDisabledColor: "gray",
+            selectedDotColor: "blue",
+            todayBackgroundColor: `${new Date(selectedDate).toISOString().substring(0, 10) === new Date().toISOString().substring(0, 10) ? "#4561FF" : "transparent"}`,
             selectedDayBackgroundColor: "#4561FF",
             selectedDayTextColor: "white",
             monthTextColor: "transparent",
@@ -136,7 +260,11 @@ const ScheduleScreen2 = () => {
                     <View key={index} className="flex-1 px-0.5">
                       <DayColumn
                         item={
-                          EVENTS.find((e) => e.day === day) || {
+                          structuredEvents.find(
+                            (e) =>
+                              e.day ===
+                              DayMapper[day as keyof typeof DayMapper],
+                          ) || {
                             day,
                             classes: [],
                           }
@@ -151,7 +279,7 @@ const ScheduleScreen2 = () => {
         ) : (
           <View>
             <View className="flex-row px-3 bg-primary-white w-screen">
-              {EVENTS.find((event) => event.day === dayName)?.classes
+              {structuredEvents.find((event) => event.day === dayName)?.classes
                 .length && (
                 <>
                   <CustomText styles="mr-10 text-gray-medium">Time</CustomText>
@@ -163,7 +291,11 @@ const ScheduleScreen2 = () => {
               showsVerticalScrollIndicator={false}
               style={{ height: 600, position: "relative" }}
             >
-              <DaySchedule dayName={fullDayName} selectedDate={selectedDate} />
+              <DaySchedule
+                dayName={dayName}
+                selectedDate={selectedDate}
+                strucutredEvents={structuredEvents}
+              />
             </ScrollView>
           </View>
         )}
@@ -177,9 +309,9 @@ const ScheduleScreen2 = () => {
         <View className="flex-1 justify-center items-center">
           <View className="absolute top-0 left-0 right-0 bottom-0 bg-primary-black opacity-75 z-0" />
           <View className="bg-primary-white w-3/4 rounded-lg p-4 z-10 shadow-lg">
-            <Text className="text-xl font-bold mb-4">Select Term</Text>
+            <CustomText styles="text-xl font-bold mb-4">Select Term</CustomText>
             <ScrollView>
-              {terms.map((item) => (
+              {semesters?.map((item) => (
                 <TouchableOpacity
                   key={item}
                   className="py-2"
@@ -188,11 +320,14 @@ const ScheduleScreen2 = () => {
                     setIsTermModalVisible(false);
                   }}
                 >
-                  <Text
-                    className={`text-lg ${term === item ? "font-bold" : "font-normal"}`}
+                  <CustomText
+                    styles={cn(
+                      `text-lg `,
+                      semester === item ? "font-bold" : "font-normal",
+                    )}
                   >
                     {item}
-                  </Text>
+                  </CustomText>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -200,9 +335,9 @@ const ScheduleScreen2 = () => {
               className="mt-4 bg-primary-light py-2 rounded-lg"
               onPress={() => setIsTermModalVisible(false)}
             >
-              <Text className="text-center text-primary-white text-lg">
+              <CustomText styles="text-center text-primary-white text-lg">
                 Close
-              </Text>
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -211,4 +346,4 @@ const ScheduleScreen2 = () => {
   );
 };
 
-export default ScheduleScreen2;
+export default Schedule;
