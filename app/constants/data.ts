@@ -175,26 +175,32 @@ const COURSES = [
   {
     label: "Big Data Analytics",
     value: "ics474",
+    dept: "cs",
   },
   {
     label: "Quality Engineering",
     value: "swe439",
+    dept: "swe",
   },
   {
     label: "Software Design",
     value: "swe316",
+    dept: "swe",
   },
   {
     label: "Software Testing",
     value: "swe326",
+    dept: "swe",
   },
   {
     label: "Software Architecture",
     value: "swe416",
+    dept: "swe",
   },
   {
     label: "Software Project Management",
     value: "swe387",
+    dept: "swe",
   },
 ];
 

@@ -38,7 +38,7 @@ const DailyClass = ({ item, day }: { item: any; day: string }) => {
             isCurrentClass ? "text-primary-white" : "text-primary-black",
           )}
         >
-          Section: {item.section}
+          {item.section}
         </CustomText>
         <View className="flex-row items-center pt-3">
           <Ionicons

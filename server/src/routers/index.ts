@@ -1,24 +1,18 @@
 import { router } from "../trpc";
-import { tutorRouter } from "./tutoring";
+import { authRouter } from "./auth";
 import { courseRouter } from "./courses";
 import { profileRouter } from "./profile";
-import { authRouter } from "./auth";
-import { sessionRouter } from "./session";
 import { scheduleRouter } from "./schedule";
+import { sessionRouter } from "./session";
+import { tutorRouter } from "./tutoring";
 
 export const appRouter = router({
-  signUp: authRouter.signUp,
-  updateProfile: profileRouter.update,
-  getProfile: profileRouter.get,
-  addTutor: tutorRouter.addTutor,
-  getTutors: tutorRouter.getTutorsCourse,
-  getCourses: courseRouter.getCourses,
-  createSession: sessionRouter.createSession,
-  getSessions: sessionRouter.getSessions,
-  getTutorSessions: sessionRouter.getTutorSessions,
-  getCourseSessions: sessionRouter.getCourseSessions,
-  getSchedule: scheduleRouter.getSchedule,
-  getTerms: scheduleRouter.getSemesters,
+  auth: authRouter,
+  profiles: profileRouter,
+  tutors: tutorRouter,
+  courses: courseRouter,
+  sessions: sessionRouter,
+  schedule: scheduleRouter,
 });
 
 export type AppRouter = typeof appRouter;

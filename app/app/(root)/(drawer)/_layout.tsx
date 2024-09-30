@@ -5,7 +5,6 @@ import CustomDrawerContent from "@/components/CustomDrawerContent";
 import CustomText from "@/components/CustomText";
 import { SafeAreaView, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 
 const RootLayout = () => {
@@ -47,7 +46,6 @@ const RootLayout = () => {
             ),
           }}
         />
-        <Drawer.Screen name="schedule" />
         <Drawer.Screen
           name="booking"
           options={{

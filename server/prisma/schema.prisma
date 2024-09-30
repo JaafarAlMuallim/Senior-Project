@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
     provider = "prisma-client-js"
 }
@@ -21,90 +15,90 @@ model User {
     password     String?
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
-    Tutor        Tutor[]
-    Student      Student[]
-    Admin        Admin[]
     profileId    String?
-    Profile      Profile?
-    Group        Group[]
     groupId      String?
-    Participant  Participant[]
+    Admin        Admin[]
+    Feedback     Feedback[]
     Message      Message[]
     Notification Notification[]
-    Feedback     Feedback[]
+    Participant  Participant[]
+    Profile      Profile?
     Registration Registration[]
+    Student      Student[]
+    Tutor        Tutor[]
+    Group        Group[]        @relation("GroupToUser")
 }
 
 model Tutor {
     id           String         @id @default(cuid())
-    user         User           @relation(fields: [userId], references: [id])
     userId       String
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
+    Availability Availability[]
     CourseTutor  CourseTutor[]
     Session      Session[]
-    Availability Availability[]
+    user         User           @relation(fields: [userId], references: [id])
 }
 
 model Course {
-    id           String         @id @default(cuid())
-    name         String
-    code         String
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
-    CourseTutor  CourseTutor[]
-    Material     Material[]
-    Quiz         Quiz[]
-    Session      Session[]
-    Assistant    Assistant[]
-    Section      Section[]
+    id          String        @id @default(cuid())
+    name        String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    code        String
+    Assistant   Assistant?
+    CourseTutor CourseTutor[]
+    Group       Group?
+    Material    Material[]
+    Quiz        Quiz[]
+    Section     Section[]
+    Session     Session[]
 }
 
 model Section {
-    id        String   @id @default(cuid())
-    title     String
-    course    Course   @relation(fields: [courseId], references: [id])
-    courseId  String
-    instructor String
-    location  String
-    days	  String[]
-    startTime DateTime
-    endTime   DateTime
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id           String         @id @default(cuid())
+    title        String
+    startTime    DateTime
+    endTime      DateTime
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    recurrence   String?
+    instructor   String         @default("TBD")
+    location     String         @default("TBD")
     registration Registration[]
+    course       Course         @relation(fields: [courseId], references: [id])
+    courseId     String
 }
 
 model CourseTutor {
     id        String   @id @default(cuid())
-    course    Course   @relation(fields: [courseId], references: [id])
     courseId  String
-    tutor     Tutor    @relation(fields: [tutorId], references: [id])
     tutorId   String
-    grade     String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    grade     String
+    course    Course   @relation(fields: [courseId], references: [id])
+    tutor     Tutor    @relation(fields: [tutorId], references: [id])
 }
 
 model Student {
     id        String   @id @default(cuid())
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Admin {
     id        String   @id @default(cuid())
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Profile {
     id         String   @id @default(cuid())
-    user       User     @relation(fields: [userId], references: [clerkId])
     userId     String   @unique
     major      String?
     phone      String?
@@ -112,28 +106,29 @@ model Profile {
     standing   String?
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
+    user       User     @relation(fields: [userId], references: [clerkId])
 }
 
 model Material {
     id        String   @id @default(cuid())
     content   String
-    course    Course   @relation(fields: [courseId], references: [id])
     courseId  String
     title     String
     type      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    Tag       Tag?     @relation(fields: [tagId], references: [id])
     tagId     String?
+    course    Course   @relation(fields: [courseId], references: [id])
+    Tag       Tag?     @relation(fields: [tagId], references: [id])
 }
 
 model Quiz {
     id        String     @id @default(cuid())
-    course    Course     @relation(fields: [courseId], references: [id])
     courseId  String
     createdAt DateTime   @default(now())
     updatedAt DateTime   @updatedAt
     Question  Question[]
+    course    Course     @relation(fields: [courseId], references: [id])
 }
 
 model Question {
@@ -142,32 +137,32 @@ model Question {
     correctAnswer String
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
-    Quiz          Quiz?    @relation(fields: [quizId], references: [id])
     quizId        String?
+    Quiz          Quiz?    @relation(fields: [quizId], references: [id])
 }
 
 model Session {
     id        String   @id @default(cuid())
-    course    Course   @relation(fields: [courseId], references: [id])
-    date      DateTime
     courseId  String
     title     String
     startTime DateTime
-    tutor     Tutor    @relation(fields: [tutorId], references: [id])
     tutorId   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    date      DateTime
+    course    Course   @relation(fields: [courseId], references: [id])
+    tutor     Tutor    @relation(fields: [tutorId], references: [id])
 }
 
 model Participant {
     id        String    @id @default(cuid())
-    user      User      @relation(fields: [userId], references: [id])
     userId    String
-    group     Group     @relation(fields: [groupId], references: [id])
     groupId   String
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
     Message   Message[]
+    group     Group     @relation(fields: [groupId], references: [id])
+    user      User      @relation(fields: [userId], references: [id])
 }
 
 model Message {
@@ -175,11 +170,11 @@ model Message {
     content   String
     createdAt DateTime    @default(now())
     updatedAt DateTime    @updatedAt
-    sender    Participant @relation(fields: [senderId], references: [id])
     senderId  String
-    group     Group       @relation(fields: [groupId], references: [id])
     groupId   String
     userId    String?
+    group     Group       @relation(fields: [groupId], references: [id])
+    sender    Participant @relation(fields: [senderId], references: [id])
     User      User?       @relation(fields: [userId], references: [id])
 }
 
@@ -188,9 +183,11 @@ model Group {
     name        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
-    Participant Participant[]
-    User        User[]
+    courseId    String        @unique
+    Course      Course        @relation(fields: [courseId], references: [id])
     Message     Message[]
+    Participant Participant[]
+    User        User[]        @relation("GroupToUser")
 }
 
 model Notification {
@@ -199,8 +196,8 @@ model Notification {
     seen      Boolean  @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Feedback {
@@ -208,16 +205,16 @@ model Feedback {
     content   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Assistant {
     id        String   @id @default(cuid())
-    course    Course   @relation(fields: [courseId], references: [id])
-    courseId  String
+    courseId  String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    course    Course   @relation(fields: [courseId], references: [id])
 }
 
 model Report {
@@ -237,15 +234,13 @@ model Tag {
 
 model Registration {
     id        String   @id @default(cuid())
-    // course    Course   @relation(fields: [courseId], references: [id])
-    // courseId  String
     sectionId String
-    section  Section @relation(fields: [sectionId], references: [id])
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
     semester  String   @default("241")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    section   Section  @relation(fields: [sectionId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Availability {
@@ -253,8 +248,8 @@ model Availability {
     day       String
     startTime DateTime
     endTime   DateTime
-    tutor     Tutor    @relation(fields: [tutorId], references: [id])
     tutorId   String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    tutor     Tutor    @relation(fields: [tutorId], references: [id])
 }
