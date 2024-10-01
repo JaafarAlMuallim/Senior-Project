@@ -1,14 +1,17 @@
-import React, { useMemo, useState } from "react";
 import CustomText from "@/components/CustomText";
-import { Alert, Animated, TouchableOpacity, View } from "react-native";
-import { Book, BriefcaseBusiness, GraduationCap } from "lucide-react-native";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import trpc from "@/utils/trpc";
-import { Loader2 } from "lucide-react-native";
-import { Redirect, router } from "expo-router";
 import Dropdown from "@/components/Dropdown";
-import { COURSES, GRADES } from "@/constants/data";
+import { GRADES } from "@/constants/data";
+import { trpc } from "@/lib/trpc";
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { Redirect, router } from "expo-router";
+import {
+  Book,
+  BriefcaseBusiness,
+  GraduationCap,
+  Loader2,
+} from "lucide-react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 
 const Tutoring = () => {
   const { user } = useUser();
@@ -22,35 +25,26 @@ const Tutoring = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["profile", user?.id],
-    enabled: !!user?.id,
-    queryFn: () => trpc.getProfile.query({ clerkId: user?.id! }),
+  const { data, isLoading } = trpc.profiles.get.useQuery({
+    clerkId: user?.id!,
   });
-  const { data: courses, isLoading: coursesLoading } = useQuery({
-    queryKey: ["courses"],
-    queryFn: () => trpc.getCourses.query(),
-  });
+  const { data: courses, isLoading: coursesLoading } =
+    trpc.courses.getCourses.useQuery();
 
-  const { mutate: addTutor } = useMutation({
+  const { mutate } = trpc.tutors.addTutor.useMutation({
     mutationKey: ["addTutor", user?.id],
-    mutationFn: (data: { userId: string; course: string; grade: string }) =>
-      trpc.addTutor.mutate({
-        userId: data.userId,
-        courseId: data.course,
-        grade,
-      }),
-
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/home");
     },
   });
 
+  const addTutor = (data: { userId: string; course: string; grade: string }) =>
+    mutate({ userId: data.userId, courseId: data.course, grade });
+
   const onSubmit = () => {
     if (!grade || !course) {
       Alert.alert("Please fill all fields");
     }
-    console.log({ id: data?.user.id, course, grade });
     addTutor({ userId: data?.user.id!, course, grade });
   };
 
@@ -60,6 +54,21 @@ const Tutoring = () => {
       value: course.id,
     }));
   }, [courses])!;
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinValue.setValue(0);
+    }
+  }, [data, isLoading]);
 
   if (isLoading || coursesLoading) {
     return (

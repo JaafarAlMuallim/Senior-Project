@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { db } from "../db";
-import { publicProcedure } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 
-export const tutorRouter = {
+export const tutorRouter = router({
   addTutor: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
@@ -55,22 +55,20 @@ export const tutorRouter = {
       return result;
     }),
 
-  // listTutors: publicProcedure
-  //   .input(
-  //     z.object({
-  //       courseId: z.string(),
-  //     })
-  //   )
-  //   .query(async ({ input, ctx }) => {
-  //     const { courseId } = input;
-  //     const tutors = await db.courseTutor.findMany({
-  //       where: {
-  //         courseId,
-  //       },
-  //     });
-  //     return tutors;
-  //   }),
-  //
+  getTutorsCourse: publicProcedure.query(async ({ input, ctx }) => {
+    const courseTutors = await db.courseTutor.findMany({
+      include: {
+        tutor: {
+          include: {
+            user: true,
+          },
+        },
+        course: true,
+      },
+    });
+    return courseTutors;
+  }),
+
   // removeTutor: publicProcedure
   //   .input(
   //     z.object({
@@ -86,4 +84,4 @@ export const tutorRouter = {
   //     });
   //     return result;
   //   }),
-};
+});

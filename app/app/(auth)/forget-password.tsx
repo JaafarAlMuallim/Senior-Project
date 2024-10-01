@@ -109,7 +109,7 @@ const ForgetPassword = () => {
             <Mail />
           </BorderInput>
           <TouchableOpacity
-            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
             onPress={ResetCode}
           >
             <CustomText styles="text-primary-white font-poppinsBold text-lg">
@@ -166,7 +166,7 @@ const ForgetPassword = () => {
             <LockKeyhole />
           </BorderInput>
           <TouchableOpacity
-            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
             onPress={ResetPassword}
           >
             <CustomText styles="text-primary-white font-poppinsBold text-lg">
@@ -188,7 +188,7 @@ const ForgetPassword = () => {
             }}
           />
           <TouchableOpacity
-            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+            className="items-center justify-center mt-8 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
             onPress={ResetSecondFactor}
           >
             <CustomText styles="text-primary-white font-poppinsBold text-lg">

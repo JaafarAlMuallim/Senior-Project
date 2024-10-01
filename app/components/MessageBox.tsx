@@ -23,7 +23,7 @@ const MessageBox = ({ item }: { item: Message }) => (
         className={`flex flex-row ${item.fromUser ? "justify-end" : "justify-start"} mb-4`}
     >
         <View
-            className={`rounded-lg px-4 py-2 max-w-3/4 ${item.fromUser ? "bg-chat-default" : "bg-chat-notification"}`}
+            className={`rounded-lg px-4 py-2 max-w-3/4 ${item.fromUser ? "bg-chat-notification" : "bg-primary-dark"}`}
         >
             {item.file && item.fileType === "image" && (
                 <Image

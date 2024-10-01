@@ -5,7 +5,7 @@ import React from "react";
 const Layout = () => {
   const { isSignedIn } = useAuth();
   if (isSignedIn) {
-    return <Redirect href="/" />;
+    return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
 
   return (

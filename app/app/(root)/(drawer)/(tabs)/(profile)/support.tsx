@@ -18,6 +18,7 @@ const Support = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState("");
     const tailwind = useTailwind();
+    const [recording, setRecording] = useState<Audio.Recording | null>(null);
 
     const sendMessage = () => {
         if (inputText.trim().length > 0) {
@@ -76,7 +77,7 @@ const Support = () => {
         }
     };
 
-    const handleVoiceRecording = async () => {
+     const startRecording = async () => {
         try {
             const { status } = await Audio.requestPermissionsAsync();
             if (status !== "granted") {
@@ -84,13 +85,19 @@ const Support = () => {
                 return;
             }
 
-            const recording = new Audio.Recording();
-            await recording.prepareToRecordAsync(
-                Audio.RecordingOptionsPresets.HIGH_QUALITY,
-            );
-            await recording.startAsync();
+            const newRecording = new Audio.Recording();
+            await newRecording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+            await newRecording.startAsync();
 
-            setTimeout(async () => {
+            setRecording(newRecording);  // Save the recording object
+        } catch (err) {
+            console.error("Failed to start recording:", err);
+        }
+    };
+
+    const stopRecording = async () => {
+        if (recording) {
+            try {
                 await recording.stopAndUnloadAsync();
                 const uri = recording.getURI();
 
@@ -103,30 +110,39 @@ const Support = () => {
                     }),
                     fromUser: true,
                 };
-                setMessages([...messages, newMessage]);
-            }, 5000);
-        } catch (err) {
-            console.error("Recording error:", err);
+
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+                // Reset the recording state
+                setRecording(null);
+            } catch (err) {
+                console.error("Failed to stop recording:", err);
+            }
         }
     };
 
-    
     return (
-        <View className="flex-1 p-4">
+        <View className="flex-1 p-4 bg-primary-white">
             <FlatList
                 data={messages}
-                renderItem={MessageBox}
+                renderItem={({ item }) => <MessageBox item={item} />} // Correctly pass item to MessageBox
                 keyExtractor={(item) => item.id}
-                className="flex-1, bg-primary-white"
+                className="flex-1 bg-primary-white"
                 contentContainerStyle={tailwind("flex-col-reverse")}
             />
             <View className="flex-row items-center p-2">
                 <TouchableOpacity onPress={handleFilePicker}>
                     <Ionicons name="attach" size={24} color="#3044FF" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleVoiceRecording}>
+
+                {/* Press-and-hold mic button */}
+                <TouchableOpacity
+                    onPressIn={startRecording}  // Start recording when pressed
+                    onPressOut={stopRecording}  // Stop recording when released
+                >
                     <Ionicons name="mic" size={24} color="#3044FF" className="mx-2" />
                 </TouchableOpacity>
+
                 <TextInput
                     value={inputText}
                     onChangeText={setInputText}

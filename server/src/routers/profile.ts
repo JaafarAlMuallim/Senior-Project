@@ -1,6 +1,6 @@
-import { db } from "../db";
 import { z } from "zod";
-import { publicProcedure } from "../trpc";
+import { db } from "../db";
+import { publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -9,9 +9,10 @@ export const profileSchema = z.object({
   standing: z.string(),
   university: z.string(),
   phone: z.string(),
+  name: z.string(),
 });
 
-export const profileRouter = {
+export const profileRouter = router({
   get: publicProcedure
     .input(
       z.object({
@@ -19,6 +20,7 @@ export const profileRouter = {
       })
     )
     .query(async ({ input, ctx }) => {
+      console.log("GET PROFILE");
       const { clerkId } = input;
       const profile = await db.profile.findFirst({
         where: {
@@ -44,12 +46,27 @@ export const profileRouter = {
     )
     .mutation(async ({ input, ctx }) => {
       const { clerkId, data } = input;
-      const profile = await db.profile.update({
-        where: {
-          userId: clerkId,
-        },
-        data,
-      });
-      return profile;
+      try {
+        const profile = await db.profile.update({
+          where: {
+            userId: clerkId,
+          },
+          data: {
+            major: data.major,
+            standing: data.standing,
+            university: data.university,
+            phone: data.phone,
+            user: {
+              update: {
+                name: data.name,
+              },
+            },
+          },
+        });
+        return profile;
+      } catch (e) {
+        console.log(e);
+        throw new Error("Profile not found");
+      }
     }),
-};
+});
