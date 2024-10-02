@@ -24,7 +24,7 @@ const AiChat = ({
       }}
     >
       <View className="flex flex-column items-start justify-start">
-        <CustomText styles="text-primary-light text-2xl">{chatName}</CustomText>
+        <CustomText styles="text-primary-light text-xl">{chatName}</CustomText>
         <CustomText styles="text-gray-light text-lg">
           {recentMessage}
         </CustomText>

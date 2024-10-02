@@ -27,6 +27,7 @@ model User {
     Student      Student[]
     Tutor        Tutor[]
     Group        Group[]        @relation("GroupToUser")
+    Group        Group?         @relation(fields: [groupId], references: [id])
 }
 
 model Tutor {
@@ -43,31 +44,31 @@ model Tutor {
 model Course {
     id          String        @id @default(cuid())
     name        String
+    code        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
-    code        String
-    Assistant   Assistant?
     CourseTutor CourseTutor[]
-    Group       Group?
     Material    Material[]
     Quiz        Quiz[]
-    Section     Section[]
     Session     Session[]
+    Assistant   Assistant?
+    Section     Section[]
+    Group       Group?
 }
 
 model Section {
     id           String         @id @default(cuid())
     title        String
-    startTime    DateTime
-    endTime      DateTime
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
-    recurrence   String?
-    instructor   String         @default("TBD")
-    location     String         @default("TBD")
-    registration Registration[]
     course       Course         @relation(fields: [courseId], references: [id])
     courseId     String
+    startTime    DateTime
+    endTime      DateTime
+    recurrence   String?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    registration Registration[]
+    Group        Group?         @relation(fields: [groupId], references: [id])
+    groupId      String?
 }
 
 model CourseTutor {
@@ -183,11 +184,14 @@ model Group {
     name        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
+    course      Course        @relation(fields: [courseId], references: [id])
     courseId    String        @unique
-    Course      Course        @relation(fields: [courseId], references: [id])
-    Message     Message[]
     Participant Participant[]
-    User        User[]        @relation("GroupToUser")
+    User        User[]
+    Message     Message[]
+    Section     Section[]
+    User        User?         @relation(fields: [userId], references: [id])
+    userId      String?
 }
 
 model Notification {
@@ -211,10 +215,10 @@ model Feedback {
 
 model Assistant {
     id        String   @id @default(cuid())
+    course    Course   @relation(fields: [courseId], references: [id])
     courseId  String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    course    Course   @relation(fields: [courseId], references: [id])
 }
 
 model Report {
@@ -235,12 +239,12 @@ model Tag {
 model Registration {
     id        String   @id @default(cuid())
     sectionId String
+    section   Section  @relation(fields: [sectionId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
     userId    String
     semester  String   @default("241")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    section   Section  @relation(fields: [sectionId], references: [id])
-    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Availability {

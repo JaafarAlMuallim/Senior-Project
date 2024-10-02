@@ -1,8 +1,9 @@
-import { cn } from "@/lib/utils";
 import { router } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View, Image } from "react-native";
 import CustomText from "./CustomText";
+import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
+import { cn } from "@/lib/utils";
 
 const Chat = ({
   imageUri,
@@ -22,21 +23,27 @@ const Chat = ({
 }) => {
   return (
     <TouchableOpacity
-      className={`items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400 ${styles}`}
+      className={cn(
+        `items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400`,
+        styles,
+      )}
       {...touchableProps}
       onPress={() => {
         router.push(routeTo);
       }}
     >
       <View className="flex flex-row w-full">
-        <Image
-          source={{
-            uri: imageUri,
-          }}
-          className="w-14 h-14 rounded-full mr-4"
-        />
+        <Avatar
+          alt="Zach Nugent's Avatar"
+          className="w-14 h-14 rounded-full mr-4 bg-gray-300"
+        >
+          <AvatarImage source={{ uri: "" }} />
+          <AvatarFallback>
+            <CustomText>{groupName}</CustomText>
+          </AvatarFallback>
+        </Avatar>
         <View className="flex flex-column items-start justify-start grow">
-          <CustomText styles="text-primary-light text-2xl">
+          <CustomText styles="text-primary-light text-xl">
             {groupName}
           </CustomText>
           <CustomText styles="text-gray-light text-lg">
@@ -49,30 +56,3 @@ const Chat = ({
   );
 };
 export default Chat;
-
-// <TouchableOpacity
-//   className={cn(
-//     `items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row`,
-//     styles,
-//   )}
-//   {...touchableProps}
-//   onPress={() => {
-//     router.push(routeTo);
-//   }}
-// >
-//   <View className="flex flex-row items-center justify-between">
-//     <Image
-//       source={{
-//         uri: imageUri,
-//       }}
-//       className="w-14 h-14 rounded-full"
-//     />
-//     <View className="flex flex-column items-start justify-start mr-44 ml-5">
-//       <CustomText styles="text-primary-light text-lg">
-//       </CustomText>
-//       <CustomText styles="text-gray-light text-md">
-//         {recentMessage}
-//       </CustomText>
-//     </View>
-//   </View>
-// </TouchableOpacity>

@@ -35,11 +35,9 @@ export const profileRouter = router({
         if (!profile) {
           throw new Error("Profile not found");
         }
-
         return profile;
       } catch (e) {
         console.log(e);
-        throw new Error("Profile not found");
       }
     }),
   update: publicProcedure
