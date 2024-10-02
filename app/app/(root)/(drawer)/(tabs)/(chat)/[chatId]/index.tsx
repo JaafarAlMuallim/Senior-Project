@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, View } from "react-native";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Bubble,
   BubbleProps,
@@ -16,6 +16,7 @@ import {
   TimeProps,
 } from "react-native-gifted-chat";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
+import { separateNameNum } from "@/lib/utils";
 
 const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([
@@ -31,7 +32,10 @@ const Chat = () => {
       },
     },
   ]);
-  const { chatId } = useLocalSearchParams<{ chatId?: string }>();
+  const { chatId, name } = useLocalSearchParams<{
+    chatId?: string;
+    name?: string;
+  }>();
 
   if (!chatId) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
@@ -128,12 +132,32 @@ const Chat = () => {
     );
   };
 
+  // if (isLoading) {
+  //   return (
+  //     <View className="h-full flex flex-col p-8 bg-white-default">
+  //       <SignedIn>
+  //         <Animated.View
+  //           style={{
+  //             transform: [{ rotate }],
+  //           }}
+  //           className="flex-1 items-center justify-center"
+  //         >
+  //           <Loader2 className="h-48 w-48" size={96} />
+  //         </Animated.View>
+  //       </SignedIn>
+  //       <SignedOut>
+  //         <Redirect href={"/(auth)/welcome"} />
+  //       </SignedOut>
+  //     </View>
+  //   );
+  // }
+
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: chatId,
+          title: separateNameNum(name?.toString() || ""),
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,

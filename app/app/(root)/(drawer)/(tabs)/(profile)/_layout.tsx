@@ -1,6 +1,8 @@
-import { Redirect, Stack } from "expo-router";
+import { Redirect, Stack, router } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import React from "react";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Layout = () => {
   const { isSignedIn } = useAuth();
@@ -23,6 +25,16 @@ const Layout = () => {
         options={{
           headerShown: true,
           title: "FAQs",
+          headerTitleStyle: {
+            fontFamily: "PoppinsSemiBold",
+            color: "#4561FF",
+            fontSize: 20,
+          },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
         }}
       />
 
@@ -30,7 +42,18 @@ const Layout = () => {
         name="privacy-policy"
         options={{
           headerShown: true,
-          title: "Privacy & Policy",
+          title: "Privacy Policy",
+          headerTitleStyle: {
+            fontFamily: "PoppinsSemiBold",
+            color: "#4561FF",
+            fontSize: 20,
+          },
+
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
@@ -44,16 +67,35 @@ const Layout = () => {
         name="notification"
         options={{
           headerShown: true,
-          title: "notification",
-          headerTintColor: "#304FFE",
+          title: "Notification",
+          headerTitleStyle: {
+            fontFamily: "PoppinsSemiBold",
+            color: "#4561FF",
+            fontSize: 20,
+          },
+
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Stack.Screen
         name="support"
         options={{
           headerShown: true,
-          title: "support",
-          headerTintColor: "#304FFE",
+          title: "Support",
+          headerTitleStyle: {
+            fontFamily: "PoppinsSemiBold",
+            color: "#4561FF",
+            fontSize: 20,
+          },
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Stack>

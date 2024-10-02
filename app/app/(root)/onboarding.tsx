@@ -55,8 +55,6 @@ const OnBoarding = () => {
     }
   }, [data, isLoading]);
 
-  useEffect(() => {}, [isLoading]);
-
   const { mutate } = trpc.profiles.update.useMutation({
     onSuccess: () => {
       router.push("/(root)/(drawer)/(tabs)/(home)/home");

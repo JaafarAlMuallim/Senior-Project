@@ -30,7 +30,7 @@ const Support = () => {
       setTimeout(() => {
         const supportMessage: Message = {
           id: `${messages.length + 2}`,
-          text: "Thank you for reaching out to us.",
+          text: "Thank you for reaching out to us. Support staff will get back to you shortly.",
           time: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -142,7 +142,7 @@ const Support = () => {
           value={inputText}
           onChangeText={setInputText}
           placeholder="Message"
-          className="flex-1 bg-gray-200 rounded-lg px-4 mx-2"
+          className="flex-1 bg-gray-200 rounded-lg px-4 py-2 mx-2"
         />
         <TouchableOpacity onPress={sendMessage}>
           <Ionicons name="send" size={24} color="#3044FF" />

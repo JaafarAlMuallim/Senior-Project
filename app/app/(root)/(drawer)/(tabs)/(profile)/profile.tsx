@@ -48,12 +48,12 @@ const Profile = () => {
           />
           <ProfileOption
             label={"Privacy Policy"}
-            link={"privacy-policy"}
+            link={"/privacy-policy"}
             icon={<ShieldCheck size={32} color={"black"} />}
           />
           <ProfileOption
             label={"Notification"}
-            link={"/(profile)/notification"}
+            link={"/notification"}
             icon={<Bell color={"black"} />}
           />
         </View>
@@ -64,12 +64,12 @@ const Profile = () => {
         <View className="flex-col flex">
           <ProfileOption
             label={"FAQs"}
-            link={"faq"}
+            link={"/faq"}
             icon={<CircleHelp size={32} color={"black"} />}
           />
           <ProfileOption
-            label={"Contact Us"}
-            link={"/(profile)/contact-us"}
+            label={"Support"}
+            link={"/support"}
             icon={<UsersRound size={32} color={"black"} />}
           />
         </View>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text } from "react-native";
+import { useEffect, useState } from "react";
+import { View, Text, Animated, Easing } from "react-native";
 import { Root, List, Trigger, Content } from "@rn-primitives/tabs";
 import Chat from "@/components/Chat";
 import AiChat from "@/components/AiChat";
@@ -8,20 +8,58 @@ import { cn, separateNameNum } from "@/lib/utils";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { trpc } from "@/lib/trpc";
 import { useUserStore } from "@/store/store";
-import { Link } from "expo-router";
+import { Link, Redirect } from "expo-router";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { Loader2 } from "lucide-react-native";
 
 const Chats = () => {
   const [value, setValue] = useState("AI");
 
   const { user } = useUserStore();
+
+  const spinValue = new Animated.Value(0);
+  const rotate = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  console.log(user.user.id);
   const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery({
     userId: user.user.id,
   });
+  console.log(groups);
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinValue.setValue(0);
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return (
-      <View>
-        <Text>Loading</Text>
+      <View className="h-full flex flex-col p-8 bg-white-default">
+        <SignedIn>
+          <Animated.View
+            style={{
+              transform: [{ rotate }],
+            }}
+            className="flex-1 items-center justify-center"
+          >
+            <Loader2 className="h-48 w-48" size={96} />
+          </Animated.View>
+        </SignedIn>
+        <SignedOut>
+          <Redirect href={"/(auth)/welcome"} />
+        </SignedOut>
       </View>
     );
   }
@@ -87,7 +125,7 @@ const Chats = () => {
                   <AiChat
                     chatName={separateNameNum(group.group.name)}
                     key={group.group.id}
-                    routeTo={`/chat/${group.id}`}
+                    routeTo={`/${group.id}?name=${group.group.name}`}
                     recentMessage={"Hi"}
                   />
                 ))}
@@ -118,7 +156,7 @@ const Chats = () => {
                       groupName={separateNameNum(group.group.name)}
                       recentMessage={"Hi"}
                       time={"10:15"}
-                      routeTo={`/chat/${group.group.id}`}
+                      routeTo={`/${group.group.id}?name=${group.group.name}`}
                     />
                   ))}
               </View>
