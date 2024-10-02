@@ -17,6 +17,22 @@ const Layout = () => {
           title: "Profile",
         }}
       />
+
+      <Stack.Screen
+        name="faq"
+        options={{
+          headerShown: true,
+          title: "FAQs",
+        }}
+      />
+
+      <Stack.Screen
+        name="privacy-policy"
+        options={{
+          headerShown: true,
+          title: "Privacy & Policy",
+        }}
+      />
       <Stack.Screen
         name="(edit)"
         options={{

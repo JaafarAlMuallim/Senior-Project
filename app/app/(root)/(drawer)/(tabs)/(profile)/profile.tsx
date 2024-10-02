@@ -47,8 +47,8 @@ const Profile = () => {
             icon={<UserRound size={32} color={"black"} />}
           />
           <ProfileOption
-            label={"Security"}
-            link={"/(profile)/security"}
+            label={"Privacy Policy"}
+            link={"privacy-policy"}
             icon={<ShieldCheck size={32} color={"black"} />}
           />
           <ProfileOption
@@ -63,8 +63,8 @@ const Profile = () => {
         <Text className="font-poppins text-xl text-gray-400 mt-2">More</Text>
         <View className="flex-col flex">
           <ProfileOption
-            label={"Help & Support"}
-            link={"/(profile)/help-support"}
+            label={"FAQs"}
+            link={"faq"}
             icon={<CircleHelp size={32} color={"black"} />}
           />
           <ProfileOption
