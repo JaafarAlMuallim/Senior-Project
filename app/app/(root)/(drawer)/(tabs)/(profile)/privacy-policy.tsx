@@ -1,18 +1,11 @@
 import React from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { SafeAreaView, ScrollView, View, Text } from "react-native";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Link, router } from "expo-router";
 
 const PrivacyPolicyPage = () => {
   return (

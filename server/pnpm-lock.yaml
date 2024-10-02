@@ -12,8 +12,8 @@ importers:
         specifier: ^5.19.1
         version: 5.19.1(prisma@5.19.1)
       '@trpc/server':
-        specifier: 11.0.0-rc.552
-        version: 11.0.0-rc.552
+        specifier: ^10.45.2
+        version: 10.45.2
       express:
         specifier: ^4.20.0
         version: 4.20.0
@@ -95,8 +95,8 @@ packages:
   '@prisma/get-platform@5.19.1':
     resolution: {integrity: sha512-sCeoJ+7yt0UjnR+AXZL7vXlg5eNxaFOwC23h0KvW1YIXUoa7+W2ZcAUhoEQBmJTW4GrFqCuZ8YSP0mkDa4k3Zg==}
 
-  '@trpc/server@11.0.0-rc.552':
-    resolution: {integrity: sha512-3t8jOfs6EmZXQtwRD+FliAZW9WJmG1wC3SlFj/0hBMjwHqYtLttM/gmR1qKEeFmL5VdUhMojfaLQiGg5fxQEZw==}
+  '@trpc/server@10.45.2':
+    resolution: {integrity: sha512-wOrSThNNE4HUnuhJG6PfDRp4L2009KDVxsd+2VYH8ro6o/7/jwYZ8Uu5j+VaW+mOmc8EHerHzGcdbGNQSAUPgg==}
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -742,7 +742,7 @@ snapshots:
     dependencies:
       '@prisma/debug': 5.19.1
 
-  '@trpc/server@11.0.0-rc.552': {}
+  '@trpc/server@10.45.2': {}
 
   '@tsconfig/node10@1.0.11': {}
 
