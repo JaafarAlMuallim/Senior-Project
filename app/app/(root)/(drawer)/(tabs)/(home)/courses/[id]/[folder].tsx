@@ -17,6 +17,8 @@ import {
 } from "lucide-react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
+import { useCoursesStore } from "@/store/coursesStore";
+import { separateNameNum } from "@/lib/utils";
 
 const COURSES = [
   {
@@ -201,6 +203,7 @@ const Page = () => {
     folder?: string;
     id?: string;
   }>();
+  const { registrations } = useCoursesStore();
   if (!folder || !id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
@@ -212,8 +215,8 @@ const Page = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          // title: `${COURSES.find((course) => course.id === Number(id))?.courseCode} - ${TYPES.find((t) => t.type === folder)?.title}`,
-          title: `${COURSES.find((course) => course.id === Number(id))?.courseCode}`,
+
+          title: `${separateNameNum(registrations.find((course) => course.id === id)?.section.course.code!).toUpperCase()}`,
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,

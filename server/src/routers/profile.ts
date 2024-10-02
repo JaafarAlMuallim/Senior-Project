@@ -17,32 +17,37 @@ export const profileRouter = router({
     .input(
       z.object({
         clerkId: z.string(),
-      })
+      }),
     )
     .query(async ({ input, ctx }) => {
       console.log("GET PROFILE");
       const { clerkId } = input;
-      const profile = await db.profile.findFirst({
-        where: {
-          userId: clerkId,
-        },
-        include: {
-          user: true,
-        },
-      });
+      try {
+        const profile = await db.profile.findFirst({
+          where: {
+            userId: clerkId,
+          },
+          include: {
+            user: true,
+          },
+        });
 
-      if (!profile) {
+        if (!profile) {
+          throw new Error("Profile not found");
+        }
+
+        return profile;
+      } catch (e) {
+        console.log(e);
         throw new Error("Profile not found");
       }
-
-      return profile;
     }),
   update: publicProcedure
     .input(
       z.object({
         clerkId: z.string(),
         data: profileSchema.partial(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const { clerkId, data } = input;

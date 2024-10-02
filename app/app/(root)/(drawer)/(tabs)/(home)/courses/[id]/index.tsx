@@ -16,6 +16,8 @@ import {
   Search,
 } from "lucide-react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useCoursesStore } from "@/store/coursesStore";
+import { separateNameNum } from "@/lib/utils";
 
 const COURSES = [
   {
@@ -94,15 +96,17 @@ const TYPES = [
 
 const Page = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const { registrations } = useCoursesStore();
   if (!id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
+
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
-          title: `${COURSES.find((course) => course.id === Number(id))?.courseCode}`,
+          title: `${separateNameNum(registrations.find((course) => course.id === id)?.section.course.code!).toUpperCase()}`,
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,

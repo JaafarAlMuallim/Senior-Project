@@ -3,6 +3,7 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
+import { useUserStore } from "@/store/store";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
@@ -18,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const OnBoarding = () => {
   const { user } = useUser();
+  const { setUser } = useUserStore();
   const [phone, setPhone] = useState("");
   const [university, setUniversity] = useState("");
   const [major, setMajor] = useState("");
@@ -29,15 +31,14 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  console.log(user?.id);
-
   const { data, isLoading } = trpc.profiles.get.useQuery({
     clerkId: user?.id!,
   });
-  console.log(data);
 
   useEffect(() => {
     if (!isLoading && data?.university) {
+      setUser(data);
+
       router.replace("/(root)/(drawer)/(tabs)/home");
     }
     if (isLoading) {
