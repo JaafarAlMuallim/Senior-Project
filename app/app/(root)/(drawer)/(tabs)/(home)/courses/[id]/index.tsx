@@ -1,6 +1,7 @@
 import CustomText from "@/components/CustomText";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
+import * as DocumentPicker from "expo-document-picker";
 import {
   Image,
   TouchableOpacity,
@@ -8,12 +9,14 @@ import {
   Animated,
   Easing,
   FlatList,
+  Alert,
 } from "react-native";
 import {
   ArrowDownNarrowWide,
   EllipsisVertical,
   FolderClosed,
   Search,
+  Upload,
 } from "lucide-react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCoursesStore } from "@/store/coursesStore";
@@ -97,6 +100,18 @@ const TYPES = [
 const Page = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { registrations } = useCoursesStore();
+
+  const pickFiles = async () => {
+    try {
+      const res = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+        copyToCacheDirectory: false,
+      });
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "An error occurred while picking files.");
+    }
+  };
   if (!id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
@@ -115,6 +130,18 @@ const Page = () => {
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => {
+                router.push(
+                  `/(root)/(drawer)/(tabs)/(home)/courses/${id}/upload`,
+                );
+              }}
+              // onPress={pickFiles}
+            >
+              <Upload size={24} color={"#4561FF"} />
             </TouchableOpacity>
           ),
         }}
