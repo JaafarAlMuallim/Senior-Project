@@ -1,6 +1,6 @@
+import SwitchOption from "@/components/SwitchOption";
 import React, { useState } from "react";
 import { View, ScrollView, Text } from "react-native";
-import SwitchOption from "@/components/switchOption";
 
 const NotificationSettings = () => {
   const [settings, setSettings] = useState({

@@ -5,12 +5,12 @@ module.exports = {
     extend: {
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
-        poppinsBold: ["Poppins-Bold", "sans-serif"],
-        poppinsItalic: ["Poppins-Italic", "sans-serif"],
-        poppinsRegular: ["Poppins-Regular", "sans-serif"],
-        poppinsSemiBold: ["Poppins-SemiBold", "sans-serif"],
-        poppinsBlack: ["Poppins-Black", "sans-serif"],
-        poppineMedium: ["Poppins-Medium", "sans-serif"],
+        poppinsBold: ["PoppinsBold", "sans-serif"],
+        poppinsItalic: ["PoppinsItalic", "sans-serif"],
+        poppinsRegular: ["PoppinsRegular", "sans-serif"],
+        poppinsSemiBold: ["PoppinsSemiBold", "sans-serif"],
+        poppinsBlack: ["PoppinsBlack", "sans-serif"],
+        poppineMedium: ["PoppinsMedium", "sans-serif"],
       },
       colors: {
         primary: {

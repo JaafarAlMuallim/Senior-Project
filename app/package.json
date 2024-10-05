@@ -1,6 +1,6 @@
 {
   "name": "edulink",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "scripts": {
     "start": "ts-node src/index.ts",
@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@azure/core-asynciterator-polyfill": "^1.0.2",
     "@babel/runtime": "^7.25.6",
     "@clerk/clerk-expo": "^2.2.16",
     "@expo/metro-runtime": "~3.2.3",
@@ -69,10 +70,12 @@
     "react-native-svg": "15.2.0",
     "react-native-web": "~0.19.10",
     "reflect-metadata": "^0.1.13",
+    "rn-eventsource-reborn": "^1.0.5",
     "tailwind-merge": "^2.5.2",
     "tailwind-rn": "^4.2.0",
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.7",
+    "web-streams-polyfill": "^4.0.0",
     "zustand": "^4.5.5"
   },
   "overrides": {

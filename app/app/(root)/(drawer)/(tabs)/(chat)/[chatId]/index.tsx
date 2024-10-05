@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, View } from "react-native";
-import React, { useState, useCallback } from "react";
+import { TextInput, TouchableOpacity, View } from "react-native";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import {
   Bubble,
   BubbleProps,
@@ -17,8 +17,18 @@ import {
 } from "react-native-gifted-chat";
 import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { separateNameNum } from "@/lib/utils";
+import { useUserStore } from "@/store/store";
+import { useThrottledIsTypingMutation, useWhoIsTyping } from "@/hooks/useChats";
 
 const Chat = () => {
+  const { chatId, name } = useLocalSearchParams<{
+    chatId?: string;
+    name?: string;
+  }>();
+
+  const { user } = useUserStore();
+  const [text, setText] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
   const [messages, setMessages] = useState<IMessage[]>([
     {
       _id: 1,
@@ -32,14 +42,18 @@ const Chat = () => {
       },
     },
   ]);
-  const { chatId, name } = useLocalSearchParams<{
-    chatId?: string;
-    name?: string;
-  }>();
 
-  if (!chatId) {
-    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
-  }
+  const isTypingMutation = useThrottledIsTypingMutation(chatId!, user?.user.id);
+
+  const whoIsTyping = useWhoIsTyping(chatId!);
+
+  useEffect(() => {
+    if (isFocused && text.length > 0) {
+      isTypingMutation(true);
+    } else {
+      isTypingMutation(false);
+    }
+  }, [isFocused, text, isTypingMutation]);
 
   const onSend = useCallback((newMessages: IMessage[] = []) => {
     setMessages((previousMessages) =>
@@ -104,10 +118,11 @@ const Chat = () => {
 
   // Custom Composer
   const renderComposer = (props: ComposerProps) => {
+    // return <Composer {...props} text={text} />;
+
     return (
-      <Composer
-        {...props}
-        textInputStyle={{
+      <TextInput
+        style={{
           backgroundColor: "#fff",
           borderRadius: 20,
           paddingHorizontal: 12,
@@ -117,6 +132,15 @@ const Chat = () => {
           borderColor: "#ddd", // Border color of the input field
           fontSize: 16, // Text size in the input field
         }}
+        {...props}
+        placeholder="Type a message..."
+        placeholderTextColor="#666"
+        value={text}
+        onChangeText={setText}
+        onFocus={() => {
+          setIsFocused(true);
+        }}
+        onBlur={() => setIsFocused(false)}
       />
     );
   };
@@ -152,6 +176,10 @@ const Chat = () => {
   //   );
   // }
 
+  if (!chatId || !name) {
+    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
+  }
+
   return (
     <>
       <Stack.Screen
@@ -161,7 +189,7 @@ const Chat = () => {
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,
-            fontFamily: "Poppins-Bold",
+            fontFamily: "PoppinsBold",
           },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>
@@ -174,9 +202,11 @@ const Chat = () => {
         renderUsernameOnMessage={true}
         messages={messages}
         alwaysShowSend={true}
+        isTyping={whoIsTyping.length > 0}
         onSend={(messages) => onSend(messages)}
         user={{
-          _id: 1,
+          _id: user?.id,
+          name: user?.user.name,
         }}
         renderBubble={renderBubble} // Use the custom bubble renderer
         renderTime={renderTime} // Use custom time renderer

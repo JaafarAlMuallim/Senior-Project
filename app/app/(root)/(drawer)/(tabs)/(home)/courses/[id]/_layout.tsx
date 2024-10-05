@@ -40,7 +40,7 @@ const Layout = () => {
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,
-            fontFamily: "Poppins-Bold",
+            fontFamily: "PoppinsBold",
           },
         }}
       />

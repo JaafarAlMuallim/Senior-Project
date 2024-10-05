@@ -15,9 +15,20 @@ import React, { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "reflect-metadata";
 import "../global.css";
-import { httpBatchLink } from "@trpc/client";
+import {
+  httpBatchLink,
+  loggerLink,
+  splitLink,
+  unstable_httpSubscriptionLink,
+} from "@trpc/client";
+import { LogBox, Platform } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
+// ignore Warn Logs
+
+LogBox.ignoreLogs(["Clerk:", "clerk:"]);
+LogBox.ignoreLogs(["Warning:"]);
+LogBox.ignoreLogs(["fontFamily"]);
 
 const tokenCache = {
   async getToken(key: string) {
@@ -55,23 +66,48 @@ if (!publishableKey) {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    PoppinsBlack: require("../assets/fonts/Poppins-Black.ttf"),
-    Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
-    PoppinsBold: require("../assets/fonts/Poppins-Bold.ttf"),
-    PoppinsItalic: require("../assets/fonts/Poppins-Italic.ttf"),
-    PoppinsMedium: require("../assets/fonts/Poppins-Medium.ttf"),
-    PoppinsRegular: require("../assets/fonts/Poppins-Regular.ttf"),
-    PoppinsSemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
+    PoppinsBlack: require("../assets/fonts/PoppinsBlack.ttf"),
+    Poppins: require("../assets/fonts/PoppinsRegular.ttf"),
+    PoppinsBold: require("../assets/fonts/PoppinsBold.ttf"),
+    PoppinsItalic: require("../assets/fonts/PoppinsItalic.ttf"),
+    PoppinsMedium: require("../assets/fonts/PoppinsMedium.ttf"),
+    PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
+    PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
+  });
+
+  const url = Platform.select({
+    web: "http://localhost:3000/trpc",
+    ios: "http://localhost:3000/trpc",
+    android: "http://10.0.2.2:3000/trpc",
+    default: "http://localhost:3000/trpc",
   });
 
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
-          // transformer: superjson, <-- if you use a data transformer
-          url: "http://localhost:3000/trpc",
+        // loggerLink(),
+        splitLink({
+          // uses the httpSubscriptionLink for subscriptions
+          condition: (op) => op.type === "subscription",
+          true: unstable_httpSubscriptionLink({
+            url: url,
+            // eventSourceOptions: async () => {
+            //   return {
+            //     headers: {
+            //       authorization: 'Bearer supersecret',
+            //     },
+            //   }; // you either need to typecast to `EventSourceInit` or use `as any` or override the types by a `declare global` statement
+            // },
+          }),
+          false: httpBatchLink({
+            url: url,
+          }),
         }),
+        // httpBatchLink({
+        //   // transformer: superjson, <-- if you use a data transformer
+        //   url: url,
+        // }),
       ],
       // optional
       // headers() {

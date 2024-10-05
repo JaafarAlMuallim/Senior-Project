@@ -21,13 +21,11 @@ model User {
     Feedback     Feedback[]
     Message      Message[]
     Notification Notification[]
-    Participant  Participant[]
+    Groups       Group[]
     Profile      Profile?
     Registration Registration[]
     Student      Student[]
     Tutor        Tutor[]
-    Group        Group[]        @relation("GroupToUser")
-    Group        Group?         @relation(fields: [groupId], references: [id])
 }
 
 model Tutor {
@@ -64,6 +62,8 @@ model Section {
     startTime    DateTime
     endTime      DateTime
     recurrence   String?
+    instructor   String?        @default("TBD")
+    location     String?        @default("TBD")
     createdAt    DateTime       @default(now())
     updatedAt    DateTime       @updatedAt
     registration Registration[]
@@ -155,43 +155,27 @@ model Session {
     tutor     Tutor    @relation(fields: [tutorId], references: [id])
 }
 
-model Participant {
-    id        String    @id @default(cuid())
-    userId    String
-    groupId   String
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    Message   Message[]
-    group     Group     @relation(fields: [groupId], references: [id])
-    user      User      @relation(fields: [userId], references: [id])
-}
-
 model Message {
-    id        String      @id @default(cuid())
+    id        String   @id @default(cuid())
     content   String
-    createdAt DateTime    @default(now())
-    updatedAt DateTime    @updatedAt
-    senderId  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
     groupId   String
-    userId    String?
-    group     Group       @relation(fields: [groupId], references: [id])
-    sender    Participant @relation(fields: [senderId], references: [id])
-    User      User?       @relation(fields: [userId], references: [id])
+    group     Group    @relation(fields: [groupId], references: [id])
+    sender    User?    @relation(fields: [senderId], references: [id])
+    senderId  String
 }
 
 model Group {
-    id          String        @id @default(cuid())
-    name        String
-    createdAt   DateTime      @default(now())
-    updatedAt   DateTime      @updatedAt
-    course      Course        @relation(fields: [courseId], references: [id])
-    courseId    String        @unique
-    Participant Participant[]
-    User        User[]
-    Message     Message[]
-    Section     Section[]
-    User        User?         @relation(fields: [userId], references: [id])
-    userId      String?
+    id        String    @id @default(cuid())
+    name      String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    course    Course    @relation(fields: [courseId], references: [id])
+    courseId  String    @unique
+    Users     User[]
+    Message   Message[]
+    Section   Section[]
 }
 
 model Notification {

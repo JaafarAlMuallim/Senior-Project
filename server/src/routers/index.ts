@@ -2,6 +2,7 @@ import { router } from "../trpc";
 import { authRouter } from "./auth";
 import { courseRouter } from "./courses";
 import { groupRouter } from "./groups";
+import { messageRouter } from "./message";
 import { profileRouter } from "./profile";
 import { scheduleRouter } from "./schedule";
 import { sessionRouter } from "./session";
@@ -15,6 +16,7 @@ export const appRouter = router({
   sessions: sessionRouter,
   schedule: scheduleRouter,
   groups: groupRouter,
+  messages: messageRouter,
 });
 
 export type AppRouter = typeof appRouter;

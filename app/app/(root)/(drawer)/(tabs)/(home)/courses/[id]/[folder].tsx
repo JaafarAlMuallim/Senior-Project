@@ -220,7 +220,7 @@ const Page = () => {
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,
-            fontFamily: "Poppins-Bold",
+            fontFamily: "PoppinsBold",
           },
           headerLeft: () => (
             <TouchableOpacity onPress={() => router.back()}>

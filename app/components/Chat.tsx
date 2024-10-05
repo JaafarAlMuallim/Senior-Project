@@ -1,26 +1,52 @@
 import { router } from "expo-router";
-import React from "react";
-import { TouchableOpacity, View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
 import CustomText from "./CustomText";
 import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
-import { cn } from "@/lib/utils";
+import { cn, listWithAnd, pluralize } from "@/lib/utils";
+import { useWhoIsTyping } from "@/hooks/useChats";
+import { trpc } from "@/lib/trpc";
 
 const Chat = ({
   imageUri,
+  groupId,
   groupName,
-  recentMessage,
   time,
   styles,
   routeTo,
   ...touchableProps // Spread TouchableOpacity props
 }: {
   imageUri: string;
+  groupId: string;
   groupName: string;
-  recentMessage: string;
   time: string;
   routeTo: string;
   styles?: string;
 }) => {
+  const [content, setContent] = useState("");
+  const currentlyTyping = useWhoIsTyping(groupId);
+  console.log("GROUP ID: ", groupId);
+  console.log("Platform: ", Platform.OS);
+  const { data: lastMessage, isLoading } =
+    trpc.messages.getLastMessage.useQuery({ groupId });
+  useEffect(() => {
+    if (currentlyTyping.length > 0) {
+      setContent(
+        `${listWithAnd(currentlyTyping)} ${pluralize(
+          currentlyTyping.length,
+          "is",
+          "are",
+        )} typing...`,
+      );
+    } else if (isLoading) {
+      setContent("Loading...");
+    } else {
+      setContent(lastMessage?.content || "No messages");
+    }
+  }, [currentlyTyping, lastMessage, isLoading]);
+
+  console.log("CONTENT: ", content);
+
   return (
     <TouchableOpacity
       className={cn(
@@ -46,9 +72,7 @@ const Chat = ({
           <CustomText styles="text-primary-light text-xl">
             {groupName}
           </CustomText>
-          <CustomText styles="text-gray-light text-lg">
-            {recentMessage}
-          </CustomText>
+          <CustomText styles="text-gray-light text-lg">{content}</CustomText>
         </View>
         <CustomText styles="text-primary-light">{time}</CustomText>
       </View>

@@ -1,8 +1,182 @@
 import { z } from "zod";
 import { db } from "../db";
 import { publicProcedure, router } from "../trpc";
+import EventEmitter, { on } from "events";
+import { Message } from "@prisma/client";
+
+export type WhoIsTyping = Record<string, { lastTyped: Date }>;
+
+export interface MyEvents {
+  add: (groupId: string, data: Message) => void;
+  isTypingUpdate: (groupId: string, who: WhoIsTyping) => void;
+}
+declare interface MyEventEmitter {
+  on<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
+  off<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
+  once<TEv extends keyof MyEvents>(event: TEv, listener: MyEvents[TEv]): this;
+  emit<TEv extends keyof MyEvents>(
+    event: TEv,
+    ...args: Parameters<MyEvents[TEv]>
+  ): boolean;
+}
+
+class MyEventEmitter extends EventEmitter {
+  public toIterable<TEv extends keyof MyEvents>(
+    event: TEv,
+    opts: NonNullable<Parameters<typeof on>[2]>,
+  ): AsyncIterable<Parameters<MyEvents[TEv]>> {
+    return on(this, event, opts) as AsyncIterable<Parameters<MyEvents[TEv]>>;
+  }
+}
+
+// TODO: REDIS
+// In a real app, you'd probably use Redis or something
+export const ee = new MyEventEmitter();
+
+// who is currently typing for each group, key is `name`
+export const currentlyTyping: Record<string, WhoIsTyping> = Object.create(null);
+
+// every 1s, clear old "isTyping"
+// setInterval(() => {
+//   const updatedGroups = new Set<string>();
+//   const now = Date.now();
+//   for (const [groupId, typers] of Object.entries(currentlyTyping)) {
+//     for (const [key, value] of Object.entries(typers ?? {})) {
+//       if (now - value.lastTyped.getTime() > 3e3) {
+//         delete typers[key];
+//         updatedGroups.add(groupId);
+//       }
+//     }
+//   }
+//   updatedGroups.forEach((groupId) => {
+//     ee.emit("isTypingUpdate", groupId, currentlyTyping[groupId] ?? {});
+//   });
+// }, 3e3).unref();
+
+setInterval(() => {
+  const updatedGroups = new Set<string>();
+  const now = Date.now();
+
+  for (const [groupId, typers] of Object.entries(currentlyTyping)) {
+    for (const [key, value] of Object.entries(typers ?? {})) {
+      // Check if more than 3 seconds have passed since the last typing event
+      if (now - value.lastTyped.getTime() > 1.5e3) {
+        // 3 seconds timeout
+        delete typers[key]; // Remove from typing list
+        updatedGroups.add(groupId);
+      }
+    }
+  }
+
+  // Emit typing update event for any group with updated typing status
+  updatedGroups.forEach((groupId) => {
+    ee.emit("isTypingUpdate", groupId, currentlyTyping[groupId] ?? {});
+  });
+}, 1e3).unref(); // Check every second, but only clear if 3 seconds have passed
 
 export const groupRouter = router({
+  list: publicProcedure.query(async () => {
+    return await db.group.findMany();
+    // return db.query.Group.findMany();
+  }),
+
+  // create:publicProcedure
+  //   .input(z.object({ name: z.string().trim().min(2) }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     // const [group] = await db
+  //     //   .insert(Group)
+  //     //   .values({
+  //     //     name: input.name,
+  //     //   })
+  //     //   .returning();
+  //     const group = await db.group.create({
+  //       data: {
+  //         name: input.name,
+  //       },
+  //     });
+  //
+  //     return group!.id;
+  //   }),
+
+  isTyping: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        typing: z.boolean(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      // TODO: get name from ctx
+      // const { name } = opts.ctx.user;
+      const { userId, groupId, typing } = input;
+      const user = await db.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+      const name = user?.name;
+
+      if (!currentlyTyping[groupId]) {
+        currentlyTyping[groupId] = {};
+      }
+
+      if (typing) {
+        currentlyTyping[groupId][name!] = {
+          lastTyped: new Date(),
+        };
+      } else {
+        delete currentlyTyping[groupId][name!];
+      }
+
+      ee.emit("isTypingUpdate", groupId, currentlyTyping[groupId]);
+      console.log("currentlyTyping", currentlyTyping[groupId]);
+    }),
+
+  whoIsTyping: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+      }),
+    )
+    .subscription(async function* ({ input, signal }) {
+      const { groupId: currGroup } = input;
+
+      let lastIsTyping = "";
+      console.log("currGroup", currGroup);
+      console.log(currentlyTyping);
+
+      /**
+       * yield who is typing if it has changed
+       * won't yield if it's the same as last time
+       */
+      try {
+        function* maybeYield(who: WhoIsTyping) {
+          const idx = Object.keys(who).toSorted().toString();
+          console.log("Last is typing:", lastIsTyping, "Current typing:", idx);
+          if (idx === lastIsTyping) {
+            return;
+          }
+          yield Object.keys(who);
+          lastIsTyping = idx;
+        }
+
+        // emit who is currently typing
+        console.log("currentlyTyping", currentlyTyping);
+        yield* maybeYield(currentlyTyping[currGroup] ?? {});
+
+        for await (const [groupId, who] of ee.toIterable("isTypingUpdate", {
+          signal: signal,
+        })) {
+          if (groupId === currGroup) {
+            yield* maybeYield(who);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        throw new Error("Error getting who is typing");
+      }
+    }),
   getUserGroups: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
@@ -13,15 +187,18 @@ export const groupRouter = router({
       const { userId } = input;
       try {
         try {
-          const groups = await db.participant.findMany({
+          const groups = await db.user.findUnique({
             where: {
-              userId,
+              id: userId,
             },
             include: {
-              group: true,
+              Groups: true,
             },
           });
-          return groups;
+          if (!groups) {
+            throw new Error("User not found");
+          }
+          return groups.Groups;
         } catch (error) {
           console.log(error);
           throw new Error("Error getting user groups");

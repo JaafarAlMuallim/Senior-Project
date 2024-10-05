@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Animated, Easing } from "react-native";
+import { View, Animated, Easing } from "react-native";
 import { Root, List, Trigger, Content } from "@rn-primitives/tabs";
 import Chat from "@/components/Chat";
 import AiChat from "@/components/AiChat";
@@ -24,10 +24,14 @@ const Chats = () => {
   });
 
   console.log(user.user.id);
-  const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery({
-    userId: user.user.id,
-  });
-  console.log(groups);
+  const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery(
+    {
+      userId: user.user.id,
+    },
+    {
+      gcTime: 1000,
+    },
+  );
 
   useEffect(() => {
     if (isLoading) {
@@ -106,33 +110,8 @@ const Chats = () => {
               </View>
             </List>
             <Content value="AI">
-              {!groups && (
-                <View className="flex h-full grow items-center py-24 flex-wrap px-8">
-                  <CustomText styles="text-2xl text-wrap text-center">
-                    Register Your{" "}
-                    <Link
-                      href={"/(root)/(drawer)/(tabs)/(schedule)/schedule"}
-                      className="underline text-primary-light font-bold"
-                    >
-                      Schedule
-                    </Link>{" "}
-                    To Be Added To AI Assistants
-                  </CustomText>
-                </View>
-              )}
-              {groups &&
-                groups.map((group) => (
-                  <AiChat
-                    chatName={separateNameNum(group.group.name)}
-                    key={group.group.id}
-                    routeTo={`/${group.id}?name=${group.group.name}`}
-                    recentMessage={"Hi"}
-                  />
-                ))}
-            </Content>
-            <Content value="messages">
-              <View className="flex flex-column justify-between">
-                {!groups && (
+              {!groups ||
+                (!groups.length && (
                   <View className="flex h-full grow items-center py-24 flex-wrap px-8">
                     <CustomText styles="text-2xl text-wrap text-center">
                       Register Your{" "}
@@ -142,21 +121,48 @@ const Chats = () => {
                       >
                         Schedule
                       </Link>{" "}
-                      To Be Added To Groups
+                      To Be Added To AI Assistants
                     </CustomText>
                   </View>
-                )}
+                ))}
+              {groups &&
+                groups.map((group) => (
+                  <AiChat
+                    chatName={separateNameNum(group.name)}
+                    key={group.id}
+                    routeTo={`/${group.id}?name=${group.name}`}
+                    recentMessage={"Hi"}
+                  />
+                ))}
+            </Content>
+            <Content value="messages">
+              <View className="flex flex-column justify-between">
+                {!groups ||
+                  (!groups.length && (
+                    <View className="flex h-full grow items-center py-24 flex-wrap px-8">
+                      <CustomText styles="text-2xl text-wrap text-center">
+                        Register Your{" "}
+                        <Link
+                          href={"/(root)/(drawer)/(tabs)/(schedule)/schedule"}
+                          className="underline text-primary-light font-bold"
+                        >
+                          Schedule
+                        </Link>{" "}
+                        To Be Added To Groups
+                      </CustomText>
+                    </View>
+                  ))}
                 {groups &&
                   groups.map((group) => (
                     <Chat
                       imageUri={
                         "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"
                       }
-                      key={group.group.id}
-                      groupName={separateNameNum(group.group.name)}
-                      recentMessage={"Hi"}
+                      key={group.id}
+                      groupId={group.id}
+                      groupName={separateNameNum(group.name)}
                       time={"10:15"}
-                      routeTo={`/${group.group.id}?name=${group.group.name}`}
+                      routeTo={`/${group.id}?name=${group.name}`}
                     />
                   ))}
               </View>
