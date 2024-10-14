@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { TextInput, TouchableOpacity, View } from "react-native";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { useMemo, useState } from "react";
 import {
   Actions,
   ActionsProps,
@@ -17,20 +17,9 @@ import {
   Time,
   TimeProps,
 } from "react-native-gifted-chat";
-import {
-  Redirect,
-  router,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-} from "expo-router";
+import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
 import { separateNameNum } from "@/lib/utils";
 import { useUserStore } from "@/store/store";
-import {
-  useLiveMessages,
-  useThrottledIsTypingMutation,
-  useWhoIsTyping,
-} from "@/hooks/useChats";
 import { trpc } from "@/lib/trpc";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
@@ -42,60 +31,27 @@ const Chat = () => {
 
   const { user } = useUserStore();
   const [text, setText] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const utils = trpc.useUtils();
-
-  const isTypingMutation = useThrottledIsTypingMutation(chatId!, user?.user.id);
-
-  const liveMessages = useLiveMessages(chatId!);
+  console.log(chatId);
+  const { data, isLoading } = trpc.messages.getMessages.useQuery({
+    groupId: chatId!,
+  });
 
   const messages = useMemo(() => {
-    if (!liveMessages || !liveMessages.messages) return [];
-    return liveMessages.messages.map((message) => ({
-      _id: message.id,
-      text: message.text,
-      createdAt: new Date(message.createdAt),
-      user: {
-        _id: message.userId,
-        name: message.user.name,
-        // name: message.user,
-      },
-    }));
-  }, [liveMessages]);
-
-  const { mutate: subscribe } = trpc.groups.sub.useMutation({
-    onSuccess: () => {
-      console.log("Subscribed");
-    },
-
-    onError: (err) => {
-      console.error("ERROR: ", err);
-    },
-    gcTime: 1000 * 60 * 60 * 24,
-  });
-
-  const { mutate: unsubscribe } = trpc.groups.unsub.useMutation({
-    onSuccess: () => {
-      console.log("Unsubscribed");
-    },
-
-    onError: (err) => {
-      console.error("ERROR: ", err);
-    },
-    gcTime: 1000 * 60 * 60 * 24,
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      subscribe({ groupId: chatId!, userId: user?.user.id! });
-
-      return () => {
-        unsubscribe({ groupId: chatId!, userId: user?.user.id! });
+    return data?.map((message) => {
+      return {
+        _id: message.id,
+        text: message.text,
+        createdAt: new Date(message.createdAt),
+        user: {
+          _id: message.userId,
+          name: message.user.name,
+        },
       };
-    }, []),
-  );
+    });
+  }, [data]);
 
-  const { mutate } = trpc.messages.add.useMutation({
+  const { mutate } = trpc.messages.addAIMessage.useMutation({
     onError: (err) => {
       console.error("ERROR: ", err);
       console.log("Message not sent");
@@ -104,35 +60,9 @@ const Chat = () => {
       console.log("Message sent");
       utils.messages.getMessages.invalidate({ groupId: chatId! });
       utils.messages.getLastMessage.invalidate({ groupId: chatId! });
-      utils.messages.infinite.invalidate({ groupId: chatId! });
       setText("");
     },
   });
-
-  const whoIsTyping = useWhoIsTyping(chatId!);
-
-  useEffect(() => {
-    let typingTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    if (isFocused && text !== "") {
-      // User is typing, debounce the typing state change
-      if (typingTimeout) clearTimeout(typingTimeout);
-
-      isTypingMutation(true); // Start typing immediately
-
-      // Set a timeout to stop typing after 2 seconds of no input
-      typingTimeout = setTimeout(() => {
-        isTypingMutation(false); // Stop typing if no input for 2 seconds
-      }, 2000); // Adjust the timeout duration as needed
-    } else {
-      isTypingMutation(false); // Stop typing when the input is cleared or focus is lost
-    }
-
-    // Cleanup function to clear the timeout if component unmounts or re-renders
-    return () => {
-      if (typingTimeout) clearTimeout(typingTimeout);
-    };
-  }, [isFocused, text, isTypingMutation]);
 
   const renderBubble = (props: BubbleProps<IMessage>) => {
     return (
@@ -239,73 +169,28 @@ const Chat = () => {
             value: text,
             onChangeText: setText,
             autoFocus: false,
-            onFocus: () => setIsFocused(true),
-            onBlur: () => setIsFocused(false),
           }}
         />
-        <TouchableOpacity>
-          <Ionicons name="camera" size={24} color="#007AFF" />
-        </TouchableOpacity>
       </View>
-    );
-
-    return (
-      <TextInput
-        // style={{
-        //   backgroundColor: "#fff",
-        //   borderRadius: 20,
-        //   paddingHorizontal: 12,
-        //   paddingVertical: 8,
-        //   marginRight: 8,
-        //   borderWidth: 1,
-        //   borderColor: "#ddd", // Border color of the input field
-        //   fontSize: 16, // Text size in the input field
-        // }}
-        className="flex-1 bg-white-default rounded-2xl px-4 border border-gray-400 text-lg justify-center items-center"
-        {...props}
-        placeholder="Type a message..."
-        value={text}
-        onChangeText={setText}
-        autoFocus={false}
-        onFocus={() => {
-          setIsFocused(true);
-        }}
-        onBlur={() => setIsFocused(false)}
-      />
     );
   };
 
   // Custom Send button
   const renderSend = (props: SendProps<IMessage>) => {
-    return isFocused ? (
+    return (
       <TouchableWithoutFeedback
         onPress={() => {
           mutate({
             groupId: chatId!,
             userId: user?.user.id!,
             text: text,
+            agent: separateNameNum(name!),
           });
         }}
       >
         <Send {...props}>
           <View>
             <Ionicons name="send" size={24} color="#007AFF" />
-          </View>
-        </Send>
-      </TouchableWithoutFeedback>
-    ) : (
-      <TouchableWithoutFeedback
-        onPress={() => {
-          mutate({
-            groupId: chatId!,
-            userId: user?.user.id!,
-            text: text,
-          });
-        }}
-      >
-        <Send {...props}>
-          <View>
-            <Ionicons name="mic" size={24} color="#007AFF" />
           </View>
         </Send>
       </TouchableWithoutFeedback>
@@ -338,22 +223,12 @@ const Chat = () => {
         infiniteScroll={true}
         listViewProps={{
           scrollEventThrottle: 400,
-          onScroll: () => {
-            if (
-              liveMessages.query.hasNextPage ||
-              liveMessages.query.isFetchingNextPage
-            )
-              return;
-            liveMessages.query.fetchNextPage();
-          },
         }}
         renderUsernameOnMessage={true}
         renderActions={renderActions}
+        renderAvatar={null}
         messages={messages}
         alwaysShowSend={true}
-        isTyping={
-          whoIsTyping.length > 0 && !whoIsTyping.includes(user?.user.name)
-        }
         user={{
           _id: user?.user.id,
           name: user?.user.name,

@@ -8,20 +8,32 @@ datasource db {
     url      = env("MONGO_DATABASE_URL")
 }
 
+enum type {
+    AI
+    GROUP
+    INDIVIDUAL
+}
+
 model User {
-    id      String    @id @map("_id") @db.String
-    userId  String    @unique
-    email   String    @unique
-    name    String
-    clerkId String    @unique
-    Message Message[]
+    id         String       @id @default(auto()) @map("_id") @db.ObjectId
+    userId     String       @unique
+    email      String       @unique
+    name       String
+    clerkId    String       @unique
+    Message    Message[]
+    Groups     Group[]
+    UserGroups UserGroups[]
 }
 
 model Group {
-    id       String    @id @map("_id") @db.String
-    groupId  String    @unique
-    name     String
-    messages Message[]
+    id         String       @id @default(auto()) @map("_id") @db.ObjectId
+    groupId    String       @unique
+    name       String
+    type       type         @default(GROUP)
+    ownerId    String?
+    owner      User?        @relation(fields: [ownerId], references: [userId])
+    messages   Message[]
+    UserGroups UserGroups[]
 }
 
 model Message {
@@ -33,7 +45,12 @@ model Message {
     user      User     @relation(fields: [userId], references: [userId])
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
 
-    // @@index([groupId], name: "groupId")
-    // @@index([userId], name: "userId")
+model UserGroups {
+    id      String @id @default(auto()) @map("_id") @db.ObjectId
+    userId  String
+    user    User   @relation(fields: [userId], references: [userId])
+    groupId String @db.ObjectId
+    group   Group  @relation(fields: [groupId], references: [id])
 }

@@ -6,6 +6,7 @@ import { mongoClient, postgresClient, redisClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
+import { model } from "../ai";
 
 export const messageRouter = router({
   add: publicProcedure
@@ -63,6 +64,84 @@ export const messageRouter = router({
 
       return message;
     }),
+  addAIMessage: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        userId: z.string(),
+        text: z.string().trim().min(1),
+        agent: z.string(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { groupId, agent, text, userId } = input;
+      console.log("addAIMessage", groupId, agent, text, userId);
+      let ai = null;
+      try {
+        console.log("get Agent");
+        ai = await mongoClient.user.findFirst({
+          where: {
+            name: agent,
+          },
+        });
+      } catch (err) {
+        console.error("Error getting agent");
+        console.error(err);
+      }
+
+      try {
+        console.log("Creating message");
+        await mongoClient.message.create({
+          data: {
+            // name: opts.ctx.user.name,
+            userId,
+            text,
+            groupId,
+          },
+        });
+      } catch (err) {
+        console.error("Error creating message");
+        console.error(err);
+      }
+
+      // get Response
+      try {
+        console.log("Creating response");
+        const res = await model.generateContent(text);
+        const response = await mongoClient.message.create({
+          data: {
+            // name: opts.ctx.user.name,
+            userId: ai?.userId!,
+            text: res.response.text(),
+            groupId,
+          },
+        });
+
+        return response;
+      } catch (err) {
+        console.error("Error creating response");
+        console.error(err);
+      }
+    }),
+  getAIMessage: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { groupId, userId } = input;
+      const message = await mongoClient.message.findFirst({
+        where: {
+          groupId,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }),
+
   infinite: publicProcedure
     .input(
       z.object({

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "ts-node prisma/seed.ts",
     "postgres:dbpush": "npx prisma db push --schema ./prisma/postgres/schema.prisma",
     "postgres:generate": "npx prisma generate --schema ./prisma/postgres/schema.prisma",
     "postgres:studio": "npx prisma studio --schema ./prisma/postgres/schema.prisma",
@@ -20,6 +21,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@prisma/client": "^5.20.0",
     "@trpc/server": "11.0.0-rc.552",
     "express": "^4.21.0",

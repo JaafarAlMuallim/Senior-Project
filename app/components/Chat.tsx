@@ -29,7 +29,7 @@ const Chat = ({
     trpc.messages.getLastMessage.useQuery(
       { groupId },
       {
-        refetchInterval: 2000,
+        refetchInterval: 20000,
       },
     );
 
@@ -39,7 +39,7 @@ const Chat = ({
       userId: user.user.id,
     },
     {
-      refetchInterval: 2000,
+      refetchInterval: 20000,
     },
   );
 
@@ -61,7 +61,8 @@ const Chat = ({
 
   const time = useMemo(() => {
     const date = new Date(lastMessage?.createdAt!);
-    return `${date.getHours()}:${date.getMinutes()}`;
+    const min = date.getMinutes();
+    return `${date.getHours()}:${min < 10 ? `0${min}` : min}`;
   }, [lastMessage]);
 
   return (

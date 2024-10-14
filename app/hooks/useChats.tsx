@@ -16,7 +16,6 @@ export function useWhoIsTyping(groupId: string) {
         console.error("ERROR: ", err);
       },
       onStarted() {
-        console.log(Platform.OS);
         console.log("Subscription started");
       },
     },

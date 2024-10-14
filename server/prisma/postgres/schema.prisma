@@ -8,6 +8,12 @@ datasource db {
     url      = env("POSTGRES_DATABASE_URL")
 }
 
+enum type {
+    AI
+    GROUP
+    INDIVIDUAL
+}
+
 model User {
     id           String         @id @default(cuid())
     email        String         @unique
@@ -48,11 +54,12 @@ model Course {
     code        String
     Assistant   Assistant?
     CourseTutor CourseTutor[]
-    Group       Group?
+    Group       Group?        @relation(fields: [groupId], references: [id])
     Material    Material[]
     Quiz        Quiz[]
     Section     Section[]
     Session     Session[]
+    groupId     String?
 }
 
 model Section {
@@ -172,11 +179,12 @@ model Group {
     name      String
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    courseId  String    @unique
-    course    Course    @relation(fields: [courseId], references: [id])
+    courseId  String
+    course    Course[]
     Message   Message[]
     Section   Section[]
     Users     User[]    @relation("GroupToUser")
+    type      type      @default(GROUP)
 }
 
 model Notification {

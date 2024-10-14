@@ -28,7 +28,7 @@ const Chats = () => {
       userId: user.user.id,
     },
     {
-      refetchInterval: 1000,
+      refetchInterval: 5000,
     },
   );
 
@@ -125,14 +125,16 @@ const Chats = () => {
                   </View>
                 ))}
               {groups &&
-                groups.map((group) => (
-                  <AiChat
-                    chatName={separateNameNum(group.name)}
-                    key={group.id}
-                    routeTo={`/${group.id}?name=${group.name}`}
-                    recentMessage={"Hi"}
-                  />
-                ))}
+                groups
+                  .filter((group) => group.type === "AI")
+                  .map((group) => (
+                    <AiChat
+                      groupId={group.groupId}
+                      chatName={separateNameNum(group.name)}
+                      key={group.id}
+                      routeTo={`/ai/${group.groupId}?name=${group.name}`}
+                    />
+                  ))}
             </Content>
             <Content value="messages">
               <View className="flex flex-column justify-between">
@@ -152,17 +154,19 @@ const Chats = () => {
                     </View>
                   ))}
                 {groups &&
-                  groups.map((group) => (
-                    <Chat
-                      imageUri={
-                        "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"
-                      }
-                      key={group.id}
-                      groupId={group.id}
-                      groupName={separateNameNum(group.name)}
-                      routeTo={`/${group.id}?name=${group.name}`}
-                    />
-                  ))}
+                  groups
+                    .filter((group) => group.type === "GROUP")
+                    .map((group) => (
+                      <Chat
+                        imageUri={
+                          "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"
+                        }
+                        key={group.id}
+                        groupId={group.groupId}
+                        groupName={separateNameNum(group.name)}
+                        routeTo={`/${group.groupId}?name=${group.name}`}
+                      />
+                    ))}
               </View>
             </Content>
           </Root>

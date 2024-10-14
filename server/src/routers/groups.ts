@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { postgresClient, redisClient } from "../db";
+import { mongoClient, postgresClient, redisClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 import EventEmitter, { on } from "events";
 import { Message, User } from "@prisma/mongo/client";
@@ -166,18 +166,19 @@ export const groupRouter = router({
       const { userId } = input;
       try {
         try {
-          const groups = await postgresClient.user.findUnique({
+          const groups = await mongoClient.userGroups.findMany({
             where: {
-              id: userId,
+              userId: userId,
             },
             include: {
-              Groups: true,
+              group: true,
             },
           });
+
           if (!groups) {
             throw new Error("User not found");
           }
-          return groups.Groups;
+          return groups.map((group) => group.group);
         } catch (error) {
           console.log(error);
           throw new Error("Error getting user groups");
@@ -196,7 +197,7 @@ export const groupRouter = router({
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
       try {
-        const group = await postgresClient.group.findUnique({
+        const group = await mongoClient.group.findUnique({
           where: {
             id: groupId,
           },
