@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient, redisClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 import EventEmitter, { on } from "events";
-import { Message } from "@prisma/client";
+import { Message, User } from "@prisma/mongo/client";
 
 export type WhoIsTyping = Record<string, { lastTyped: Date }>;
 
 export interface MyEvents {
-  add: (groupId: string, data: Message) => void;
+  add: (groupId: string, data: Message & { user: User }) => void;
   isTypingUpdate: (groupId: string, who: WhoIsTyping) => void;
 }
 declare interface MyEventEmitter {
@@ -76,27 +76,9 @@ setInterval(() => {
 
 export const groupRouter = router({
   list: publicProcedure.query(async () => {
-    return await db.group.findMany();
-    // return db.query.Group.findMany();
+    return await postgresClient.group.findMany();
+    // return postgresClient.query.Group.findMany();
   }),
-
-  // create:publicProcedure
-  //   .input(z.object({ name: z.string().trim().min(2) }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     // const [group] = await db
-  //     //   .insert(Group)
-  //     //   .values({
-  //     //     name: input.name,
-  //     //   })
-  //     //   .returning();
-  //     const group = await db.group.create({
-  //       data: {
-  //         name: input.name,
-  //       },
-  //     });
-  //
-  //     return group!.id;
-  //   }),
 
   isTyping: publicProcedure
     .input(
@@ -110,7 +92,7 @@ export const groupRouter = router({
       // TODO: get name from ctx
       // const { name } = opts.ctx.user;
       const { userId, groupId, typing } = input;
-      const user = await db.user.findUnique({
+      const user = await postgresClient.user.findUnique({
         where: {
           id: userId,
         },
@@ -121,6 +103,8 @@ export const groupRouter = router({
         currentlyTyping[groupId] = {};
       }
 
+      console.log("isTyping", name, typing);
+
       if (typing) {
         currentlyTyping[groupId][name!] = {
           lastTyped: new Date(),
@@ -130,7 +114,6 @@ export const groupRouter = router({
       }
 
       ee.emit("isTypingUpdate", groupId, currentlyTyping[groupId]);
-      console.log("currentlyTyping", currentlyTyping[groupId]);
     }),
 
   whoIsTyping: publicProcedure
@@ -143,8 +126,6 @@ export const groupRouter = router({
       const { groupId: currGroup } = input;
 
       let lastIsTyping = "";
-      console.log("currGroup", currGroup);
-      console.log(currentlyTyping);
 
       /**
        * yield who is typing if it has changed
@@ -153,7 +134,6 @@ export const groupRouter = router({
       try {
         function* maybeYield(who: WhoIsTyping) {
           const idx = Object.keys(who).toSorted().toString();
-          console.log("Last is typing:", lastIsTyping, "Current typing:", idx);
           if (idx === lastIsTyping) {
             return;
           }
@@ -162,7 +142,6 @@ export const groupRouter = router({
         }
 
         // emit who is currently typing
-        console.log("currentlyTyping", currentlyTyping);
         yield* maybeYield(currentlyTyping[currGroup] ?? {});
 
         for await (const [groupId, who] of ee.toIterable("isTypingUpdate", {
@@ -187,7 +166,7 @@ export const groupRouter = router({
       const { userId } = input;
       try {
         try {
-          const groups = await db.user.findUnique({
+          const groups = await postgresClient.user.findUnique({
             where: {
               id: userId,
             },
@@ -217,17 +196,48 @@ export const groupRouter = router({
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
       try {
-        console.log("groupId", groupId);
-        const group = await db.group.findUnique({
+        const group = await postgresClient.group.findUnique({
           where: {
             id: groupId,
           },
         });
-        console.log("group", group);
         return group;
       } catch (error) {
         console.log(error);
         throw new Error("Error getting group");
       }
+    }),
+  sub: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { groupId, userId } = input;
+      console.log("sub", groupId, userId);
+      await Promise.all([
+        await redisClient.sadd(`group:${groupId}:subscriptions`, userId),
+        await redisClient.hset(
+          `group:${groupId}:userId:${userId}`,
+          "unread",
+          "0",
+        ),
+      ]);
+
+      // await redisClient.sadd(`group:${groupId}:subscriptions`, userId);
+    }),
+  unsub: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { groupId, userId } = input;
+      console.log("unsub", groupId, userId);
+      await redisClient.srem(`group:${groupId}:subscriptions`, userId);
     }),
 });

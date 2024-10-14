@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
@@ -13,7 +13,7 @@ export const scheduleRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { userId, semester, sectionId } = input;
-      const registration = await db.registration.findFirst({
+      const registration = await postgresClient.registration.findFirst({
         where: {
           userId, // TODO: Need to replace with ctx.user.id later
           semester,
@@ -25,7 +25,7 @@ export const scheduleRouter = router({
         throw new Error("Registration already exists");
       }
 
-      return await db.registration.create({
+      return await postgresClient.registration.create({
         data: {
           userId, // TODO: Need to replace with ctx.user.id later
           sectionId,
@@ -45,7 +45,7 @@ export const scheduleRouter = router({
       console.log(userId, semester);
       try {
         console.log("inside try");
-        const registrations = await db.registration.findMany({
+        const registrations = await postgresClient.registration.findMany({
           where: {
             userId,
             semester,
@@ -73,7 +73,7 @@ export const scheduleRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const uniqueSemesters = await db.registration.findMany({
+      const uniqueSemesters = await postgresClient.registration.findMany({
         where: {
           userId: input.userId,
         },

@@ -1,10 +1,11 @@
 generator client {
     provider = "prisma-client-js"
+    output   = "../../node_modules/@prisma/postgres/client"
 }
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL")
+    url      = env("POSTGRES_DATABASE_URL")
 }
 
 model User {
@@ -21,11 +22,11 @@ model User {
     Feedback     Feedback[]
     Message      Message[]
     Notification Notification[]
-    Groups       Group[]
     Profile      Profile?
     Registration Registration[]
     Student      Student[]
     Tutor        Tutor[]
+    Groups       Group[]        @relation("GroupToUser")
 }
 
 model Tutor {
@@ -42,33 +43,33 @@ model Tutor {
 model Course {
     id          String        @id @default(cuid())
     name        String
-    code        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
+    code        String
+    Assistant   Assistant?
     CourseTutor CourseTutor[]
+    Group       Group?
     Material    Material[]
     Quiz        Quiz[]
-    Session     Session[]
-    Assistant   Assistant?
     Section     Section[]
-    Group       Group?
+    Session     Session[]
 }
 
 model Section {
     id           String         @id @default(cuid())
     title        String
-    course       Course         @relation(fields: [courseId], references: [id])
     courseId     String
     startTime    DateTime
     endTime      DateTime
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
     recurrence   String?
     instructor   String?        @default("TBD")
     location     String?        @default("TBD")
-    createdAt    DateTime       @default(now())
-    updatedAt    DateTime       @updatedAt
-    registration Registration[]
-    Group        Group?         @relation(fields: [groupId], references: [id])
     groupId      String?
+    registration Registration[]
+    course       Course         @relation(fields: [courseId], references: [id])
+    Group        Group?         @relation(fields: [groupId], references: [id])
 }
 
 model CourseTutor {
@@ -157,13 +158,13 @@ model Session {
 
 model Message {
     id        String   @id @default(cuid())
-    content   String
+    text      String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    senderId  String
     groupId   String
     group     Group    @relation(fields: [groupId], references: [id])
-    sender    User?    @relation(fields: [senderId], references: [id])
-    senderId  String
+    sender    User     @relation(fields: [senderId], references: [id])
 }
 
 model Group {
@@ -171,11 +172,11 @@ model Group {
     name      String
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
-    course    Course    @relation(fields: [courseId], references: [id])
     courseId  String    @unique
-    Users     User[]
+    course    Course    @relation(fields: [courseId], references: [id])
     Message   Message[]
     Section   Section[]
+    Users     User[]    @relation("GroupToUser")
 }
 
 model Notification {
@@ -199,10 +200,10 @@ model Feedback {
 
 model Assistant {
     id        String   @id @default(cuid())
-    course    Course   @relation(fields: [courseId], references: [id])
     courseId  String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    course    Course   @relation(fields: [courseId], references: [id])
 }
 
 model Report {
@@ -223,12 +224,12 @@ model Tag {
 model Registration {
     id        String   @id @default(cuid())
     sectionId String
-    section   Section  @relation(fields: [sectionId], references: [id])
-    user      User     @relation(fields: [userId], references: [id])
     userId    String
     semester  String   @default("241")
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    section   Section  @relation(fields: [sectionId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
 }
 
 model Availability {

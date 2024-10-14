@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 
 export const tutorRouter = router({
@@ -9,11 +9,11 @@ export const tutorRouter = router({
         userId: z.string(),
         courseId: z.string(),
         grade: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const { userId, courseId, grade } = input;
-      let tutor = await db.tutor.findFirst({
+      let tutor = await postgresClient.tutor.findFirst({
         where: {
           userId,
         },
@@ -22,7 +22,7 @@ export const tutorRouter = router({
       if (!tutor) {
         console.log("Creating tutor");
         try {
-          tutor = await db.tutor.create({
+          tutor = await postgresClient.tutor.create({
             data: {
               userId,
             },
@@ -33,7 +33,7 @@ export const tutorRouter = router({
         }
       }
 
-      const courseTutor = await db.courseTutor.findFirst({
+      const courseTutor = await postgresClient.courseTutor.findFirst({
         where: {
           courseId,
           tutorId: tutor.id,
@@ -44,7 +44,7 @@ export const tutorRouter = router({
         throw new Error("Tutor already exists");
       }
 
-      const result = await db.courseTutor.create({
+      const result = await postgresClient.courseTutor.create({
         data: {
           courseId,
           tutorId: tutor.id,
@@ -56,7 +56,7 @@ export const tutorRouter = router({
     }),
 
   getTutorsCourse: publicProcedure.query(async ({ input, ctx }) => {
-    const courseTutors = await db.courseTutor.findMany({
+    const courseTutors = await postgresClient.courseTutor.findMany({
       include: {
         tutor: {
           include: {
@@ -77,7 +77,7 @@ export const tutorRouter = router({
   //   )
   //   .mutation(async ({ input, ctx }) => {
   //     const { courseTutorId } = input;
-  //     const result = await db.courseTutor.delete({
+  //     const result = await postgresClient.courseTutor.delete({
   //       where: {
   //         id: courseTutorId,
   //       },

@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import { useUserStore } from "@/store/store";
 import { skipToken } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { Platform } from "react-native";
@@ -96,7 +97,7 @@ export function useThrottledIsTypingMutation(groupId: string, userId: string) {
   }, [groupId, userId]);
 }
 
-export function useLivePosts(groupId: string) {
+export function useLiveMessages(groupId: string) {
   const [data, query] = trpc.messages.infinite.useSuspenseInfiniteQuery(
     { groupId },
     {
@@ -112,14 +113,16 @@ export function useLivePosts(groupId: string) {
     const msgs = query.data?.pages.map((page) => page.items).flat();
     return msgs ?? null;
   });
-  type Post = NonNullable<typeof messages>[number];
+  // Omit User
+
+  type Message = NonNullable<typeof messages>[number];
 
   /**
    * fn to add and dedupe new messages onto state
    */
-  const addMessages = useCallback((incoming?: Post[]) => {
+  const addMessages = useCallback((incoming?: Message[]) => {
     setMessages((current) => {
-      const map: Record<Post["id"], Post> = {};
+      const map: Record<Message["id"], Message> = {};
       for (const msg of current ?? []) {
         map[msg.id] = msg;
       }
@@ -128,7 +131,7 @@ export function useLivePosts(groupId: string) {
       }
       return Object.values(map).sort(
         (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       );
     });
   }, []);

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
@@ -23,7 +23,7 @@ export const profileRouter = router({
       console.log("GET PROFILE");
       const { clerkId } = input;
       try {
-        const profile = await db.profile.findFirst({
+        const profile = await postgresClient.profile.findFirst({
           where: {
             userId: clerkId,
           },
@@ -50,7 +50,7 @@ export const profileRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { clerkId, data } = input;
       try {
-        const profile = await db.profile.update({
+        const profile = await postgresClient.profile.update({
           where: {
             userId: clerkId,
           },

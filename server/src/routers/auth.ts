@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
@@ -27,7 +27,7 @@ export const authRouter = router({
           throw new Error("Missing required fields");
         }
         console.log(email, name, clerkId);
-        const checker = await db.user.findUnique({
+        const checker = await postgresClient.user.findUnique({
           where: {
             clerkId,
           },
@@ -35,19 +35,19 @@ export const authRouter = router({
         if (checker) {
           throw new Error("Clerk ID already exists, Login");
         }
-        const data = await db.user.create({
+        const data = await postgresClient.user.create({
           data: {
             email,
             name,
             clerkId,
           },
         });
-        const profile = await db.profile.create({
+        const profile = await postgresClient.profile.create({
           data: {
             userId: clerkId,
           },
         });
-        await db.user.update({
+        await postgresClient.user.update({
           where: {
             clerkId,
           },

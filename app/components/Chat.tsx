@@ -1,17 +1,17 @@
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Platform, TouchableOpacity, View } from "react-native";
 import CustomText from "./CustomText";
 import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 import { cn, listWithAnd, pluralize } from "@/lib/utils";
 import { useWhoIsTyping } from "@/hooks/useChats";
 import { trpc } from "@/lib/trpc";
+import { useUserStore } from "@/store/store";
 
 const Chat = ({
   imageUri,
   groupId,
   groupName,
-  time,
   styles,
   routeTo,
   ...touchableProps // Spread TouchableOpacity props
@@ -19,16 +19,30 @@ const Chat = ({
   imageUri: string;
   groupId: string;
   groupName: string;
-  time: string;
   routeTo: string;
   styles?: string;
 }) => {
+  const { user } = useUserStore();
   const [content, setContent] = useState("");
   const currentlyTyping = useWhoIsTyping(groupId);
-  console.log("GROUP ID: ", groupId);
-  console.log("Platform: ", Platform.OS);
   const { data: lastMessage, isLoading } =
-    trpc.messages.getLastMessage.useQuery({ groupId });
+    trpc.messages.getLastMessage.useQuery(
+      { groupId },
+      {
+        refetchInterval: 2000,
+      },
+    );
+
+  const { data: unreadCount } = trpc.messages.getUnreadCount.useQuery(
+    {
+      groupId,
+      userId: user.user.id,
+    },
+    {
+      refetchInterval: 2000,
+    },
+  );
+
   useEffect(() => {
     if (currentlyTyping.length > 0) {
       setContent(
@@ -41,11 +55,14 @@ const Chat = ({
     } else if (isLoading) {
       setContent("Loading...");
     } else {
-      setContent(lastMessage?.content || "No messages");
+      setContent(lastMessage?.text || "No messages");
     }
   }, [currentlyTyping, lastMessage, isLoading]);
 
-  console.log("CONTENT: ", content);
+  const time = useMemo(() => {
+    const date = new Date(lastMessage?.createdAt!);
+    return `${date.getHours()}:${date.getMinutes()}`;
+  }, [lastMessage]);
 
   return (
     <TouchableOpacity
@@ -74,7 +91,16 @@ const Chat = ({
           </CustomText>
           <CustomText styles="text-gray-light text-lg">{content}</CustomText>
         </View>
-        <CustomText styles="text-primary-light">{time}</CustomText>
+        <View className="justify-center items-center">
+          <CustomText styles="text-primary-light">{time}</CustomText>
+          {unreadCount && unreadCount > 0 ? (
+            <View className="my-1 bg-primary-light rounded-full w-6 h-6 flex items-center justify-center">
+              <CustomText styles="text-white-default text-sm">
+                {unreadCount}
+              </CustomText>
+            </View>
+          ) : null}
+        </View>
       </View>
     </TouchableOpacity>
   );

@@ -1,18 +1,15 @@
 import { Redirect, router, Stack } from "expo-router";
-import { PortalHost } from "@rn-primitives/portal";
 import { useAuth } from "@clerk/clerk-expo";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/DropdownRnr";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Text } from "@/components/TextRnr";
 import CustomText from "@/components/CustomText";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
@@ -34,7 +31,6 @@ const Layout = () => {
   if (!isSignedIn) {
     return <Redirect href="/(auth)/welcome" />;
   }
-  const terms = ["241", "242", "243"];
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
@@ -133,23 +129,4 @@ const Layout = () => {
   );
 };
 
-// <View className="flex flex-row items-center justify-between w-screen p-2">
-//   <TouchableOpacity
-//     className="bg-fill-default/20 rounded-lg justify-center"
-//     onPress={() => setIsTermModalVisible(true)}
-//   >
-//     <CustomText styles="font-poppinsBold font-bold text-primary-dark justify-center py-2 px-3">
-//       {term}
-//     </CustomText>
-//   </TouchableOpacity>
-//   <View className="flex-1 items-center">
-//     <CustomText styles="text-2xl text-primary-light font-poppinsSemiBold">
-//       Schedule
-//     </CustomText>
-//   </View>
-//   <TouchableOpacity className="bg-primary-white p-0.5 rounded-full border-2 border-primary-dark">
-//     <Ionicons name="add" size={18} color="#3044FF" />
-//   </TouchableOpacity>
-// </View>
-//
 export default Layout;

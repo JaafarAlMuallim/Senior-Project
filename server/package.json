@@ -4,7 +4,16 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postgres:dbpush": "npx prisma db push --schema ./prisma/postgres/schema.prisma",
+    "postgres:generate": "npx prisma generate --schema ./prisma/postgres/schema.prisma",
+    "postgres:studio": "npx prisma studio --schema ./prisma/postgres/schema.prisma",
+    "postgres:dbpull": "npx prisma db pull --schema ./prisma/postgres/schema.prisma",
+    "mongo:dbpush": "npx prisma db push --schema ./prisma/mongo/schema.prisma",
+    "mongo:generate": "npx prisma generate --schema ./prisma/mongo/schema.prisma",
+    "mongo:studio": "npx prisma studio --schema ./prisma/mongo/schema.prisma",
+    "mongo:dbpull": "npx prisma db pull --schema ./prisma/mongo/schema.prisma",
+    "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma && prisma generate --schema prisma/mongo/schema.prisma"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +24,7 @@
     "@trpc/server": "11.0.0-rc.552",
     "express": "^4.21.0",
     "express-router": "^0.0.1",
+    "ioredis": "^5.4.1",
     "prisma": "^5.20.0",
     "server": "file:",
     "zod": "^3.23.8"

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { db } from "../db";
+import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 
 export const sessionRouter = router({
@@ -10,14 +10,14 @@ export const sessionRouter = router({
         time: z.string(),
         courseId: z.string(),
         date: z.coerce.date(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       console.log("CREATE SESSION");
       const { tutorId, time, courseId, date } = input;
       console.log(input);
       try {
-        const courseName = await db.course.findFirst({
+        const courseName = await postgresClient.course.findFirst({
           where: {
             id: courseId,
           },
@@ -29,7 +29,7 @@ export const sessionRouter = router({
         const minutes = time.split(":")[1];
         date.setHours(parseInt(hours));
         date.setMinutes(parseInt(minutes));
-        const session = await db.session.create({
+        const session = await postgresClient.session.create({
           data: {
             tutorId,
             courseId,
@@ -47,7 +47,7 @@ export const sessionRouter = router({
       }
     }),
   getSessions: publicProcedure.query(async () => {
-    const sessions = await db.session.findMany();
+    const sessions = await postgresClient.session.findMany();
     return sessions;
   }),
 
@@ -55,11 +55,11 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
-      const sessions = await db.session.findMany({
+      const sessions = await postgresClient.session.findMany({
         where: {
           tutorId,
         },
@@ -70,11 +70,11 @@ export const sessionRouter = router({
     .input(
       z.object({
         courseId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { courseId } = input;
-      const sessions = await db.session.findMany({
+      const sessions = await postgresClient.session.findMany({
         where: {
           courseId,
         },

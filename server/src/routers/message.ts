@@ -1,8 +1,8 @@
 import { tracked } from "@trpc/server";
 import { streamToAsyncIterable } from "../lib/streamToAsync";
-import { Message } from "@prisma/client";
+import { Message, User } from "@prisma/mongo/client";
 import { z } from "zod";
-import { db } from "../db";
+import { mongoClient, postgresClient, redisClient } from "../db";
 import { publicProcedure, router } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
@@ -11,34 +11,55 @@ export const messageRouter = router({
   add: publicProcedure
     .input(
       z.object({
-        id: z.string().optional(),
         groupId: z.string(),
         userId: z.string(),
-        content: z.string().trim().min(1),
+        text: z.string().trim().min(1),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { groupId, content, userId } = input;
-      const message = await db.message.create({
+      const { groupId, text, userId } = input;
+      const currentSubscriptions = await redisClient.smembers(
+        `group:${groupId}:subscriptions`,
+      );
+
+      const notSubscribed = await postgresClient.user.findMany({
+        where: {
+          id: {
+            notIn: currentSubscriptions,
+          },
+        },
+      });
+
+      const message = await mongoClient.message.create({
         data: {
-          content,
           // name: opts.ctx.user.name,
-          senderId: userId,
+          userId,
+          text,
           groupId,
         },
         include: {
-          sender: true,
+          user: true,
         },
       });
 
       const groupTyping = currentlyTyping[groupId];
       if (groupTyping) {
-        delete groupTyping[message.sender!.name];
         ee.emit("isTypingUpdate", groupId, groupTyping);
       }
 
       const defMessage = message!;
       ee.emit("add", groupId, defMessage);
+
+      // increment their unread count
+      Promise.all(
+        notSubscribed.map(async (user) => {
+          await redisClient.hincrby(
+            `group:${groupId}:userId:${user.id}`,
+            "unread",
+            1,
+          );
+        }),
+      );
 
       return message;
     }),
@@ -51,27 +72,24 @@ export const messageRouter = router({
       }),
     )
     .query(async ({ input }) => {
+      // add user to subscription list if they are not already
+      // opts.ctx.user.id,
       const { cursor, groupId } = input;
       let { take } = input;
       if (!take) {
         take = 20;
       }
+      console.log("infinite", groupId, cursor, take);
 
-      // const page = await db.query.Message.findMany({
-      //   orderBy: (fields, ops) => ops.desc(fields.createdAt),
-      //   where: (fields, ops) =>
-      //     ops.and(
-      //       ops.eq(fields.groupId, opts.input.groupId),
-      //       cursor ? ops.lte(fields.createdAt, cursor) : undefined,
-      //     ),
-      //   limit: take + 1,
-      // });
-      const page = await db.message.findMany({
+      const page = await mongoClient.message.findMany({
         where: {
           groupId,
           createdAt: {
             lte: cursor ?? new Date(),
           },
+        },
+        include: {
+          user: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -79,7 +97,7 @@ export const messageRouter = router({
         take: take + 1,
       });
 
-      const items = page.reverse();
+      const items = page;
       let nextCursor: typeof cursor | null = null;
       if (items.length > take) {
         const prev = items.shift();
@@ -105,10 +123,14 @@ export const messageRouter = router({
     .subscription(async function* ({ input, signal }) {
       let lastMessageCursor: Date | null = null;
       const { lastEventId: eventId, groupId: currGroup } = input;
+      console.log("onAdd", eventId, currGroup);
       if (eventId) {
-        const itemById = await db.message.findFirst({
+        const itemById = await mongoClient.message.findFirst({
           where: {
             id: eventId,
+          },
+          include: {
+            user: true,
           },
         });
         // const itemById = await db.query.Message.findFirst({
@@ -124,7 +146,7 @@ export const messageRouter = router({
       // We use a readable stream here to prevent the client from missing events
       // created between the fetching & yield'ing of `newItemsSinceCursor` and the
       // subscription to the ee
-      const stream = new ReadableStream<Message>({
+      const stream = new ReadableStream<Message & { user: User }>({
         async start(controller) {
           const onAdd: MyEvents["add"] = (groupId, data) => {
             if (groupId === currGroup) {
@@ -136,22 +158,15 @@ export const messageRouter = router({
             ee.off("add", onAdd);
           };
 
-          // const newItemsSinceCursor = await db.query.Message.findMany({
-          //   where: (fields, ops) =>
-          //     ops.and(
-          //       ops.eq(fields.groupId, opts.input.groupId),
-          //       lastMessageCursor
-          //         ? ops.gt(fields.createdAt, lastMessageCursor)
-          //         : undefined,
-          //     ),
-          //   orderBy: (fields, ops) => ops.asc(fields.createdAt),
-          // });
-          const newItemsSinceCursor = await db.message.findMany({
+          const newItemsSinceCursor = await mongoClient.message.findMany({
             where: {
               groupId: currGroup,
               createdAt: {
                 gt: lastMessageCursor!,
               },
+            },
+            include: {
+              user: true,
             },
             orderBy: {
               createdAt: "asc",
@@ -182,7 +197,7 @@ export const messageRouter = router({
     )
     .query(async ({ input }) => {
       const { groupId } = input;
-      const message = await db.message.findFirst({
+      const message = await mongoClient.message.findFirst({
         where: {
           groupId,
         },
@@ -190,7 +205,49 @@ export const messageRouter = router({
           createdAt: "desc",
         },
       });
-
       return message;
+    }),
+
+  getUnreadCount: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { groupId, userId } = input;
+      const count = await redisClient.hget(
+        `group:${groupId}:userId:${userId}`,
+        "unread",
+      );
+      return parseInt(count ?? "0");
+    }),
+  getMessages: publicProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { groupId } = input;
+      console.log("get messages", groupId);
+      try {
+        const messages = await mongoClient.message.findMany({
+          where: {
+            groupId,
+          },
+          include: {
+            user: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+        return messages;
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
     }),
 });

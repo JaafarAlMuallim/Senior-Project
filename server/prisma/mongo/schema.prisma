@@ -1,0 +1,39 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../node_modules/@prisma/mongo/client"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("MONGO_DATABASE_URL")
+}
+
+model User {
+    id      String    @id @map("_id") @db.String
+    userId  String    @unique
+    email   String    @unique
+    name    String
+    clerkId String    @unique
+    Message Message[]
+}
+
+model Group {
+    id       String    @id @map("_id") @db.String
+    groupId  String    @unique
+    name     String
+    messages Message[]
+}
+
+model Message {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    text      String
+    groupId   String
+    group     Group    @relation(fields: [groupId], references: [groupId])
+    userId    String
+    user      User     @relation(fields: [userId], references: [userId])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // @@index([groupId], name: "groupId")
+    // @@index([userId], name: "userId")
+}

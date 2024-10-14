@@ -23,13 +23,12 @@ const Chats = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  console.log(user.user.id);
   const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery(
     {
       userId: user.user.id,
     },
     {
-      gcTime: 1000,
+      refetchInterval: 1000,
     },
   );
 
@@ -161,7 +160,6 @@ const Chats = () => {
                       key={group.id}
                       groupId={group.id}
                       groupName={separateNameNum(group.name)}
-                      time={"10:15"}
                       routeTo={`/${group.id}?name=${group.name}`}
                     />
                   ))}
