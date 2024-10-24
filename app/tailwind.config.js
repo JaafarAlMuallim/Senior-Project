@@ -71,8 +71,18 @@ module.exports = {
         },
         schedule: {
           term: "rgba(69, 97, 255, 0.1)", // color for term select and day
-          fill: "4561FF", //class time or day
-          nofill: "F6F6F5", // not class time or not that day
+          fill: "#4561FF", //class time or day
+          nofill: "#F6F6F5", // not class time or not that day
+        },
+        toast: {
+          success: "#5A8156",
+          danger: "#BB5653",
+          error: "#BB5653",
+          warning: "#A4603B",
+          info: "#4F5FE2",
+        },
+        info: {
+          default: "#E8E9FB",
         },
         success: {
           100: "#F0FFF4",
@@ -84,7 +94,7 @@ module.exports = {
           700: "#276749",
           800: "#22543D",
           900: "#1C4532",
-          default: "#1D8C1D", // Green
+          default: "#EBF6EA", // Green
         },
         danger: {
           100: "#FFF5F5",
@@ -96,7 +106,7 @@ module.exports = {
           700: "#C53030",
           800: "#9B2C2C",
           900: "#742A2A",
-          default: "#C21D1A", // Red
+          default: "#FCEBED", // Red
         },
         warning: {
           100: "#FFFBEB",
@@ -108,7 +118,7 @@ module.exports = {
           700: "#A16207",
           800: "#854D0E",
           900: "#713F12",
-          default: "#F89402", // Orange
+          default: "#FDF4E2", // Orange
         },
       },
     },

@@ -15,8 +15,8 @@ type Section = {
   startTime: string;
   endTime: string;
   recurrence: string | null;
-  instructor: string;
-  location: string;
+  instructor: string | null;
+  location: string | null;
   courseId: string;
   course: Course;
 };

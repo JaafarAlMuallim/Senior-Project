@@ -1,4 +1,5 @@
 import * as trpcExpress from "@trpc/server/adapters/express";
+import { createRouteHandler } from "uploadthing/express";
 import express from "express";
 import { appRouter } from "./routers";
 import { createContext } from "./trpc";

@@ -44,6 +44,23 @@ const Layout = () => {
           },
         }}
       />
+      <Stack.Screen
+        name="file"
+        options={{
+          headerShown: true,
+          presentation: "modal",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.back()}>
+              <Ionicons name="close" size={24} color={"#4561FF"} />
+            </TouchableOpacity>
+          ),
+          headerTitleStyle: {
+            color: "#4561FF",
+            fontSize: 20,
+            fontFamily: "PoppinsBold",
+          },
+        }}
+      />
     </Stack>
   );
 };

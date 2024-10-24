@@ -1,6 +1,12 @@
 import CustomText from "@/components/CustomText";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
-import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
+import {
+  Link,
+  Redirect,
+  Stack,
+  router,
+  useLocalSearchParams,
+} from "expo-router";
 import {
   Image,
   TouchableOpacity,
@@ -8,17 +14,20 @@ import {
   Animated,
   Easing,
   FlatList,
+  Pressable,
 } from "react-native";
 import {
   ArrowDownNarrowWide,
   EllipsisVertical,
   File,
+  Loader2,
   Search,
 } from "lucide-react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useCoursesStore } from "@/store/coursesStore";
 import { separateNameNum } from "@/lib/utils";
+import { trpc } from "@/lib/trpc";
 
 const COURSES = [
   {
@@ -50,153 +59,45 @@ const COURSES = [
 const TYPES = [
   {
     id: 1,
-    title: "Class Notes",
-    type: "class-notes",
-  },
-  {
-    id: 2,
     title: "Slides",
     type: "slides",
   },
   {
-    id: 3,
+    id: 2,
     title: "Assignments",
     type: "assignments",
   },
   {
-    id: 4,
+    id: 3,
     title: "Quizzes",
     type: "quizzes",
   },
   {
-    id: 5,
+    id: 4,
     title: "Exams",
     type: "exams",
   },
   {
-    id: 6,
-    title: "Labs",
-    type: "labs",
-  },
-  {
-    id: 7,
-    title: "Projects",
-    type: "projects",
-  },
-  {
-    id: 8,
+    id: 5,
     title: "Pictures",
     type: "pictures",
   },
   {
-    id: 9,
+    id: 6,
     title: "Others",
     type: "others",
   },
-];
+] as const;
 
-const FILES = [
-  {
-    id: 1,
-    title: "Lecture 1",
-    description: "This is a lecture about computer science.",
-    type: "class-notes",
-    date: "2022-01-01",
-  },
-  {
-    id: 2,
-    title: "Lecture 2",
-    description: "This is a lecture about computer science.",
-    type: "class-notes",
-    date: "2022-01-04",
-  },
-  {
-    id: 3,
-    title: "Assignment 1",
-    description: "This is an assignment about computer science.",
-    type: "assignments",
-    date: "2022-01-01",
-  },
-  {
-    id: 4,
-    title: "Assignment 2",
-    description: "This is an assignment about computer science.",
-    type: "assignments",
-    date: "2022-02-01",
-  },
-  {
-    id: 5,
-    title: "Quiz 1",
-    description: "This is a quiz about computer science.",
-    type: "quizzes",
-    date: "2022-01-01",
-  },
-  {
-    id: 6,
-    title: "Quiz 2",
-    description: "This is a quiz about computer science.",
-    type: "quizzes",
-  },
-  {
-    id: 7,
-    title: "Midterm",
-    description: "This is a midterm about computer science.",
-    type: "exams",
-    date: "2022-01-01",
-  },
-  {
-    id: 8,
-    title: "Final",
-    description: "This is a final about computer science.",
-    type: "exams",
-  },
-  {
-    id: 9,
-    title: "Lab 1",
-    description: "This is a lab about computer science.",
-    type: "labs",
-    date: "2022-01-01",
-  },
-  {
-    id: 10,
-    title: "Lab 2",
-    description: "This is a lab about computer science.",
-    type: "labs",
-  },
-  {
-    id: 11,
-    title: "Project 1",
-    description: "This is a project about computer science.",
-    type: "projects",
-    date: "2022-01-01",
-  },
-  {
-    id: 12,
-    title: "Project 2",
-    description: "This is a project about computer science.",
-    type: "projects",
-  },
-  {
-    id: 13,
-    title: "Picture 1",
-    description: "This is a picture about computer science.",
-    type: "pictures",
-    date: "2022-01-01",
-  },
-  {
-    id: 14,
-    title: "Picture 2",
-    description: "This is a picture about computer science.",
-    type: "pictures",
-  },
-  {
-    id: 15,
-    title: "Other 1",
-    description: "This is an other about computer science.",
-    type: "others",
-    date: "2022-01-01",
-  },
-];
+const MAPPING = {
+  slides: "SLIDE",
+  assignments: "HW",
+  book: "BOOK",
+  exams: "EXAM",
+  quizzes: "QUIZ",
+  pictures: "IMG",
+  others: "OTHER",
+} as const;
 
 const Page = () => {
   const { folder, id } = useLocalSearchParams<{
@@ -204,19 +105,62 @@ const Page = () => {
     id?: string;
   }>();
   const { registrations } = useCoursesStore();
+  const spinValue = new Animated.Value(0);
+  const rotate = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+  const { data: material, isLoading } = trpc.courses.getMaterial.useQuery({
+    courseId: id!,
+    category: MAPPING[folder! as keyof typeof MAPPING],
+  });
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start();
+    } else {
+      spinValue.setValue(0);
+    }
+  }, [isLoading]);
+
   if (!folder || !id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
-  const files = useMemo(() => {
-    return FILES.filter((file) => file.type === folder);
-  }, [folder, id]);
+
+  if (isLoading) {
+    return (
+      <View className="h-full flex flex-col p-8 bg-white-default">
+        <SignedIn>
+          <Animated.View
+            style={{
+              transform: [{ rotate }],
+            }}
+            className="flex-1 items-center justify-center"
+          >
+            <Loader2 className="h-48 w-48" size={96} />
+          </Animated.View>
+        </SignedIn>
+        <SignedOut>
+          <Redirect href={"/(auth)/welcome"} />
+        </SignedOut>
+      </View>
+    );
+  }
+
   return (
     <>
       <Stack.Screen
         options={{
           headerShown: true,
 
-          title: `${separateNameNum(registrations.find((course) => course.id === id)?.section.course.code!).toUpperCase()}`,
+          title: `${separateNameNum(registrations.find((reg) => reg.section.course.id === id)?.section.course.code!).toUpperCase()}`,
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,
@@ -229,7 +173,8 @@ const Page = () => {
           ),
         }}
       />
-      {folder && id && (
+
+      {material && material.length ? (
         <View className="h-full w-full flex flex-col p-8 bg-white-default">
           <View className="w-full flex flex-row justify-between items-center">
             <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
@@ -248,29 +193,50 @@ const Page = () => {
             <FlatList
               showsVerticalScrollIndicator={false}
               className="flex flex-col py-2"
-              data={files}
+              data={material}
               ItemSeparatorComponent={() => <View className="h-4" />}
               renderItem={({ item }) => {
                 return (
                   <View className="bg-primary-light h-16 p-4 rounded-xl flex justify-between items-center shadow-sm shadow-gray-900">
-                    <View className="flex flex-col">
-                      <View className="flex-row w-full justify-between items-center">
-                        <View className="flex flex-row justify-center items-center">
-                          <File size={32} color={"white"} />
-                          <CustomText styles="ml-4 text-white-default text-lg font-poppinsBold">
-                            {item.title}
+                    <Pressable
+                      onPress={() => {
+                        router.push(
+                          `/(root)/(drawer)/(tabs)/(home)/courses/[id]/file?name=${item.name}&file=${item.url}`,
+                        );
+                      }}
+                    >
+                      <View className="flex flex-col">
+                        <View className="flex-row w-full justify-between items-center">
+                          <View className="flex flex-row justify-center items-center">
+                            <File size={32} color={"white"} />
+                            <CustomText styles="ml-4 text-white-default text-lg font-poppinsBold">
+                              {item.name}
+                            </CustomText>
+                          </View>
+                          <CustomText styles="ml-12 text-white-default text-md">
+                            {item.createdAt.substring(0, 10)}
                           </CustomText>
                         </View>
-                        <CustomText styles="ml-12 text-white-default text-md">
-                          {item.date}
-                        </CustomText>
                       </View>
-                    </View>
+                    </Pressable>
                   </View>
                 );
               }}
             />
           </View>
+        </View>
+      ) : (
+        <View className="w-full flex justify-center flex-1">
+          <CustomText styles="text-2xl text-center">
+            No Material Available in{" "}
+            {TYPES.find((t) => t.type === folder)?.title}
+          </CustomText>
+          <Link
+            className="text-2xl text-center text-primary-light underline"
+            href={`/(root)/(drawer)/(tabs)/(home)/courses/${id}/upload?type=${folder}`}
+          >
+            <CustomText>Upload New Material</CustomText>
+          </Link>
         </View>
       )}
     </>

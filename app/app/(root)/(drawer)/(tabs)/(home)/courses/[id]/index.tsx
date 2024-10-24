@@ -22,76 +22,34 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCoursesStore } from "@/store/coursesStore";
 import { separateNameNum } from "@/lib/utils";
 
-const COURSES = [
-  {
-    id: 1,
-    title: "Introdudction to Python",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 104",
-  },
-  {
-    id: 2,
-    title: "Data Structures and Algorithms",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 202",
-  },
-  {
-    id: 3,
-    title: "Discrete Mathematics",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 253",
-  },
-  {
-    id: 4,
-    title: "Computer Organization and Architecture",
-    description: "This is a course about computer science.",
-    courseCode: "COE 301",
-  },
-];
-
 const TYPES = [
   {
     id: 1,
-    title: "Class Notes",
-    type: "class-notes",
-  },
-  {
-    id: 2,
     title: "Slides",
     type: "slides",
   },
   {
-    id: 3,
+    id: 2,
     title: "Assignments",
     type: "assignments",
   },
   {
-    id: 4,
+    id: 3,
     title: "Quizzes",
     type: "quizzes",
   },
   {
-    id: 5,
+    id: 4,
     title: "Exams",
     type: "exams",
   },
   {
-    id: 6,
-    title: "Labs",
-    type: "labs",
-  },
-  {
-    id: 7,
-    title: "Projects",
-    type: "projects",
-  },
-  {
-    id: 8,
+    id: 5,
     title: "Pictures",
     type: "pictures",
   },
   {
-    id: 9,
+    id: 6,
     title: "Others",
     type: "others",
   },
@@ -121,7 +79,7 @@ const Page = () => {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: `${separateNameNum(registrations.find((course) => course.id === id)?.section.course.code!).toUpperCase()}`,
+          title: `${separateNameNum(registrations.find((reg) => reg.section.course.id === id)?.section.course.code!).toUpperCase()}`,
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,

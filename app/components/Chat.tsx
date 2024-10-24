@@ -55,7 +55,10 @@ const Chat = ({
     } else if (isLoading) {
       setContent("Loading...");
     } else {
-      setContent(lastMessage?.text || "No messages");
+      setContent(
+        `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
+          "No messages",
+      );
     }
   }, [currentlyTyping, lastMessage, isLoading]);
 

@@ -37,7 +37,10 @@ const AiChat = ({
       <View className="flex flex-column items-start justify-start">
         <CustomText styles="text-primary-light text-2xl">{chatName}</CustomText>
         <CustomText styles="text-gray-light text-lg">
-          {isLoading ? "Loading..." : lastMessage?.text || "No messages"}
+          {isLoading
+            ? "Loading..."
+            : `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
+              "No messages"}
         </CustomText>
       </View>
     </TouchableOpacity>

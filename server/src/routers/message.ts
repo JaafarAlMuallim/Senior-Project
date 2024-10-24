@@ -7,6 +7,7 @@ import { publicProcedure, router } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
 import { model } from "../ai";
+import { Content, Part } from "@google/generative-ai";
 
 export const messageRouter = router({
   add: publicProcedure
@@ -77,6 +78,7 @@ export const messageRouter = router({
       const { groupId, agent, text, userId } = input;
       console.log("addAIMessage", groupId, agent, text, userId);
       let ai = null;
+      let context: Content[] = [];
       try {
         console.log("get Agent");
         ai = await mongoClient.user.findFirst({
@@ -90,6 +92,40 @@ export const messageRouter = router({
       }
 
       try {
+        const oldMessages = await mongoClient.message.findMany({
+          where: {
+            groupId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          include: {
+            user: true,
+          },
+          take: 10,
+        });
+        context = [
+          {
+            role: "user",
+            parts: oldMessages
+              .filter((msg) => !msg.user.email.includes("EduLink"))
+              .map((msg) => {
+                return {
+                  text: msg.text,
+                };
+              }),
+          },
+          {
+            role: "model",
+            parts: oldMessages
+              .filter((msg) => msg.user.email.includes("EduLink"))
+              .map((msg) => {
+                return {
+                  text: msg.text,
+                };
+              }),
+          },
+        ];
         console.log("Creating message");
         await mongoClient.message.create({
           data: {
@@ -107,7 +143,11 @@ export const messageRouter = router({
       // get Response
       try {
         console.log("Creating response");
-        const res = await model.generateContent(text);
+        const chat = model.startChat({
+          history: context,
+        });
+        const res = await chat.sendMessage(text);
+
         const response = await mongoClient.message.create({
           data: {
             // name: opts.ctx.user.name,
@@ -116,32 +156,12 @@ export const messageRouter = router({
             groupId,
           },
         });
-
         return response;
       } catch (err) {
         console.error("Error creating response");
         console.error(err);
       }
     }),
-  getAIMessage: publicProcedure
-    .input(
-      z.object({
-        groupId: z.string(),
-        userId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { groupId, userId } = input;
-      const message = await mongoClient.message.findFirst({
-        where: {
-          groupId,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
-    }),
-
   infinite: publicProcedure
     .input(
       z.object({

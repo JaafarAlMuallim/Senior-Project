@@ -7,5 +7,4 @@ export const { useImageUploader, useDocumentUploader } =
      * @default process.env.EXPO_PUBLIC_SERVER_URL
      * @remarks In dev we will also try to use Expo.debuggerHost
      */
-    url: "http://localhost:8081/api",
   });

@@ -18,7 +18,7 @@ import { DAYS_OF_WEEK } from "@/constants/data";
 import DayColumn from "@/components/DayColumn";
 import TimeSlot from "@/components/TimeSlot";
 import DaySchedule from "@/components/DaySchedule";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react-native";
 import { Redirect } from "expo-router";

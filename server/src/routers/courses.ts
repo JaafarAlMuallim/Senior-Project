@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { postgresClient } from "../db";
-import { authProcedure, publicProcedure, router } from "../trpc";
+import { publicProcedure, router } from "../trpc";
+import { Category } from "@prisma/postgres/client";
 
 export const courseRouter = router({
   getCourses: publicProcedure.query(async () => {
@@ -31,22 +32,55 @@ export const courseRouter = router({
         throw new Error("Error");
       }
     }),
-  addFiles: publicProcedure
+  addMaterial: publicProcedure
     .input(
       z.object({
         courseId: z.string(),
-        files: z.array(z.custom<File>()),
+        file: z.object({
+          url: z.string(),
+          type: z.string(),
+          name: z.string(),
+          size: z.number(),
+        }),
       }),
     )
     .mutation(async ({ input }) => {
-      const { courseId, files } = input;
-      console.log("addFiles", courseId, files[0]);
+      const { courseId, file } = input;
+      const random = Math.random();
+      const category =
+        file.size > 1024
+          ? Category.BOOK
+          : random > 0.5
+            ? Category.SLIDE
+            : Category.HW;
+      try {
+        const material = await postgresClient.material.create({
+          data: {
+            courseId,
+            name: file.name,
+            size: file.size,
+            url: file.url,
+            fileType: file.type,
+            category,
+          },
+        });
+        return material;
+      } catch (e) {
+        console.log(e);
+      }
     }),
-  // getUserCourses: authProcedure.query(async ({ ctx: { user } }) => {
-  //   const enrolledCourses = await db.registration.findMany({
-  //     where: { userId: user.id },
-  //     include: { section: { include: { course: true } } },
-  //   });
-  //   return enrolledCourses;
-  // }),
+  getMaterial: publicProcedure
+    .input(z.object({ courseId: z.string(), category: z.nativeEnum(Category) }))
+    .query(async ({ input }) => {
+      const { courseId, category } = input;
+      try {
+        const materials = await postgresClient.material.findMany({
+          where: { courseId, category },
+        });
+        console.log(materials);
+        return materials;
+      } catch (e) {
+        console.log(e);
+      }
+    }),
 });

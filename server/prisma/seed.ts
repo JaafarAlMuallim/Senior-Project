@@ -1,4 +1,7 @@
-import { PrismaClient as PostgresClient } from "@prisma/postgres/client";
+import {
+  Category,
+  PrismaClient as PostgresClient,
+} from "@prisma/postgres/client";
 import { PrismaClient as MongoClient } from "@prisma/mongo/client";
 
 const postgres = new PostgresClient();

@@ -14,6 +14,16 @@ enum type {
     INDIVIDUAL
 }
 
+enum Category {
+    SLIDE
+    HW
+    BOOK
+    EXAM
+    QUIZ
+    IMG
+    OTHER
+}
+
 model User {
     id           String         @id @default(cuid())
     email        String         @unique
@@ -120,10 +130,12 @@ model Profile {
 
 model Material {
     id        String   @id @default(cuid())
-    content   String
+    url       String
+    size      Float
     courseId  String
-    title     String
-    type      String
+    name      String
+    category  Category
+    fileType  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     tagId     String?

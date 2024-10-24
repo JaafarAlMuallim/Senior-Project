@@ -17,12 +17,14 @@ const Layout = () => {
         name="home"
         options={{
           headerShown: true,
-          title: "Courses",
-          headerLeft: () => (
-            <TouchableOpacity>
-              <ArrowDownNarrowWide size={24} color="#4561FF" />
-            </TouchableOpacity>
-          ),
+        }}
+      />
+      <Stack.Screen
+        name="requests"
+        options={{
+          title: "Tutoring Requests",
+          headerShown: true,
+          presentation: "modal",
           headerTitleStyle: {
             color: "#4561FF",
             fontSize: 20,
