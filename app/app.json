@@ -29,7 +29,14 @@
       "output": "server",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": ["expo-router", "expo-asset"],
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      [
+        "expo-camera",
+        { "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera" }
+      ]
+    ],
     "assetBundlePatterns": ["**/*"]
   },
   "experiments": {

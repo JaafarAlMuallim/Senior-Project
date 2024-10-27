@@ -1,23 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Portal } from "@rn-primitives/portal";
 import * as ToastPrimitive from "@rn-primitives/toast";
 import { Ban, Check, Info, OctagonAlert, X } from "lucide-react-native";
 import { cn } from "@/lib/utils";
+import CustomText from "../CustomText";
 
 type ToastType = "info" | "success" | "warning" | "error";
 
-interface ToastProps {
-  ms: number;
+type Action = {
+  text: string;
+  onPress: () => void;
+  className?: string;
+  textClassName?: string;
+};
+
+type ToastPayload = {
+  id: string;
   title: string;
   description: string;
-  variant: ToastType;
+  ms: number;
+  variant: "info" | "success" | "warning" | "error";
+  actions: Action[];
   onClose: () => void;
-}
+};
 
-function Toast({ ms, title, description, variant, onClose }: ToastProps) {
-  const [seconds, setSeconds] = useState(ms / 1000); // Countdown timer
+function Toast({
+  ms,
+  title,
+  description,
+  variant,
+  onClose,
+  actions,
+}: ToastPayload) {
+  const [_, setSeconds] = useState(ms / 1000); // Countdown timer
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
@@ -50,13 +67,15 @@ function Toast({ ms, title, description, variant, onClose }: ToastProps) {
   const icon = (variant: ToastType) => {
     switch (variant) {
       case "success":
-        return <Check size={24} className="text-toast-success mx-1" />;
+        return <Check size={24} className="text-toast-success mx-1 mt-1" />;
       case "info":
-        return <Info size={24} className="text-toast-info mx-1" />;
+        return <Info size={24} className="text-toast-info mx-1 mt-1" />;
       case "warning":
-        return <OctagonAlert size={24} className="text-toast-warning mx-1" />;
+        return (
+          <OctagonAlert size={24} className="text-toast-warning mx-1 mt-1" />
+        );
       case "error":
-        return <Ban size={24} className="text-toast-error mx-1" />;
+        return <Ban size={24} className="text-toast-error mx-1 mt-1" />;
     }
   };
   const textColor = (variant: ToastType) => {
@@ -71,6 +90,7 @@ function Toast({ ms, title, description, variant, onClose }: ToastProps) {
         return "text-toast-error";
     }
   };
+  console.log(actions);
 
   return (
     <Portal name="toast">
@@ -102,11 +122,30 @@ function Toast({ ms, title, description, variant, onClose }: ToastProps) {
               </ToastPrimitive.Close>
             </View>
             <ToastPrimitive.Description
-              className={cn("text-lg font-poppins", textColor(variant))}
+              className={cn(
+                "text-lg font-poppins items-center justify-center",
+                textColor(variant),
+              )}
             >
               {icon(variant)}
-              {description || `This will disappear in ${seconds} seconds.`}
+              {description}
             </ToastPrimitive.Description>
+            {actions
+              ? actions.map((action, index) => (
+                  <ToastPrimitive.Action
+                    key={index}
+                    className={cn(
+                      "text-black-80 text-lg font-poppins",
+                      action.className,
+                    )}
+                    onPress={action.onPress}
+                  >
+                    <CustomText styles={cn("", action.textClassName)}>
+                      {action.text}
+                    </CustomText>
+                  </ToastPrimitive.Action>
+                ))
+              : null}
           </View>
         </ToastPrimitive.Root>
       </View>
@@ -114,28 +153,20 @@ function Toast({ ms, title, description, variant, onClose }: ToastProps) {
   );
 }
 
-type ToastPayload = {
-  id: string;
-  title: string;
-  description: string;
-  ms: number;
-  variant: "info" | "success" | "warning" | "error";
-};
+let addToast: (payload: Omit<ToastPayload, "id" | "onClose">) => void;
 
-let addToast: (payload: Omit<ToastPayload, "id">) => void;
-
-const toast = (payload: Omit<ToastPayload, "id">) => {
+const toast = (payload: Omit<ToastPayload, "id" | "onClose">) => {
   if (addToast) {
     addToast(payload);
   }
 };
 
 const Toaster = () => {
-  const [toasts, setToasts] = useState<ToastPayload[]>([]);
+  const [toasts, setToasts] = useState<Omit<ToastPayload, "onClose">[]>([]);
 
   // Add a new toast to the list
   addToast = (toastProps) => {
-    const id = Math.random().toString(36).substr(2, 9); // Generate a unique ID for the toast
+    const id = Math.random().toString(36).substring(2, 9); // Generate a unique ID for the toast
     setToasts((prevToasts) => [...prevToasts, { ...toastProps, id }]);
   };
 
@@ -149,11 +180,13 @@ const Toaster = () => {
       {toasts.map((toast) => (
         <Toast
           key={toast.id}
+          id={toast.id}
           ms={toast.ms || 3000}
           title={toast.title}
           description={toast.description}
           variant={toast.variant}
           onClose={() => removeToast(toast.id)}
+          actions={toast.actions}
         />
       ))}
     </>
