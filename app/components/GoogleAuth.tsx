@@ -5,7 +5,6 @@ import CustomText from "./CustomText";
 import { images } from "@/constants/images";
 import React from "react";
 import { trpc } from "@/lib/trpc";
-// import { db } from "@/lib/db";
 
 const GoogleAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -15,38 +14,9 @@ const GoogleAuth = () => {
     },
   });
 
-  // const { mutate: addUser } = useMutation({
-  //   mutationKey: ["signUp"],
-  //   mutationFn: ({
-  //     email,
-  //     name,
-  //     clerkId,
-  //   }: {
-  //     email: string;
-  //     name: string;
-  //     clerkId: string;
-  //   }) =>
-  //     trpc.signUp.mutate({
-  //       email,
-  //       name,
-  //       clerkId,
-  //     }),
-  //   onSuccess: () => {
-  //     Alert.alert("Success", "You have successfully signed up!");
-  //   },
-  // });
-
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
     if (result.success) {
-      // await db.user.create({
-      //   data: {
-      //     email: result.data?.email!,
-      //     name: result.data?.name!,
-      //     clerkId: result.data?.clerkId!,
-      //   },
-      // });
-
       addUser({
         email: result.data?.email!,
         name: result.data?.name!,

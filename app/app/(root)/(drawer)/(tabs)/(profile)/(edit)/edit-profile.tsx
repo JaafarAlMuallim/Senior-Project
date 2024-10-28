@@ -86,15 +86,6 @@ const EditProfile = () => {
 
   return (
     <View className="h-full w-full px-4 flex-1 bg-white-default py-8">
-      {/*
-    <View className="flex items-center ">
-        <Image
-          className="w-44 h-44 rounded-full border"
-          source={images.profileImage}
-          resizeMode={"cover"}
-        />
-      </View>
-      */}
       <View className="flex flex-col mt-5 flex-1">
         <Input
           label={"Name"}
