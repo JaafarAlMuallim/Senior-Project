@@ -2,6 +2,7 @@ import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
+// import { db } from "@/lib/db";
 import { trpc } from "@/lib/trpc";
 import { useUserStore } from "@/store/store";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
@@ -56,7 +57,24 @@ const OnBoarding = () => {
   }, [data, isLoading]);
 
   const { mutate } = trpc.profiles.update.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // const profile = await db.profile.create({
+      //   data: {
+      //     phone,
+      //     university,
+      //     major,
+      //     standing,
+      //     userId: user?.id!,
+      //   },
+      // });
+      // db.user.update({
+      //   where: {
+      //     id: user?.id!,
+      //   },
+      //   data: {
+      //     profileId: profile.id,
+      //   },
+      // });
       router.push("/(root)/(drawer)/(tabs)/(home)/home");
     },
   });

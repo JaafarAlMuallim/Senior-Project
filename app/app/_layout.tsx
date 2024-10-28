@@ -17,14 +17,13 @@ import "reflect-metadata";
 import "../global.css";
 import {
   httpBatchLink,
-  loggerLink,
   splitLink,
   unstable_httpSubscriptionLink,
 } from "@trpc/client";
-import { LogBox, Platform } from "react-native";
+import { ActivityIndicator, LogBox, Platform, View } from "react-native";
+// import { initializeDB } from "@/lib/db";
 
 SplashScreen.preventAutoHideAsync();
-// ignore Warn Logs
 
 LogBox.ignoreLogs(["Clerk:", "clerk:"]);
 LogBox.ignoreLogs(["Warning:"]);
@@ -74,6 +73,14 @@ export default function RootLayout() {
     PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
   });
+  // const [isInitialized, setIsInitialized] = useState(false);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await initializeDB();
+  //     setIsInitialized(true);
+  //   })();
+  // }, []);
 
   const url = Platform.select({
     web: "http://localhost:3000/trpc",
@@ -86,35 +93,16 @@ export default function RootLayout() {
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        // loggerLink(),
         splitLink({
-          // uses the httpSubscriptionLink for subscriptions
           condition: (op) => op.type === "subscription",
           true: unstable_httpSubscriptionLink({
             url: url,
-            // eventSourceOptions: async () => {
-            //   return {
-            //     headers: {
-            //       authorization: 'Bearer supersecret',
-            //     },
-            //   }; // you either need to typecast to `EventSourceInit` or use `as any` or override the types by a `declare global` statement
-            // },
           }),
           false: httpBatchLink({
             url: url,
           }),
         }),
-        // httpBatchLink({
-        //   // transformer: superjson, <-- if you use a data transformer
-        //   url: url,
-        // }),
       ],
-      // optional
-      // headers() {
-      //   return {
-      //     // authorization: getAuthCookie(),
-      //   };
-      // },
     }),
   );
 
@@ -126,6 +114,12 @@ export default function RootLayout() {
   }, [loaded]);
 
   console.log(loaded);
+
+  // if (!isInitialized) {
+  //   <View>
+  //     <ActivityIndicator size={"large"} color={"#000"} />
+  //   </View>;
+  // }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

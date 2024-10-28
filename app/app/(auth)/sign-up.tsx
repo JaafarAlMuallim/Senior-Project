@@ -1,5 +1,6 @@
 import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
+import { db } from "@/lib/db";
 import { trpc } from "@/lib/trpc";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
@@ -47,6 +48,13 @@ const SignUp = () => {
       if (completeSignUp?.status === "complete") {
         await setActive!({ session: completeSignUp?.createdSessionId });
         addUser(signUp.createdUserId!);
+        await db.user.create({
+          data: {
+            email,
+            name,
+            clerkId: signUp.createdUserId!,
+          },
+        });
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

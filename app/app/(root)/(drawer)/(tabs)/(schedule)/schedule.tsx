@@ -24,6 +24,7 @@ import { Loader2 } from "lucide-react-native";
 import { Redirect } from "expo-router";
 import { useUserStore } from "@/store/store";
 import { cn } from "@/lib/utils";
+// import { db } from "@/lib/db";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -104,6 +105,20 @@ const Schedule = () => {
     userId: user?.user.id!,
     semester: semester,
   });
+  // const schedule = db.registration.useFindMany({
+  //   where: {
+  //     userId: user?.user.id!,
+  //     semester: semester,
+  //   },
+  //   include: {
+  //     section: {
+  //       include: {
+  //         course: true,
+  //       },
+  //     },
+  //   },
+  // });
+  // console.log(schedule);
 
   const dayNum = format(dateObject, "dd");
   const dayName = dateObject.toLocaleDateString("en-US", {

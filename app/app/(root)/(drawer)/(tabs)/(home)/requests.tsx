@@ -8,6 +8,7 @@ import { formatDistance } from "date-fns";
 
 const RequestsModalPage = () => {
   const { tutor } = useUserStore();
+  const utils = trpc.useUtils();
   const { data: requests, isLoading } =
     trpc.sessions.getPendingSessionTutor.useQuery(
       {
@@ -15,7 +16,6 @@ const RequestsModalPage = () => {
       },
       {
         enabled: !!tutor?.id,
-        refetchInterval: 2000,
       },
     );
 
@@ -30,6 +30,9 @@ const RequestsModalPage = () => {
     }),
       {
         enabled: !!sessionId,
+        onSuccess: () => {
+          utils.sessions.getPendingSessionTutor.invalidate();
+        },
       };
   };
   const declineSession = (sessionId: string) => {

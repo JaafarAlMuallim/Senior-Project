@@ -11,14 +11,7 @@ import {
   UserRound,
 } from "lucide-react-native";
 import { Suspense, useEffect } from "react";
-import {
-  Animated,
-  Easing,
-  FlatList,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
 import { separateNameNum } from "@/lib/utils";
 import { useCoursesStore } from "@/store/coursesStore";
 import { Text } from "@/components/ui/text";
@@ -27,59 +20,45 @@ import { add } from "date-fns";
 
 const Page = () => {
   const { user } = useUser();
-  const { user: userStore, setUser, tutor, setTutor } = useUserStore();
-  const spinValue = new Animated.Value(0);
+  const { user: userStore, tutor, setTutor } = useUserStore();
   const { setRegistrations } = useCoursesStore();
+  console.log(tutor);
 
-  const { data, isLoading } = trpc.profiles.get.useQuery(
+  const { data: userCourses } = trpc.schedule.getSchedule.useQuery(
     {
-      clerkId: user?.id!,
+      userId: userStore?.user.id!,
+      semester: "241",
     },
     {
-      enabled: !!user?.id,
+      enabled: !!userStore?.user.id,
     },
   );
 
-  const { data: isTutorData, isLoading: isTutorLoading } =
-    trpc.tutors.isTutor.useQuery(
-      {
-        userId: userStore?.user.id!,
-      },
-      {
-        enabled: !!userStore?.user.id,
-      },
-    );
+  const { data: isTutor } = trpc.tutors.isTutor.useQuery({
+    userId: userStore?.user.id!,
+  });
 
-  const { data: userCourses, isLoading: coursesLoading } =
-    trpc.schedule.getSchedule.useQuery(
-      {
-        userId: userStore?.user.id!,
-        semester: "241",
-      },
-      {
-        enabled: !!userStore?.user.id,
-      },
-    );
+  if (isTutor && !tutor) {
+    setTutor(isTutor);
+  }
 
-  const { data: sessions, isLoading: sessionsLoading } =
-    trpc.sessions.getAcceptedSessionTutor.useQuery(
-      {
-        tutorId: tutor?.id!,
-      },
-      {
-        enabled: !!tutor?.id,
-      },
-    );
-  const { data: requests, isLoading: requestsLoading } =
-    trpc.sessions.getPendingSessionTutorCount.useQuery(
-      {
-        tutorId: tutor?.id!,
-      },
-      {
-        enabled: !!tutor?.id,
-        refetchInterval: 10000,
-      },
-    );
+  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery(
+    {
+      tutorId: tutor?.id!,
+    },
+    {
+      enabled: !!tutor?.id,
+    },
+  );
+  const { data: requests } = trpc.sessions.getPendingSessionTutorCount.useQuery(
+    {
+      tutorId: tutor?.id!,
+    },
+    {
+      enabled: !!tutor?.id,
+      refetchInterval: 10000,
+    },
+  );
 
   useEffect(() => {
     if (userCourses) {
