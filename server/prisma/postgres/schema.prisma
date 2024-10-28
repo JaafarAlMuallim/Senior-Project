@@ -24,6 +24,14 @@ enum Category {
     OTHER
 }
 
+enum SessionStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+    DONE
+    CANCELLED
+}
+
 model User {
     id           String         @id @default(cuid())
     email        String         @unique
@@ -43,6 +51,7 @@ model User {
     Student      Student[]
     Tutor        Tutor[]
     Groups       Group[]        @relation("GroupToUser")
+    Session      Session[]
 }
 
 model Tutor {
@@ -163,16 +172,19 @@ model Question {
 }
 
 model Session {
-    id        String   @id @default(cuid())
-    courseId  String
-    title     String
-    startTime DateTime
-    tutorId   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    date      DateTime
-    course    Course   @relation(fields: [courseId], references: [id])
-    tutor     Tutor    @relation(fields: [tutorId], references: [id])
+    id          String        @id @default(cuid())
+    courseId    String
+    title       String
+    startTime   DateTime
+    tutorId     String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    date        DateTime
+    status      SessionStatus @default(PENDING)
+    course      Course        @relation(fields: [courseId], references: [id])
+    tutor       Tutor         @relation(fields: [tutorId], references: [id])
+    requester   User          @relation(fields: [requestedBy], references: [id])
+    requestedBy String
 }
 
 model Message {

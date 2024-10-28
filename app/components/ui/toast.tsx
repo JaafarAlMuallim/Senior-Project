@@ -22,7 +22,7 @@ type ToastPayload = {
   description: string;
   ms: number;
   variant: "info" | "success" | "warning" | "error";
-  actions: Action[];
+  actions?: Action[];
   onClose: () => void;
 };
 

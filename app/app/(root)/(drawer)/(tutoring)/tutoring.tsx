@@ -15,7 +15,6 @@ import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 
 const Tutoring = () => {
   const { user } = useUser();
-
   const [course, setCourse] = useState(""); // Fetch courses from DB
   const [grade, setGrade] = useState("");
 

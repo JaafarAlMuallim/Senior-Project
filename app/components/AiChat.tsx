@@ -24,7 +24,6 @@ const AiChat = ({
         refetchInterval: 2000,
       },
     );
-  console.log(lastMessage);
 
   return (
     <TouchableOpacity

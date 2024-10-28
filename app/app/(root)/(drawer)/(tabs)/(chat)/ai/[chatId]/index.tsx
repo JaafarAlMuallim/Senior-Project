@@ -1,6 +1,17 @@
+import { trpc } from "@/lib/trpc";
+import { separateNameNum } from "@/lib/utils";
+import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, View } from "react-native";
+import {
+  Redirect,
+  router,
+  Stack,
+  useLocalSearchParams,
+  usePathname,
+} from "expo-router";
 import { useMemo, useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import {
   Actions,
   ActionsProps,
@@ -17,11 +28,6 @@ import {
   Time,
   TimeProps,
 } from "react-native-gifted-chat";
-import { Redirect, router, Stack, useLocalSearchParams } from "expo-router";
-import { separateNameNum } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
-import { trpc } from "@/lib/trpc";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const Chat = () => {
   const { chatId, name } = useLocalSearchParams<{
@@ -30,6 +36,7 @@ const Chat = () => {
   }>();
 
   const { user } = useUserStore();
+  const pathname = usePathname();
   const [text, setText] = useState("");
   const utils = trpc.useUtils();
   console.log(chatId);
@@ -197,8 +204,9 @@ const Chat = () => {
     );
   };
 
-  if (!chatId || !name) {
-    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
+  if ((!chatId || !name) && pathname.includes("chat")) {
+    console.log("Redirecting to chats");
+    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)/chats" />;
   }
 
   return (

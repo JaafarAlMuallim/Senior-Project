@@ -68,6 +68,25 @@ export const tutorRouter = router({
     });
     return courseTutors;
   }),
+  isTutor: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const { userId } = input;
+      const tutor = await postgresClient.tutor.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      if (!tutor) {
+        return false;
+      }
+      return tutor;
+    }),
 
   // removeTutor: publicProcedure
   //   .input(

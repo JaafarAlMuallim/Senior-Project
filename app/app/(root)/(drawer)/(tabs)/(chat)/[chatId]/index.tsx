@@ -1,6 +1,23 @@
+import {
+  useLiveMessages,
+  useThrottledIsTypingMutation,
+  useWhoIsTyping,
+} from "@/hooks/useChats";
+import { trpc } from "@/lib/trpc";
+import { separateNameNum } from "@/lib/utils";
+import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  Redirect,
+  router,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  usePathname,
+} from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import {
   Actions,
   ActionsProps,
@@ -17,22 +34,6 @@ import {
   Time,
   TimeProps,
 } from "react-native-gifted-chat";
-import {
-  Redirect,
-  router,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-} from "expo-router";
-import { separateNameNum } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
-import {
-  useLiveMessages,
-  useThrottledIsTypingMutation,
-  useWhoIsTyping,
-} from "@/hooks/useChats";
-import { trpc } from "@/lib/trpc";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const Chat = () => {
   const { chatId, name } = useLocalSearchParams<{
@@ -44,6 +45,7 @@ const Chat = () => {
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const utils = trpc.useUtils();
+  const pathname = usePathname();
 
   const isTypingMutation = useThrottledIsTypingMutation(chatId!, user?.user.id);
 
@@ -312,8 +314,9 @@ const Chat = () => {
     );
   };
 
-  if (!chatId || !name) {
-    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)" />;
+  if ((!chatId || !name) && pathname.includes("chat")) {
+    console.log("Redirecting to chats");
+    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)/chats" />;
   }
 
   return (
