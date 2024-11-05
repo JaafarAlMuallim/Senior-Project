@@ -1,101 +1,231 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
 
-export default function Home() {
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  ChartContainer,
+  ChartTooltipContent,
+  ChartLegendContent,
+} from "../components/ui/chart";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "../components/ui/table";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "../components/ui/tabs";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+
+const MainDashboard = () => {
+  const [viewMode, setViewMode] = useState("table");
+
+  const users = [
+    {
+      id: "12345",
+      email: "example1@gmail.com",
+      name: "Ahmed Abdullah",
+      date: "2024/12/06",
+    },
+    {
+      id: "12445",
+      email: "example2@gmail.com",
+      name: "Saed Wael",
+      date: "2024/12/06",
+    },
+    {
+      id: "15345",
+      email: "example3@gmail.com",
+      name: "Ali Hassan",
+      date: "2024/12/06",
+    },
+    {
+      id: "18345",
+      email: "example4@gmail.com",
+      name: "Ahmed Mohammed",
+      date: "2024/12/06",
+    },
+  ];
+
+  const groups = [
+    { id: "12345", name: "ICS 485", courseId: "23945", date: "2024/12/06" },
+    { id: "12445", name: "IAS 322", courseId: "56070", date: "2024/12/06" },
+    { id: "15345", name: "ISE 291", courseId: "55966", date: "2024/12/06" },
+    { id: "18345", name: "SWE 316", courseId: "15967", date: "2024/12/06" },
+  ];
+
+  const messagesInGroupsData = [
+    { day: "2024-11-01", messages: 30 },
+    { day: "2024-11-02", messages: 45 },
+    { day: "2024-11-03", messages: 50 },
+  ];
+
+  const messagesInAIData = [
+    { day: "2024-11-01", messages: 10 },
+    { day: "2024-11-02", messages: 20 },
+    { day: "2024-11-03", messages: 15 },
+  ];
+
+  const renderTableContent = (contentType) => {
+    if (contentType === "users") {
+      return (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Date Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.date}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    } else if (contentType === "groups") {
+      return (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Course ID</TableHead>
+              <TableHead>Date Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {groups.map((group) => (
+              <TableRow key={group.id}>
+                <TableCell>{group.id}</TableCell>
+                <TableCell>{group.name}</TableCell>
+                <TableCell>{group.courseId}</TableCell>
+                <TableCell>{group.date}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    }
+  };
+
+  const renderChartContent = (contentType) => {
+    const data =
+      contentType === "messagesInGroups"
+        ? messagesInGroupsData
+        : messagesInAIData;
+    const color = contentType === "messagesInGroups" ? "#4f46e5" : "#f97316";
+    const label =
+      contentType === "messagesInGroups"
+        ? "Messages in Groups"
+        : "Messages in AI";
+
+    return (
+      <ChartContainer config={{ messages: { label: "Messages", color } }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" />
+            <YAxis />
+            <Tooltip content={<ChartTooltipContent />} />
+            <Legend content={<ChartLegendContent />} />
+            <Line type="monotone" dataKey="messages" stroke={color} />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartContainer>
+    );
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Tabs defaultValue="users">
+      <div className="flex h-screen">
+        {/* Sidebar Tabs */}
+        <div className="w-1/5 p-4 bg-gray-100 flex flex-col items-start space-y-4">
+          <TabsList className="flex-col space-y-2 w-full">
+            {viewMode === "table" ? (
+              <>
+                <TabsTrigger value="users">Table of Users</TabsTrigger>
+                <TabsTrigger value="groups">Table of Groups</TabsTrigger>
+              </>
+            ) : (
+              <>
+                <TabsTrigger value="messagesInGroups">
+                  Chart - Messages in Groups
+                </TabsTrigger>
+                <TabsTrigger value="messagesInAI">
+                  Chart - Messages in AI
+                </TabsTrigger>
+              </>
+            )}
+          </TabsList>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Button
+            onClick={() =>
+              setViewMode(viewMode === "table" ? "chart" : "table")
+            }
+            className="w-full mt-4"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {viewMode === "table"
+              ? "Switch to Chart Mode"
+              : "Switch to Table Mode"}
+          </Button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Content Area */}
+        <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
+          {/* Search and Filter Section */}
+          <div className="flex items-center space-x-4 mb-4">
+            <Input placeholder="Filter emails or IDs..." className="flex-1" />
+            <Button>Columns</Button>
+          </div>
+
+          {viewMode === "table" ? (
+            <>
+              <TabsContent value="users">
+                {renderTableContent("users")}
+              </TabsContent>
+              <TabsContent value="groups">
+                {renderTableContent("groups")}
+              </TabsContent>
+            </>
+          ) : (
+            <>
+              <TabsContent value="messagesInGroups">
+                {renderChartContent("messagesInGroups")}
+              </TabsContent>
+              <TabsContent value="messagesInAI">
+                {renderChartContent("messagesInAI")}
+              </TabsContent>
+            </>
+          )}
+        </div>
+      </div>
+    </Tabs>
   );
-}
+};
+
+export default MainDashboard;
