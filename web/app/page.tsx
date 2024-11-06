@@ -1,4 +1,4 @@
-// app/page.tsx
+
 "use client";
 
 import React, { useState } from "react";
@@ -31,13 +31,33 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../components/ui/tabs";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu"
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { DataTable } from "../components/ui/data-table";
+import { FaUser, FaUsers, FaClipboardList } from 'react-icons/fa';
+import { MoreHorizontal, ArrowUpDown } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+
+// types just for experiment
+type Users = {
+    id: string
+    email: string
+    name: string
+    date: string
+}
 
 const MainDashboard = () => {
   const [viewMode, setViewMode] = useState("table");
 
-  const users = [
+  const users: Users[] = [
     {
       id: "12345",
       email: "example1@gmail.com",
@@ -71,6 +91,13 @@ const MainDashboard = () => {
     { id: "18345", name: "SWE 316", courseId: "15967", date: "2024/12/06" },
   ];
 
+    const reports = [
+        { id: "12345", title: "Forgot password", category: "Security", date: "2024/12/06" },
+        { id: "12445", title: "University integration", category: "Suggestion", date: "2024/12/06" },
+        { id: "15345", title: "App crashed", category: "Bug", date: "2024/12/06" },
+        { id: "18345", title: "Forgot password", category: "Security", date: "2024/12/06" },
+    ];
+
   const messagesInGroupsData = [
     { day: "2024-11-01", messages: 30 },
     { day: "2024-11-02", messages: 45 },
@@ -81,31 +108,248 @@ const MainDashboard = () => {
     { day: "2024-11-01", messages: 10 },
     { day: "2024-11-02", messages: 20 },
     { day: "2024-11-03", messages: 15 },
-  ];
+    ];
+
+    const columns: ColumnDef<Users>[] = [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
+        {
+            accessorKey: "id",
+            header: "ID",
+        },
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+        },
+        {
+            accessorKey: "email",
+            header: "Email",
+        },
+        {
+            accessorKey: "date",
+            header: "Date Created",
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const user = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(user.name)}
+                            >
+                                Copy user name
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Remove user</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            },
+        },
+    ]
+
+    const columnsGroups = [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
+        {
+            accessorKey: "id",
+            header: "ID",
+        },
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+        },
+        {
+            accessorKey: "courseId",
+            header: "Course ID",
+        },
+        {
+            accessorKey: "date",
+            header: "Date Created",
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const group = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(group.name)}
+                            >
+                                Copy group name
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Remove group</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            },
+        },
+    ]
+
+    const columnsReports = [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
+        {
+            accessorKey: "id",
+            header: "ID",
+        },
+        {
+            accessorKey: "title",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Title
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
+        },
+        {
+            accessorKey: "category",
+            header: "Category",
+        },
+        {
+            accessorKey: "date",
+            header: "Date Created",
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const report = row.original
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(report.name)}
+                            >
+                                Copy report name
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Remove report</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )
+            },
+        },
+    ]
 
   const renderTableContent = (contentType) => {
     if (contentType === "users") {
       return (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Date Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.date}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          <div className="container mx-auto py-10">
+              <DataTable columns={columns} data={users} />
+          </div>
       );
     } else if (contentType === "groups") {
       return (
@@ -161,70 +405,46 @@ const MainDashboard = () => {
   };
 
   return (
-    <Tabs defaultValue="users">
-      <div className="flex h-screen">
-        {/* Sidebar Tabs */}
-        <div className="w-1/5 p-4 bg-gray-100 flex flex-col items-start space-y-4">
-          <TabsList className="flex-col space-y-2 w-full">
-            {viewMode === "table" ? (
-              <>
-                <TabsTrigger value="users">Table of Users</TabsTrigger>
-                <TabsTrigger value="groups">Table of Groups</TabsTrigger>
-              </>
-            ) : (
-              <>
-                <TabsTrigger value="messagesInGroups">
-                  Chart - Messages in Groups
-                </TabsTrigger>
-                <TabsTrigger value="messagesInAI">
-                  Chart - Messages in AI
-                </TabsTrigger>
-              </>
-            )}
+      <Tabs defaultValue="users" className="mt-12 mx-2  flex-col">
+          <TabsList className=" flex-col">
+              <TabsTrigger className=" flex-col px-6" value="users">
+                      <FaUser />
+                      <div className="text-sm">Users</div>
+              </TabsTrigger>
+              <TabsTrigger className=" flex-col px-6" value="groups">
+                  <FaUsers />
+                  <div className="text-sm">Groups</div>
+              </TabsTrigger>
+              <TabsTrigger className=" flex-col px-6" value="reports">
+                  <FaClipboardList />
+                  <div className="text-sm">Reports</div>
+              </TabsTrigger>
           </TabsList>
-
-          <Button
-            onClick={() =>
-              setViewMode(viewMode === "table" ? "chart" : "table")
-            }
-            className="w-full mt-4"
-          >
-            {viewMode === "table"
-              ? "Switch to Chart Mode"
-              : "Switch to Table Mode"}
-          </Button>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 p-8 bg-gray-50 overflow-y-auto">
-          {/* Search and Filter Section */}
-          <div className="flex items-center space-x-4 mb-4">
-            <Input placeholder="Filter emails or IDs..." className="flex-1" />
-            <Button>Columns</Button>
+          <TabsContent value="users">
+          <div className="pl-28">
+                  <div className="text-2xl">Table of users</div>
+                  <div className="container mx-auto py-10">
+                      <DataTable columns={columns} data={users} placeholder="Filter emails.." tcolumn="email" />
+                  </div>
           </div>
-
-          {viewMode === "table" ? (
-            <>
-              <TabsContent value="users">
-                {renderTableContent("users")}
-              </TabsContent>
-              <TabsContent value="groups">
-                {renderTableContent("groups")}
-              </TabsContent>
-            </>
-          ) : (
-            <>
-              <TabsContent value="messagesInGroups">
-                {renderChartContent("messagesInGroups")}
-              </TabsContent>
-              <TabsContent value="messagesInAI">
-                {renderChartContent("messagesInAI")}
-              </TabsContent>
-            </>
-          )}
-        </div>
-      </div>
-    </Tabs>
+          </TabsContent>
+          <TabsContent value="groups">
+              <div className="pl-28">
+                  <div className="text-2xl">Table of groups</div>
+                  <div className="container mx-auto py-10">
+                      <DataTable columns={columnsGroups} data={groups} placeholder="Filter course name.." tcolumn="name" />
+                  </div>
+              </div>
+          </TabsContent>
+          <TabsContent value="reports">
+              <div className="pl-28">
+                  <div className="text-2xl">Table of reports</div>
+                  <div className="container mx-auto py-10">
+                      <DataTable columns={columnsReports} data={reports} placeholder="Filter category.." tcolumn="category" />
+                  </div>
+              </div>
+          </TabsContent>
+      </Tabs>
   );
 };
 
