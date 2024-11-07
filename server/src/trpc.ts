@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User } from "@prisma/postgres/client";
 import { initTRPC } from "@trpc/server";
 import * as trpcExpress from "@trpc/server/adapters/express";
 

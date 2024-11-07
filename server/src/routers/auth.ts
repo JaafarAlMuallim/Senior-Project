@@ -1,6 +1,6 @@
-import { db } from "../db";
 import { z } from "zod";
-import { publicProcedure } from "../trpc";
+import { postgresClient } from "../db";
+import { publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -11,14 +11,14 @@ export const profileSchema = z.object({
   phone: z.string(),
 });
 
-export const authRouter = {
+export const authRouter = router({
   signUp: publicProcedure
     .input(
       z.object({
         email: z.string(),
         name: z.string(),
         clerkId: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const { email, name, clerkId } = input;
@@ -27,7 +27,7 @@ export const authRouter = {
           throw new Error("Missing required fields");
         }
         console.log(email, name, clerkId);
-        const checker = await db.user.findUnique({
+        const checker = await postgresClient.user.findUnique({
           where: {
             clerkId,
           },
@@ -35,19 +35,19 @@ export const authRouter = {
         if (checker) {
           throw new Error("Clerk ID already exists, Login");
         }
-        const data = await db.user.create({
+        const data = await postgresClient.user.create({
           data: {
             email,
             name,
             clerkId,
           },
         });
-        const profile = await db.profile.create({
+        const profile = await postgresClient.profile.create({
           data: {
             userId: clerkId,
           },
         });
-        await db.user.update({
+        await postgresClient.user.update({
           where: {
             clerkId,
           },
@@ -61,4 +61,4 @@ export const authRouter = {
         throw error;
       }
     }),
-};
+});

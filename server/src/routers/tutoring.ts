@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { db } from "../db";
-import { publicProcedure } from "../trpc";
+import { postgresClient } from "../db";
+import { publicProcedure, router } from "../trpc";
 
-export const tutorRouter = {
+export const tutorRouter = router({
   addTutor: publicProcedure // TODO: Change to authProcedure
     .input(
       z.object({
@@ -13,7 +13,7 @@ export const tutorRouter = {
     )
     .mutation(async ({ input, ctx }) => {
       const { userId, courseId, grade } = input;
-      let tutor = await db.tutor.findFirst({
+      let tutor = await postgresClient.tutor.findFirst({
         where: {
           userId,
         },
@@ -22,7 +22,7 @@ export const tutorRouter = {
       if (!tutor) {
         console.log("Creating tutor");
         try {
-          tutor = await db.tutor.create({
+          tutor = await postgresClient.tutor.create({
             data: {
               userId,
             },
@@ -33,7 +33,7 @@ export const tutorRouter = {
         }
       }
 
-      const courseTutor = await db.courseTutor.findFirst({
+      const courseTutor = await postgresClient.courseTutor.findFirst({
         where: {
           courseId,
           tutorId: tutor.id,
@@ -44,7 +44,7 @@ export const tutorRouter = {
         throw new Error("Tutor already exists");
       }
 
-      const result = await db.courseTutor.create({
+      const result = await postgresClient.courseTutor.create({
         data: {
           courseId,
           tutorId: tutor.id,
@@ -55,22 +55,59 @@ export const tutorRouter = {
       return result;
     }),
 
-  // listTutors: publicProcedure
-  //   .input(
-  //     z.object({
-  //       courseId: z.string(),
-  //     })
-  //   )
-  //   .query(async ({ input, ctx }) => {
-  //     const { courseId } = input;
-  //     const tutors = await db.courseTutor.findMany({
-  //       where: {
-  //         courseId,
-  //       },
-  //     });
-  //     return tutors;
-  //   }),
-  //
+  getTutorsCourse: publicProcedure.query(async ({ input, ctx }) => {
+    const courseTutors = await postgresClient.courseTutor.findMany({
+      include: {
+        tutor: {
+          include: {
+            user: true,
+          },
+        },
+        course: true,
+      },
+    });
+    return courseTutors;
+  }),
+  isTutor: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { userId } = input;
+      const tutor = await postgresClient.tutor.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      if (!tutor) {
+        return false;
+      }
+      return tutor;
+    }),
+  getTutorsCourseById: publicProcedure
+    .input(
+      z.object({
+        tutorId: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { tutorId } = input;
+      console.log;
+      const tutorCourses = await postgresClient.courseTutor.findMany({
+        where: {
+          tutorId,
+        },
+        include: {
+          course: true,
+        },
+      });
+      console.log(tutorCourses);
+      return tutorCourses;
+    }),
+
   // removeTutor: publicProcedure
   //   .input(
   //     z.object({
@@ -79,11 +116,11 @@ export const tutorRouter = {
   //   )
   //   .mutation(async ({ input, ctx }) => {
   //     const { courseTutorId } = input;
-  //     const result = await db.courseTutor.delete({
+  //     const result = await postgresClient.courseTutor.delete({
   //       where: {
   //         id: courseTutorId,
   //       },
   //     });
   //     return result;
   //   }),
-};
+});

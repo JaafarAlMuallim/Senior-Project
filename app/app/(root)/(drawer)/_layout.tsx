@@ -1,10 +1,9 @@
 import { Drawer } from "expo-router/drawer";
-import { ChevronLeft } from "lucide-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomDrawerContent from "@/components/CustomDrawerContent";
-import CustomText from "@/components/CustomText";
-import { SafeAreaView, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 const RootLayout = () => {
   return (
@@ -15,32 +14,36 @@ const RootLayout = () => {
         backBehavior="history"
       >
         <Drawer.Screen
-          name="tutoring"
+          name="(tutoring)/tutoring"
           options={{
             title: "Tutoring",
             headerShown: true,
-            header: () => (
-              <SafeAreaView className="px-4">
-                <View className="flex flex-row items-center">
-                  <View className="w-1/6">
-                    <TouchableOpacity
-                      className=""
-                      onPress={() => {
-                        console.log("Back button pressed");
-                        router.back();
-                      }}
-                    >
-                      <ChevronLeft size={32} color={"#4561FF"} />
-                    </TouchableOpacity>
-                  </View>
-                  <View className="flex-1 items-center">
-                    <CustomText styles="text-2xl text-primary-light">
-                      Tutoring
-                    </CustomText>
-                  </View>
-                  <View className="w-1/6"></View>
-                </View>
-              </SafeAreaView>
+            headerTitleStyle: {
+              color: "#4561FF", // #4561FF
+              fontSize: 20,
+              fontFamily: "PoppinsBold",
+            },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()} className="mx-4">
+                <Ionicons name="chevron-back" size={24} color={"#4561FF"} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="(booking)/booking"
+          options={{
+            title: "Booking",
+            headerShown: true,
+            headerTitleStyle: {
+              color: "#4561FF", // #4561FF
+              fontSize: 20,
+              fontFamily: "PoppinsBold",
+            },
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => router.back()} className="mx-8">
+                <Ionicons name="close" size={24} color={"#4561FF"} />
+              </TouchableOpacity>
             ),
           }}
         />

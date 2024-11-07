@@ -1,13 +1,11 @@
 import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
+import { trpc } from "@/lib/trpc";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
-import { Mail, UserRound, LockKeyhole, ShieldCheck } from "lucide-react-native";
-import { useState } from "react";
-import { Alert, Modal, TouchableOpacity, View } from "react-native";
-import { onSignUp } from "./actions";
-import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import { LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react-native";
+import React, { useState } from "react";
+import { Modal, TouchableOpacity, View } from "react-native";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -19,14 +17,8 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
 
-  const { mutate: addUser } = useMutation({
-    mutationKey: ["signUp", email],
-    mutationFn: (clerkId: string) => onSignUp({ email, name, clerkId }),
-    onSuccess: () => {
-      Alert.alert("Success", "You have successfully signed up!");
-    },
-  });
-
+  const { mutate } = trpc.auth.signUp.useMutation();
+  const addUser = (clerkId: string) => mutate({ email, name, clerkId });
   const onSignUpPress = async () => {
     if (!isLoaded) return;
 
@@ -118,7 +110,7 @@ const SignUp = () => {
         </Input>
       </View>
       <TouchableOpacity
-        className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+        className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
         onPress={() => {
           onSignUpPress();
         }}
@@ -144,7 +136,7 @@ const SignUp = () => {
             <ShieldCheck />
           </Input>
           <TouchableOpacity
-            className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-default"
+            className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light"
             onPress={onPressVerifiy}
           >
             <CustomText styles="text-primary-white font-poppinsBold text-lg">

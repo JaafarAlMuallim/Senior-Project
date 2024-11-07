@@ -4,24 +4,40 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "ts-node prisma/seed.ts",
+    "postgres:dbpush": "npx prisma db push --schema ./prisma/postgres/schema.prisma",
+    "postgres:generate": "npx prisma generate --schema ./prisma/postgres/schema.prisma",
+    "postgres:studio": "npx prisma studio --schema ./prisma/postgres/schema.prisma",
+    "postgres:dbpull": "npx prisma db pull --schema ./prisma/postgres/schema.prisma",
+    "mongo:dbpush": "npx prisma db push --schema ./prisma/mongo/schema.prisma",
+    "mongo:generate": "npx prisma generate --schema ./prisma/mongo/schema.prisma",
+    "mongo:studio": "npx prisma studio --schema ./prisma/mongo/schema.prisma",
+    "mongo:dbpull": "npx prisma db pull --schema ./prisma/mongo/schema.prisma",
+    "prisma:generate:db_clients": "prisma generate --schema prisma/postgres/schema.prisma && prisma generate --schema prisma/mongo/schema.prisma"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^5.19.1",
-    "@trpc/server": "^10.45.2",
-    "express": "^4.20.0",
+    "@google/generative-ai": "^0.21.0",
+    "@prisma/client": "^5.21.1",
+    "@trpc/server": "11.0.0-rc.552",
+    "express": "^4.21.1",
     "express-router": "^0.0.1",
-    "prisma": "^5.19.1",
+    "ioredis": "^5.4.1",
+    "prisma": "^5.21.1",
+    "puppeteer": "^23.6.1",
+    "puppeteer-core": "^23.6.1",
+    "server": "file:",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
-    "@types/node": "^22.5.4",
+    "@types/node": "^22.8.1",
+    "supabase": "^1.207.9",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.3"
   }
 }

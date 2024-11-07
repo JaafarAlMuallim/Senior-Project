@@ -1,22 +1,33 @@
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { trpc } from "@/lib/trpc";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import "../global.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
-import "react-native-reanimated";
-import * as SplashScreen from "expo-splash-screen";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useEffect } from "react";
 import { Stack } from "expo-router";
-import { ClerkProvider, ClerkLoaded } from "@clerk/clerk-expo";
+import * as SecureStore from "expo-secure-store";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect, useState } from "react";
+import "react-native-reanimated";
 import "reflect-metadata";
-import React from "react";
+import "../global.css";
+import {
+  httpBatchLink,
+  splitLink,
+  unstable_httpSubscriptionLink,
+} from "@trpc/client";
+import { ActivityIndicator, LogBox, Platform, View } from "react-native";
+// import { initializeDB } from "@/lib/db";
 
 SplashScreen.preventAutoHideAsync();
+
+LogBox.ignoreLogs(["Clerk:", "clerk:"]);
+LogBox.ignoreLogs(["Warning:"]);
+LogBox.ignoreLogs(["fontFamily"]);
 
 const tokenCache = {
   async getToken(key: string) {
@@ -52,16 +63,48 @@ if (!publishableKey) {
 }
 
 export default function RootLayout() {
-  console.log("RootLayout");
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    Poppins: require("../assets/fonts/Poppins-Regular.ttf"),
-    PoppinsBold: require("../assets/fonts/Poppins-Bold.ttf"),
-    PoppinsItalic: require("../assets/fonts/Poppins-Italic.ttf"),
-    PoppinsRegular: require("../assets/fonts/Poppins-Regular.ttf"),
-    PoppinsSemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
+    PoppinsBlack: require("../assets/fonts/PoppinsBlack.ttf"),
+    Poppins: require("../assets/fonts/PoppinsRegular.ttf"),
+    PoppinsBold: require("../assets/fonts/PoppinsBold.ttf"),
+    PoppinsItalic: require("../assets/fonts/PoppinsItalic.ttf"),
+    PoppinsMedium: require("../assets/fonts/PoppinsMedium.ttf"),
+    PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
+    PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
   });
-  const queryClient = new QueryClient();
+  // const [isInitialized, setIsInitialized] = useState(false);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     await initializeDB();
+  //     setIsInitialized(true);
+  //   })();
+  // }, []);
+
+  const url = Platform.select({
+    web: "http://localhost:3000/trpc",
+    ios: "http://localhost:3000/trpc",
+    android: "http://10.0.2.2:3000/trpc",
+    default: "http://localhost:3000/trpc",
+  });
+
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        splitLink({
+          condition: (op) => op.type === "subscription",
+          true: unstable_httpSubscriptionLink({
+            url: url,
+          }),
+          false: httpBatchLink({
+            url: url,
+          }),
+        }),
+      ],
+    }),
+  );
 
   useEffect(() => {
     if (loaded) {
@@ -70,31 +113,35 @@ export default function RootLayout() {
     console.log(loaded);
   }, [loaded]);
 
-  if (!loaded) {
-    console.log(loaded);
-    return null;
-  }
   console.log(loaded);
+
+  // if (!isInitialized) {
+  //   <View>
+  //     <ActivityIndicator size={"large"} color={"#000"} />
+  //   </View>;
+  // }
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-        <QueryClientProvider client={queryClient}>
-          <ClerkLoaded>
-            <Stack
-              initialRouteName="index"
-              screenOptions={{ headerShown: false }}
-            >
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(root)" />
-              <Stack.Screen
-                name="+not-found"
-                options={{ headerShown: false }}
-              />
-            </Stack>
-          </ClerkLoaded>
-        </QueryClientProvider>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <ClerkLoaded>
+              <Stack
+                initialRouteName="index"
+                screenOptions={{ headerShown: false }}
+              >
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(root)" />
+                <Stack.Screen
+                  name="+not-found"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </ClerkLoaded>
+          </QueryClientProvider>
+        </trpc.Provider>
       </ClerkProvider>
     </ThemeProvider>
   );

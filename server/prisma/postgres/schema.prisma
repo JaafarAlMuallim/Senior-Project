@@ -1,0 +1,276 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../node_modules/@prisma/postgres/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("POSTGRES_DATABASE_URL")
+}
+
+enum type {
+    AI
+    GROUP
+    INDIVIDUAL
+}
+
+enum Category {
+    SLIDE
+    HW
+    BOOK
+    EXAM
+    QUIZ
+    IMG
+    OTHER
+}
+
+enum SessionStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+    DONE
+    CANCELLED
+}
+
+model User {
+    id           String         @id @default(cuid())
+    email        String         @unique
+    name         String
+    clerkId      String         @unique @default(cuid())
+    password     String?
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    profileId    String?
+    groupId      String?
+    Admin        Admin[]
+    Feedback     Feedback[]
+    Message      Message[]
+    Notification Notification[]
+    Profile      Profile?
+    Registration Registration[]
+    Student      Student[]
+    Tutor        Tutor[]
+    Groups       Group[]        @relation("GroupToUser")
+    Session      Session[]
+}
+
+model Tutor {
+    id           String         @id @default(cuid())
+    userId       String
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    Availability Availability[]
+    CourseTutor  CourseTutor[]
+    Session      Session[]
+    user         User           @relation(fields: [userId], references: [id])
+}
+
+model Course {
+    id          String        @id @default(cuid())
+    name        String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    code        String
+    Assistant   Assistant?
+    CourseTutor CourseTutor[]
+    Group       Group?        @relation(fields: [groupId], references: [id])
+    Material    Material[]
+    Quiz        Quiz[]
+    Section     Section[]
+    Session     Session[]
+    groupId     String?
+}
+
+model Section {
+    id           String         @id @default(cuid())
+    title        String
+    courseId     String
+    startTime    DateTime
+    endTime      DateTime
+    createdAt    DateTime       @default(now())
+    updatedAt    DateTime       @updatedAt
+    recurrence   String?
+    instructor   String?        @default("TBD")
+    location     String?        @default("TBD")
+    groupId      String?
+    registration Registration[]
+    course       Course         @relation(fields: [courseId], references: [id])
+    Group        Group?         @relation(fields: [groupId], references: [id])
+}
+
+model CourseTutor {
+    id        String   @id @default(cuid())
+    courseId  String
+    tutorId   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    grade     String
+    course    Course   @relation(fields: [courseId], references: [id])
+    tutor     Tutor    @relation(fields: [tutorId], references: [id])
+}
+
+model Student {
+    id        String   @id @default(cuid())
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Admin {
+    id        String   @id @default(cuid())
+    userId    String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+    id         String   @id @default(cuid())
+    userId     String   @unique
+    major      String?
+    phone      String?
+    university String?
+    standing   String?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    user       User     @relation(fields: [userId], references: [clerkId])
+}
+
+model Material {
+    id        String   @id @default(cuid())
+    url       String
+    size      Float
+    courseId  String
+    name      String
+    category  Category
+    fileType  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    tagId     String?
+    course    Course   @relation(fields: [courseId], references: [id])
+    Tag       Tag?     @relation(fields: [tagId], references: [id])
+}
+
+model Quiz {
+    id        String     @id @default(cuid())
+    courseId  String
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    Question  Question[]
+    course    Course     @relation(fields: [courseId], references: [id])
+}
+
+model Question {
+    id            String   @id @default(cuid())
+    options       String[]
+    correctAnswer String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    quizId        String?
+    Quiz          Quiz?    @relation(fields: [quizId], references: [id])
+}
+
+model Session {
+    id          String        @id @default(cuid())
+    courseId    String
+    title       String
+    startTime   DateTime
+    tutorId     String
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+    date        DateTime
+    status      SessionStatus @default(PENDING)
+    course      Course        @relation(fields: [courseId], references: [id])
+    tutor       Tutor         @relation(fields: [tutorId], references: [id])
+    requester   User?         @relation(fields: [requestedBy], references: [id])
+    requestedBy String?
+}
+
+model Message {
+    id        String   @id @default(cuid())
+    text      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    senderId  String
+    groupId   String
+    group     Group    @relation(fields: [groupId], references: [id])
+    sender    User     @relation(fields: [senderId], references: [id])
+}
+
+model Group {
+    id        String    @id @default(cuid())
+    name      String
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    courseId  String
+    course    Course[]
+    Message   Message[]
+    Section   Section[]
+    Users     User[]    @relation("GroupToUser")
+    type      type      @default(GROUP)
+}
+
+model Notification {
+    id        String   @id @default(cuid())
+    content   String
+    seen      Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Feedback {
+    id        String   @id @default(cuid())
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Assistant {
+    id        String   @id @default(cuid())
+    courseId  String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Report {
+    id        String   @id @default(cuid())
+    content   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Tag {
+    id        String     @id @default(cuid())
+    name      String
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    material  Material[]
+}
+
+model Registration {
+    id        String   @id @default(cuid())
+    sectionId String
+    userId    String
+    semester  String   @default("241")
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    section   Section  @relation(fields: [sectionId], references: [id])
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Availability {
+    id        String   @id @default(cuid())
+    day       String
+    startTime DateTime
+    endTime   DateTime
+    tutorId   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    tutor     Tutor    @relation(fields: [tutorId], references: [id])
+}

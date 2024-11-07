@@ -14,7 +14,7 @@ import CustomText from "./CustomText";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react-native";
 
-type OptionItem = {
+export type OptionItem = {
   value: string;
   label: string;
 };
@@ -25,21 +25,25 @@ interface DropdownProps {
   placeholder: string;
   icon?: ReactNode;
   label: string;
+  value?: OptionItem;
 }
 
 const Dropdown = ({
   data,
   onChange,
+  value,
   placeholder,
   icon,
   label,
 }: DropdownProps) => {
   const [expanded, setExpanded] = useState(false);
 
-  const [curr, setCurr] = useState<OptionItem | null>();
+  const [curr, setCurr] = useState<OptionItem | null>(value || null);
 
   const buttonRef = useRef<View>(null);
 
+  const [top, setTop] = useState(0);
+  
   const toggleExpanded = useCallback(() => {
     if (buttonRef.current) {
       buttonRef.current.measure((fx, fy, width, height, px, py) => {
@@ -49,7 +53,7 @@ const Dropdown = ({
     setExpanded(!expanded);
   }, [expanded]);
 
-  const [top, setTop] = useState(0);
+  
 
   const onSelect = useCallback((item: OptionItem) => {
     onChange(item);
@@ -63,7 +67,7 @@ const Dropdown = ({
         <TouchableOpacity
           className={cn(
             "h-14 flex flex-row justify-between items-center px-4 border rounded-lg",
-            expanded ? "border-blue-600" : "",
+            expanded ? "border-primary-light" : "",
           )}
           activeOpacity={0.8}
           onPress={toggleExpanded}
@@ -89,14 +93,14 @@ const Dropdown = ({
                   <FlatList
                     keyExtractor={(item) => item.value}
                     data={data}
-                    ItemSeparatorComponent={() => (
-                      <View className="border-0.5 border-black flex flex-row w-full self-center opacity-50" />
-                    )}
+                    // ItemSeparatorComponent={() => (
+                    //   <View className="border-0.5 border-black flex flex-row w-full self-center opacity-50" />
+                    // )}
                     renderItem={({ item }) => (
                       <TouchableOpacity
                         activeOpacity={0.8}
                         className={cn(
-                          "h-10 flex justify-start items-start bg-white flex-row py-1.5 rounded-md",
+                          "h-10 flex justify-start items-start bg-white flex-row py-1.5 px-1 rounded-md",
                           item.value === curr?.value ? "bg-zinc-200" : "",
                         )}
                         onPress={() => onSelect(item)}

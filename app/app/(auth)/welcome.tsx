@@ -7,18 +7,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function WelcomePage() {
   return (
-    <SafeAreaView className="flex-1 items-center justify-center bg-white-default">
-      <View className="w-full px-4 flex-1 justify-center gap-8 bg-white">
-        <CustomText styles={"text-2xl px-8"}>Welcome to</CustomText>
-        <Text className={"text-primary-light text-5xl font-bold mt-2"}>
+    <SafeAreaView className="px-8 flex-1 items-center justify-center bg-white-default h-full">
+      <View className="w-full px-4 flex-1 justify-center bg-white h-full">
+        <CustomText styles={"text-2xl my-2"}>Welcome to</CustomText>
+        <CustomText styles={"text-primary-light text-4xl font-bold my-2"}>
           EduLink
-        </Text>
+        </CustomText>
         <View>
           <CustomText styles={"text-xl text-wrap"}>
             A place where you can learn, grow and connect with others.
           </CustomText>
         </View>
-        <Text className={"text-xl"}>Let’s Get Started...</Text>
+        <CustomText styles={"text-xl my-8"}>Let’s Get Started...</CustomText>
         <View>
           <GoogleAuth />
           <TouchableOpacity
@@ -37,11 +37,9 @@ export default function WelcomePage() {
           <TouchableOpacity
             className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
             onPress={() => {
-              router.push("/profile");
+              router.push("");
             }}
-          >
-            
-          </TouchableOpacity>
+          ></TouchableOpacity>
         </View>
         <CustomText styles={"text-lg text-center mt-4"}>
           Already have an account?{" "}

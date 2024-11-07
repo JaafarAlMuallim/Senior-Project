@@ -1,31 +1,34 @@
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useClerk } from "@clerk/clerk-expo";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
 } from "@react-navigation/drawer";
 import CustomDrawerItem from "./CustomDrawerItem";
-import {
-  Book,
-  Calendar,
-  CalendarPlus,
-  Info,
-  LogOut,
-  MessagesSquare,
-} from "lucide-react-native";
+import { Book, CalendarPlus, Info, LogOut } from "lucide-react-native";
 import { View, Image, TouchableOpacity } from "react-native";
 import CustomText from "./CustomText";
-import { Link } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   if (!user) {
-    return null;
+    return (
+      <View className="h-full flex flex-col p-8 bg-white-default">
+        <Redirect href={"/(auth)/welcome"} />
+      </View>
+    );
   }
 
-  // TODO: Change links to actual links
   return (
     <DrawerContentScrollView style={{ paddingHorizontal: 8 }} {...props}>
-      <Link replace href={"/(root)/(drawer)/(tabs)/home"} className="mb-8">
+      <TouchableOpacity
+        className="mb-8"
+        onPress={() => {
+          router.push("/(root)/(drawer)/(tabs)/(profile)/profile");
+        }}
+      >
         <View className="flex flex-row flex-1 px-8 justify-center items-center">
           <Image
             source={{ uri: user?.imageUrl }}
@@ -40,43 +43,51 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
             </CustomText>
           </View>
         </View>
-      </Link>
+      </TouchableOpacity>
 
-      <CustomDrawerItem
-        Icon={Book}
-        name={"Tutoring"}
-        description={"Apply to be a tutor and help other students"}
-        link={"/tutoring"}
-      />
-      <CustomDrawerItem
-        Icon={MessagesSquare}
-        name={"Chat"}
-        description={"Chat with our AI, or with other students"}
-        link={"/homer"}
-      />
+      <TouchableOpacity
+        onPress={() => {
+          console.log("Navigating to /tutoring");
+          router.push("/(root)/(drawer)/(tutoring)/tutoring");
+        }}
+      >
+        <CustomDrawerItem
+          Icon={Book}
+          name={"Tutoring"}
+          description={"Apply to be a tutor and help other students"}
+        />
+      </TouchableOpacity>
 
-      <CustomDrawerItem
-        Icon={Calendar}
-        name={"Calendar"}
-        description={"View your schedule and upcoming events"}
-        link={"/homez"}
-      />
+      <TouchableOpacity
+        onPress={() => {
+          router.push("/(root)/(drawer)/(booking)/booking");
+        }}
+      >
+        <CustomDrawerItem
+          Icon={CalendarPlus}
+          name={"Book Session"}
+          description={"Book a tutoring session with a tutor"}
+        />
+      </TouchableOpacity>
 
-      <CustomDrawerItem
-        Icon={CalendarPlus}
-        name={"Book Session"}
-        description={"Book a tutoring session with a tutor"}
-        link={"/homey"}
-      />
+      <TouchableOpacity
+        onPress={() => {
+          router.push("/(root)/(drawer)/(tabs)/(profile)/profile");
+        }}
+      >
+        <CustomDrawerItem
+          Icon={Info}
+          name={"About"}
+          description={"Learn more about our platform"}
+        />
+      </TouchableOpacity>
 
-      <CustomDrawerItem
-        Icon={Info}
-        name={"About"}
-        description={"Learn more about our platform"}
-        link={"/homex"}
-      />
-
-      <TouchableOpacity onPress={() => {}} className="my-20 p-4">
+      <TouchableOpacity
+        onPress={() => {
+          signOut({ redirectUrl: "/" });
+        }}
+        className="my-20 p-4 justify-self-end"
+      >
         <View className="flex flex-row flex-1 items-center">
           <LogOut size={40} color={"#C21D1A"} />
           <View className="flex flex-col ml-4">

@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "senior-project",
+    "slug": "senior-project",
+    "version": "1.0.0",
+    "description": "## Table of Contents",
+    "sdkVersion": "51.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.senior"
+    }
+  }
+}
