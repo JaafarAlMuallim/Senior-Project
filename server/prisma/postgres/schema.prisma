@@ -183,8 +183,8 @@ model Session {
     status      SessionStatus @default(PENDING)
     course      Course        @relation(fields: [courseId], references: [id])
     tutor       Tutor         @relation(fields: [tutorId], references: [id])
-    requester   User          @relation(fields: [requestedBy], references: [id])
-    requestedBy String
+    requester   User?         @relation(fields: [requestedBy], references: [id])
+    requestedBy String?
 }
 
 model Message {

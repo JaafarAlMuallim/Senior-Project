@@ -1,7 +1,7 @@
+import { SessionStatus } from "@prisma/postgres/client";
 import { z } from "zod";
 import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
-import { SessionStatus } from "@prisma/postgres/client";
 
 export const sessionRouter = router({
   createSession: publicProcedure // TODO: Change to authProcedure
@@ -12,12 +12,14 @@ export const sessionRouter = router({
         courseId: z.string(),
         date: z.coerce.date(),
         courseName: z.string(),
-        requestedBy: z.string(),
-      }),
+        requestedBy: z.string().nullable(),
+        status: z.nativeEnum(SessionStatus).optional(),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       console.log("CREATE SESSION");
-      const { tutorId, time, courseId, date, courseName, requestedBy } = input;
+      const { tutorId, time, courseId, date, courseName, requestedBy, status } =
+        input;
       console.log(input);
       try {
         const hours = time.split(":")[0];
@@ -34,6 +36,7 @@ export const sessionRouter = router({
             title: `${courseName} - ${date.getDay()}/${
               date.getMonth() + 1
             }/${date.getFullYear()} - ${time}`,
+            status,
           },
         });
         return session;
@@ -51,7 +54,7 @@ export const sessionRouter = router({
       z.object({
         sessionId: z.string(),
         status: z.nativeEnum(SessionStatus),
-      }),
+      })
     )
     .mutation(async ({ input }) => {
       const { sessionId, status } = input;
@@ -70,7 +73,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
@@ -85,7 +88,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         courseId: z.string(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const { courseId } = input;
@@ -100,7 +103,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
@@ -124,7 +127,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
@@ -144,7 +147,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      }),
+      })
     )
     .query(async ({ input }) => {
       const { tutorId } = input;

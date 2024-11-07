@@ -1,8 +1,14 @@
 import CustomText from "@/components/CustomText";
-import { useUserStore } from "@/store/store";
+import { Text } from "@/components/ui/text";
+import { toast } from "@/components/ui/toast";
 import { trpc } from "@/lib/trpc";
+import { separateNameNum } from "@/lib/utils";
+import { useCoursesStore } from "@/store/coursesStore";
+import { useUserStore } from "@/store/store";
 import { SignedOut, useUser } from "@clerk/clerk-expo";
-import { Redirect, router, Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { add } from "date-fns";
+import { Link, Redirect, router, Stack } from "expo-router";
 import {
   ArrowDownNarrowWide,
   Bell,
@@ -11,12 +17,13 @@ import {
   UserRound,
 } from "lucide-react-native";
 import { Suspense, useEffect } from "react";
-import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
-import { separateNameNum } from "@/lib/utils";
-import { useCoursesStore } from "@/store/coursesStore";
-import { Text } from "@/components/ui/text";
-import { toast } from "@/components/ui/toast";
-import { add } from "date-fns";
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const Page = () => {
   const { user } = useUser();
@@ -171,49 +178,70 @@ const Page = () => {
         <Suspense fallback={<Text>Loading...</Text>}>
           {tutor && (
             <View>
-              <CustomText
-                styles={"text-primary-light text-3xl font-poppinsBold"}
-              >
-                Sessions
-              </CustomText>
+              <View className="flex flex-row justify-between items-center">
+                <CustomText
+                  styles={"text-primary-light text-3xl font-poppinsBold"}
+                >
+                  Sessions
+                </CustomText>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    router.push(`/help-sessions`);
+                  }}
+                >
+                  <View className="mr-4 items-center justify-center">
+                    <CustomText styles="text-gray-dark underline">
+                      Add Sessions
+                    </CustomText>
+                  </View>
+                </TouchableOpacity>
+              </View>
               <CustomText styles={"text-md font-poppins text-gray-light"}>
                 Upcoming Tutoring Sessions
               </CustomText>
               <View className="w-full flex flex-row my-2">
                 {sessions && sessions.length > 0 ? (
-                  <FlatList
-                    className="flex flex-row gap-2 py-2"
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={sessions}
-                    ItemSeparatorComponent={() => <View className="w-6" />}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => {
-                      const time = item.date.split("T")[1].substring(0, 5);
-                      const date = item.date.split("T")[0];
-                      console.log(item.date);
-                      const endTime = add(new Date(item.date), { minutes: 30 })
-                        .toISOString()
-                        .split("T")[1]
-                        .substring(0, 5);
-                      return (
-                        <View className="bg-primary-light w-56 h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900">
-                          <View className="flex-row justify-between">
-                            <UserRound size={32} color={"white"} />
+                  <View className="flex flex-row items-center mr-8">
+                    <FlatList
+                      className="flex flex-row gap-2 py-2"
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      data={sessions}
+                      ItemSeparatorComponent={() => <View className="w-6" />}
+                      keyExtractor={(item) => item.id.toString()}
+                      renderItem={({ item }) => {
+                        const time = item.date.split("T")[1].substring(0, 5);
+                        const date = item.date.split("T")[0];
+                        console.log(item.date);
+                        const endTime = add(new Date(item.date), {
+                          minutes: 30,
+                        })
+                          .toISOString()
+                          .split("T")[1]
+                          .substring(0, 5);
+                        return (
+                          <View className="bg-primary-light w-56 h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900">
+                            <View className="flex-row justify-between">
+                              <UserRound size={32} color={"white"} />
+                            </View>
+                            <CustomText styles="text-white-default text-lg font-poppinsBold uppercase">
+                              {separateNameNum(item.course.code)}
+                            </CustomText>
+                            <CustomText styles="text-white-default text-md">
+                              {time} - {endTime} - {date}
+                            </CustomText>
                           </View>
-                          <CustomText styles="text-white-default text-lg font-poppinsBold uppercase">
-                            {separateNameNum(item.course.code)}
-                          </CustomText>
-                          <CustomText styles="text-white-default text-md">
-                            {time} - {endTime} - {date}
-                          </CustomText>
-                        </View>
-                      );
-                    }}
-                  />
+                        );
+                      }}
+                    />
+                  </View>
                 ) : (
                   <CustomText styles="text-2xl">
-                    No Tutoring Sessions Yet.
+                    No Tutoring Sessions Yet.{" "}
+                    <Link href={"/help-session"}>
+                      Schedule a help session now!
+                    </Link>
                   </CustomText>
                 )}
               </View>

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { cn } from "@/lib/utils";
 import { Portal } from "@rn-primitives/portal";
 import * as ToastPrimitive from "@rn-primitives/toast";
 import { Ban, Check, Info, OctagonAlert, X } from "lucide-react-native";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomText from "../CustomText";
 
 type ToastType = "info" | "success" | "warning" | "error";
@@ -104,7 +104,7 @@ function Toast({
             /* Do nothing */
           }}
           className={`w-full opacity-95 border-border flex-row justify-between items-center p-4 rounded-xl ${getVariantClass(
-            variant,
+            variant
           )}`}
         >
           <View className="flex flex-col w-full">
@@ -112,7 +112,7 @@ function Toast({
               <ToastPrimitive.Title
                 className={cn(
                   "text-foreground text-2xl font-poppinsBold",
-                  textColor(variant),
+                  textColor(variant)
                 )}
               >
                 {title}
@@ -124,7 +124,7 @@ function Toast({
             <ToastPrimitive.Description
               className={cn(
                 "text-lg font-poppins items-center justify-center",
-                textColor(variant),
+                textColor(variant)
               )}
             >
               {icon(variant)}
@@ -136,7 +136,7 @@ function Toast({
                     key={index}
                     className={cn(
                       "text-black-80 text-lg font-poppins",
-                      action.className,
+                      action.className
                     )}
                     onPress={action.onPress}
                   >
@@ -156,6 +156,7 @@ function Toast({
 let addToast: (payload: Omit<ToastPayload, "id" | "onClose">) => void;
 
 const toast = (payload: Omit<ToastPayload, "id" | "onClose">) => {
+  console.log("TOAST");
   if (addToast) {
     addToast(payload);
   }
@@ -193,4 +194,4 @@ const Toaster = () => {
   );
 };
 
-export { Toast, Toaster, toast };
+export { Toast, toast, Toaster };
