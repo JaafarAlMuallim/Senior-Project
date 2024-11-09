@@ -14,13 +14,11 @@ export const sessionRouter = router({
         courseName: z.string(),
         requestedBy: z.string().nullable(),
         status: z.nativeEnum(SessionStatus).optional(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      console.log("CREATE SESSION");
       const { tutorId, time, courseId, date, courseName, requestedBy, status } =
         input;
-      console.log(input);
       try {
         const hours = time.split(":")[0];
         const minutes = time.split(":")[1];
@@ -54,7 +52,7 @@ export const sessionRouter = router({
       z.object({
         sessionId: z.string(),
         status: z.nativeEnum(SessionStatus),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const { sessionId, status } = input;
@@ -73,7 +71,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
@@ -88,7 +86,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         courseId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { courseId } = input;
@@ -103,20 +101,17 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
       try {
-        console.log("GETTING PENDING SESSIONS");
-        console.log(tutorId);
         const sessions = await postgresClient.session.count({
           where: {
             tutorId,
             status: SessionStatus.PENDING,
           },
         });
-        console.log(sessions);
         return sessions;
       } catch (e) {
         console.log(e);
@@ -127,7 +122,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { tutorId } = input;
@@ -147,7 +142,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         tutorId: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const { tutorId } = input;

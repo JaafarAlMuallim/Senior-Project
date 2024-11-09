@@ -20,7 +20,6 @@ export const profileRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      console.log("GET PROFILE");
       const { clerkId } = input;
       try {
         const profile = await postgresClient.profile.findFirst({

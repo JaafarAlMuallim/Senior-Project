@@ -26,7 +26,6 @@ export const authRouter = router({
         if (!email || !name || !clerkId) {
           throw new Error("Missing required fields");
         }
-        console.log(email, name, clerkId);
         const checker = await postgresClient.user.findUnique({
           where: {
             clerkId,

@@ -19,8 +19,6 @@ export const courseRouter = router({
   getUserCourses: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input: { id }, ctx }) => {
-      console.log(id);
-      console.log(ctx);
       try {
         const enrolled = await postgresClient.registration.findMany({
           where: { userId: id },
@@ -43,7 +41,7 @@ export const courseRouter = router({
           size: z.number().nullable(),
           category: z.nativeEnum(Category),
         }),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const { userId, file } = input;
@@ -72,12 +70,11 @@ export const courseRouter = router({
         regTime.setHours(
           reg.section.startTime.getHours() - 3,
           reg.section.startTime.getMinutes(),
-          reg.section.startTime.getSeconds()
+          reg.section.startTime.getSeconds(),
         );
 
         const timeDiff = Math.abs(now.getTime() - regTime.getTime());
         const hourDiff = timeDiff / (1000 * 60 * 60);
-        console.log(hourDiff);
 
         if (hourDiff <= 1) {
           courseId = reg.section.course.id;
@@ -120,7 +117,6 @@ export const courseRouter = router({
         const materials = await postgresClient.material.findMany({
           where: { courseId, category },
         });
-        console.log(materials);
         return materials;
       } catch (e) {
         console.log(e);
