@@ -27,6 +27,7 @@ import {
   StatusBar,
   View,
 } from "react-native";
+import { useTokenStore } from "@/store/tokenStore";
 // import { initializeDB } from "@/lib/db";
 
 SplashScreen.preventAutoHideAsync();
@@ -79,6 +80,7 @@ export default function RootLayout() {
     PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
   });
+  const { token } = useTokenStore();
   // const [isInitialized, setIsInitialized] = useState(false);
 
   // useEffect(() => {
@@ -94,6 +96,7 @@ export default function RootLayout() {
     android: "http://10.0.2.2:3000/trpc",
     default: "http://localhost:3000/trpc",
   });
+  console.log("HEADERS", token.token);
 
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
@@ -106,6 +109,11 @@ export default function RootLayout() {
           }),
           false: httpBatchLink({
             url: url,
+            headers: () => {
+              return {
+                Authorization: token.token,
+              };
+            },
           }),
         }),
       ],

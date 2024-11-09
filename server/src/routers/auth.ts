@@ -46,7 +46,7 @@ export const authRouter = router({
             userId: clerkId,
           },
         });
-        await postgresClient.user.update({
+        const usr = await postgresClient.user.update({
           where: {
             clerkId,
           },

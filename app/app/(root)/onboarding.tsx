@@ -4,6 +4,7 @@ import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
 import { useUserStore } from "@/store/store";
+import { useTokenStore } from "@/store/tokenStore";
 import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
@@ -20,6 +21,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const OnBoarding = () => {
   const { user } = useUser();
   const { setUser } = useUserStore();
+  const { setToken } = useTokenStore();
   const [phone, setPhone] = useState("");
   const [university, setUniversity] = useState("");
   const [major, setMajor] = useState("");
@@ -31,15 +33,24 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpc.profiles.get.useQuery({
-    clerkId: user?.id!,
-  });
+  useEffect(() => {
+    if (user) setToken({ token: user?.id! });
+    console.log(user?.id);
+  }, [user]);
+
+  const { data, isLoading } = trpc.profiles.get.useQuery(
+    {
+      clerkId: user?.id!,
+    },
+    {
+      enabled: !!user?.id,
+    },
+  );
 
   useEffect(() => {
     if (!isLoading && data?.university) {
       setUser(data);
-
-      router.replace("/(root)/(drawer)/(tabs)/home");
+      router.push("/(root)/(drawer)/(tabs)/(home)/home");
     }
     if (isLoading) {
       Animated.loop(

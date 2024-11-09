@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
   createSchedule: publicProcedure // TODO: Change to authProcedure
@@ -33,7 +33,7 @@ export const scheduleRouter = router({
         },
       });
     }),
-  getSchedule: publicProcedure // TODO: Change to authProcedure
+  getSchedule: authProcedure // TODO: Change to authProcedure
     .input(
       z.object({
         semester: z.string(),
@@ -41,12 +41,12 @@ export const scheduleRouter = router({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const { userId, semester } = input;
+      const { semester } = input;
+      console.log("SCHEDULE", ctx.user?.id);
       try {
-        console.log(ctx);
         const registrations = await postgresClient.registration.findMany({
           where: {
-            userId,
+            userId: ctx.user?.id,
             semester,
           },
           include: {

@@ -1,7 +1,9 @@
 import CustomText from "@/components/CustomText";
 import GoogleAuth from "@/components/GoogleAuth";
 import Input from "@/components/Input";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useUserStore } from "@/store/store";
+import { useTokenStore } from "@/store/tokenStore";
+import { useSignIn, useUser } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Mail, LockKeyhole } from "lucide-react-native";
 import React from "react";
@@ -10,6 +12,7 @@ import { Alert, TouchableOpacity, View } from "react-native";
 
 const SignIn = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
+  const { setToken } = useTokenStore();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -26,6 +29,7 @@ const SignIn = () => {
       if (signInAttempt?.status === "complete") {
         await setActive!({ session: signInAttempt.createdSessionId });
         router.push("/(root)/home");
+        setToken({ token: signInAttempt.id! });
       } else {
         // See https://clerk.com/docs/custom-flows/error-handling for more info on error handling
         console.log(JSON.stringify(signInAttempt, null, 2));

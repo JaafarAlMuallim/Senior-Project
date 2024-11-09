@@ -5,6 +5,7 @@ import CustomText from "./CustomText";
 import { images } from "@/constants/images";
 import React from "react";
 import { trpc } from "@/lib/trpc";
+import { useTokenStore } from "@/store/tokenStore";
 
 const GoogleAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -13,10 +14,12 @@ const GoogleAuth = () => {
       Alert.alert("Success", "You have successfully signed up!");
     },
   });
+  const { setToken } = useTokenStore();
 
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
     if (result.success) {
+      setToken({ token: result.data?.clerkId! });
       addUser({
         email: result.data?.email!,
         name: result.data?.name!,

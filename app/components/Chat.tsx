@@ -30,7 +30,7 @@ const Chat = ({
       { groupId },
       {
         refetchInterval: 20000,
-      }
+      },
     );
 
   const { data: unreadCount } = trpc.messages.getUnreadCount.useQuery(
@@ -40,7 +40,7 @@ const Chat = ({
     },
     {
       refetchInterval: 20000,
-    }
+    },
   );
 
   useEffect(() => {
@@ -49,15 +49,15 @@ const Chat = ({
         `${listWithAnd(currentlyTyping)} ${pluralize(
           currentlyTyping.length,
           "is",
-          "are"
-        )} typing...`
+          "are",
+        )} typing...`,
       );
     } else if (isLoading) {
       setContent("Loading...");
     } else {
       setContent(
         `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
-          "No messages"
+          "No messages",
       );
     }
   }, [currentlyTyping, lastMessage, isLoading]);
@@ -72,7 +72,7 @@ const Chat = ({
     <TouchableOpacity
       className={cn(
         `items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400`,
-        styles
+        styles,
       )}
       {...touchableProps}
       onPress={() => {
