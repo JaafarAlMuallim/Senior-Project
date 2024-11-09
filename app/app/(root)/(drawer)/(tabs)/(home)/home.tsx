@@ -26,6 +26,7 @@ import {
 } from "react-native";
 
 const Page = () => {
+  console.log("home");
   const { user } = useUser();
   const { user: userStore, tutor, setTutor } = useUserStore();
   const { setRegistrations } = useCoursesStore();

@@ -20,7 +20,13 @@ import {
   splitLink,
   unstable_httpSubscriptionLink,
 } from "@trpc/client";
-import { ActivityIndicator, LogBox, Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  LogBox,
+  Platform,
+  StatusBar,
+  View,
+} from "react-native";
 // import { initializeDB } from "@/lib/db";
 
 SplashScreen.preventAutoHideAsync();
@@ -127,6 +133,7 @@ export default function RootLayout() {
         <trpc.Provider client={trpcClient} queryClient={queryClient}>
           <QueryClientProvider client={queryClient}>
             <ClerkLoaded>
+              <StatusBar />
               <Stack
                 initialRouteName="index"
                 screenOptions={{ headerShown: false }}

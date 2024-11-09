@@ -1,12 +1,12 @@
-import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
-import { Platform, TouchableOpacity, View } from "react-native";
-import CustomText from "./CustomText";
-import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
-import { cn, listWithAnd, pluralize } from "@/lib/utils";
 import { useWhoIsTyping } from "@/hooks/useChats";
 import { trpc } from "@/lib/trpc";
+import { cn, listWithAnd, pluralize } from "@/lib/utils";
 import { useUserStore } from "@/store/store";
+import { router } from "expo-router";
+import React, { useEffect, useMemo, useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
+import CustomText from "./CustomText";
 
 const Chat = ({
   imageUri,
@@ -30,7 +30,7 @@ const Chat = ({
       { groupId },
       {
         refetchInterval: 20000,
-      },
+      }
     );
 
   const { data: unreadCount } = trpc.messages.getUnreadCount.useQuery(
@@ -40,7 +40,7 @@ const Chat = ({
     },
     {
       refetchInterval: 20000,
-    },
+    }
   );
 
   useEffect(() => {
@@ -49,15 +49,15 @@ const Chat = ({
         `${listWithAnd(currentlyTyping)} ${pluralize(
           currentlyTyping.length,
           "is",
-          "are",
-        )} typing...`,
+          "are"
+        )} typing...`
       );
     } else if (isLoading) {
       setContent("Loading...");
     } else {
       setContent(
         `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
-          "No messages",
+          "No messages"
       );
     }
   }, [currentlyTyping, lastMessage, isLoading]);
@@ -72,7 +72,7 @@ const Chat = ({
     <TouchableOpacity
       className={cn(
         `items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400`,
-        styles,
+        styles
       )}
       {...touchableProps}
       onPress={() => {
@@ -81,7 +81,7 @@ const Chat = ({
     >
       <View className="flex flex-row w-full">
         <Avatar
-          alt="Zach Nugent's Avatar"
+          alt={`${groupName} avatar`}
           className="w-14 h-14 rounded-full mr-4 bg-gray-300"
         >
           <AvatarImage source={{ uri: "" }} />

@@ -141,14 +141,14 @@ model Material {
     id        String   @id @default(cuid())
     url       String
     size      Float
-    courseId  String
+    courseId  String?
     name      String
     category  Category
     fileType  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     tagId     String?
-    course    Course   @relation(fields: [courseId], references: [id])
+    course    Course?   @relation(fields: [courseId], references: [id])
     Tag       Tag?     @relation(fields: [tagId], references: [id])
 }
 

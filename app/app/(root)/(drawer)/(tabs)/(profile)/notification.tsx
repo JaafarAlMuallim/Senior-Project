@@ -1,4 +1,4 @@
-import SwitchOption from "@/components/SwitchOption";
+import SwitchOption from "@/components/switchOption";
 import React, { useState } from "react";
 import { View, ScrollView, Text } from "react-native";
 
