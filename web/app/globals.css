@@ -41,7 +41,7 @@ body {
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --selected: "#3044FF";
+    /* --selected: "#3044FF"; */
   }
   .dark {
     --background: 224 71.4% 4.1%;
