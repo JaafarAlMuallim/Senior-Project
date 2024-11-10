@@ -103,8 +103,6 @@ export const groupRouter = router({
         currentlyTyping[groupId] = {};
       }
 
-      console.log("isTyping", name, typing);
-
       if (typing) {
         currentlyTyping[groupId][name!] = {
           lastTyped: new Date(),

@@ -76,11 +76,9 @@ export const messageRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId, agent, text, userId } = input;
-      console.log("addAIMessage", groupId, agent, text, userId);
       let ai = null;
       let context: Content[] = [];
       try {
-        console.log("get Agent");
         ai = await mongoClient.user.findFirst({
           where: {
             name: agent,
@@ -126,7 +124,6 @@ export const messageRouter = router({
               }),
           },
         ];
-        console.log("Creating message");
         await mongoClient.message.create({
           data: {
             // name: opts.ctx.user.name,
@@ -136,13 +133,11 @@ export const messageRouter = router({
           },
         });
       } catch (err) {
-        console.error("Error creating message");
         console.error(err);
       }
 
       // get Response
       try {
-        console.log("Creating response");
         const chat = model.startChat({
           history: context,
         });
@@ -158,7 +153,6 @@ export const messageRouter = router({
         });
         return response;
       } catch (err) {
-        console.error("Error creating response");
         console.error(err);
       }
     }),
@@ -178,8 +172,6 @@ export const messageRouter = router({
       if (!take) {
         take = 20;
       }
-      console.log("infinite", groupId, cursor, take);
-
       const page = await mongoClient.message.findMany({
         where: {
           groupId,
@@ -222,7 +214,6 @@ export const messageRouter = router({
     .subscription(async function* ({ input, signal }) {
       let lastMessageCursor: Date | null = null;
       const { lastEventId: eventId, groupId: currGroup } = input;
-      console.log("onAdd", eventId, currGroup);
       if (eventId) {
         const itemById = await mongoClient.message.findFirst({
           where: {
@@ -330,7 +321,6 @@ export const messageRouter = router({
     )
     .query(async ({ input }) => {
       const { groupId } = input;
-      console.log("get messages", groupId);
       try {
         const messages = await mongoClient.message.findMany({
           where: {

@@ -1,50 +1,22 @@
 import CustomText from "@/components/CustomText";
-import * as FileSystem from "expo-file-system";
+import { Progress } from "@/components/Progress";
+import { toast } from "@/components/ui/toast";
+import { trpc } from "@/lib/trpc";
+import { useDocumentUploader } from "@/lib/uploadthing";
 import { Redirect, useLocalSearchParams } from "expo-router";
 import { CloudUpload } from "lucide-react-native";
-import { Alert, TouchableOpacity, View } from "react-native";
-import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
-import { Progress } from "@/components/Progress";
-import { trpc } from "@/lib/trpc";
-import { supabase } from "@/lib/supabase";
-import { decode } from "punycode";
+import { Alert, TouchableOpacity, View } from "react-native";
 
 const UploadModalPage = () => {
   const { id, type } = useLocalSearchParams<{ id?: string; type?: string }>();
   const [progress, setProgress] = useState<number>(0);
+  const { openDocumentPicker, isUploading } = useDocumentUploader("pdf", {
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+    onUploadProgress: (progress) => setProgress(progress),
+  });
   const { mutate: addMaterial } = trpc.courses.addMaterial.useMutation({});
-  const pickFile = async () => {
-    const file = await DocumentPicker.getDocumentAsync({
-      type: "*/*",
-    });
-    const assets = file.assets;
-    if (!assets) {
-      return;
-    }
-    const currFile = assets[0];
-    const filePath = `${currFile.name}`;
-    const mimeType = currFile.mimeType!;
-    console.log(currFile, filePath, mimeType);
-    try {
-      const data = await supabase.storage
-        .from("files")
-        .upload(filePath, currFile.uri, { contentType: mimeType });
-      addMaterial({
-        courseId: id!,
-        file: {
-          url: data.data?.fullPath!,
-          type: mimeType,
-          size: currFile.size! || 0.5,
-          name: currFile.name!,
-        },
-      });
-      console.log(data);
-    } catch (e) {
-      console.log(e);
-      Alert.alert("Error", "Failed to upload file");
-    }
-  };
   if (!id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }
@@ -52,10 +24,21 @@ const UploadModalPage = () => {
   return (
     <View className="h-full bg-white-default justify-center items-center">
       <TouchableOpacity
-        onPress={pickFile}
+        onPress={() =>
+          openDocumentPicker({
+            onCancel: () =>
+              toast({
+                title: "Upload Cancelled",
+                variant: "info",
+                description: "You cancelled the upload",
+                ms: 3000,
+              }),
+          })
+        }
         className="flex flex-col justify-center items-center"
       >
         <CloudUpload size={56} color={"#4561FF"} />
+        <Progress value={progress} />
         <CustomText styles="text-primary-light text-2xl font-bold">
           Upload Files{" "}
         </CustomText>

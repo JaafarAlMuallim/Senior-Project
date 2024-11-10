@@ -20,7 +20,6 @@ export const tutorRouter = router({
       });
 
       if (!tutor) {
-        console.log("Creating tutor");
         try {
           tutor = await postgresClient.tutor.create({
             data: {
@@ -28,7 +27,6 @@ export const tutorRouter = router({
             },
           });
         } catch (error) {
-          console.log(error);
           throw new Error("Tutor already exists");
         }
       }
@@ -51,7 +49,6 @@ export const tutorRouter = router({
           grade,
         },
       });
-      console.log(result);
       return result;
     }),
 
@@ -86,6 +83,24 @@ export const tutorRouter = router({
         return false;
       }
       return tutor;
+    }),
+  getTutorsCourseById: publicProcedure
+    .input(
+      z.object({
+        tutorId: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { tutorId } = input;
+      const tutorCourses = await postgresClient.courseTutor.findMany({
+        where: {
+          tutorId,
+        },
+        include: {
+          course: true,
+        },
+      });
+      return tutorCourses;
     }),
 
   // removeTutor: publicProcedure

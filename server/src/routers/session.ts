@@ -1,7 +1,7 @@
+import { SessionStatus } from "@prisma/postgres/client";
 import { z } from "zod";
 import { postgresClient } from "../db";
 import { publicProcedure, router } from "../trpc";
-import { SessionStatus } from "@prisma/postgres/client";
 
 export const sessionRouter = router({
   createSession: publicProcedure // TODO: Change to authProcedure
@@ -12,13 +12,13 @@ export const sessionRouter = router({
         courseId: z.string(),
         date: z.coerce.date(),
         courseName: z.string(),
-        requestedBy: z.string(),
+        requestedBy: z.string().nullable(),
+        status: z.nativeEnum(SessionStatus).optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      console.log("CREATE SESSION");
-      const { tutorId, time, courseId, date, courseName, requestedBy } = input;
-      console.log(input);
+      const { tutorId, time, courseId, date, courseName, requestedBy, status } =
+        input;
       try {
         const hours = time.split(":")[0];
         const minutes = time.split(":")[1];
@@ -34,6 +34,7 @@ export const sessionRouter = router({
             title: `${courseName} - ${date.getDay()}/${
               date.getMonth() + 1
             }/${date.getFullYear()} - ${time}`,
+            status,
           },
         });
         return session;
@@ -105,15 +106,12 @@ export const sessionRouter = router({
     .query(async ({ input }) => {
       const { tutorId } = input;
       try {
-        console.log("GETTING PENDING SESSIONS");
-        console.log(tutorId);
         const sessions = await postgresClient.session.count({
           where: {
             tutorId,
             status: SessionStatus.PENDING,
           },
         });
-        console.log(sessions);
         return sessions;
       } catch (e) {
         console.log(e);

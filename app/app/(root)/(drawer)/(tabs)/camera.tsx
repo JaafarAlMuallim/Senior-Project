@@ -1,52 +1,105 @@
+import CustomText from "@/components/CustomText";
+import { Progress } from "@/components/Progress";
 import { toast } from "@/components/ui/toast";
+import { trpc } from "@/lib/trpc";
+import { useImageUploader } from "@/lib/uploadthing";
 import { separateNameNum } from "@/lib/utils";
+import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { useCameraPermissions } from "expo-camera";
 import { Stack, useRouter } from "expo-router";
-import { useRef } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useEffect, useState } from "react";
+import { TouchableOpacity, View } from "react-native";
+import { ClientUploadedFileData } from "uploadthing/types";
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const router = useRouter();
-  const cameraRef = useRef<CameraView>(null);
-  const takePicture = async () => {
-    try {
-      const options = { quality: 0.5, base64: true };
-      const data = await cameraRef.current?.takePictureAsync(options);
-      // Save to Supabase Under Others and Let User Select Course
-      console.log(data?.uri, "<<<<<<<<<<<<<<<<<<<<<");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [filename, setFilename] = useState<string | null>(null);
+  const { user } = useUserStore();
+  const { mutate: addMaterial } = trpc.courses.addMaterial.useMutation({
+    onSuccess: () => {
       toast({
         title: "Success",
-        description: "Picture taken successfully",
-        actions: [
-          {
-            text: "Save",
-            onPress: () => {
-              // Saving to Supabase
-            },
-            className:
-              "bg-green-800 p-2 rounded-md justify-center items-center my-2",
-            textClassName: "text-white-default text-center text-xl",
-          },
-        ],
-        ms: 7000,
+        description: "Material added successfully",
         variant: "success",
+        ms: 3000,
       });
-    } catch (error) {
-      console.log(error, "ERROR <<<<<<<<<<<<<");
-    }
-  };
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "error",
+        ms: 3000,
+      });
+    },
+  });
+
+  const { openImagePicker, isUploading } = useImageUploader("image", {
+    onUploadBegin: (filename) => {
+      setFilename(filename);
+      setUploadProgress(0);
+      toast({
+        title: "Uploading",
+        description: "Image is being uploaded",
+        variant: "info",
+        ms: 3000,
+      });
+    },
+    onUploadProgress: (progress) => {
+      setUploadProgress(progress);
+      console.log("Progress", progress);
+    },
+    onClientUploadComplete: (
+      data: ClientUploadedFileData<{ url: string }>[]
+    ) => {
+      addMaterial({
+        userId: user.user.id,
+        file: {
+          type: "image",
+          size: 0,
+          category: "IMG",
+          name: filename ?? "No name",
+          url: data[0].url,
+        },
+      });
+      toast({
+        title: "Success",
+        description: "Image uploaded successfully",
+        variant: "success",
+        ms: 3000,
+      });
+
+      setFilename(null);
+      setUploadProgress(0);
+    },
+    onUploadError: (error) => {
+      console.log(error.toJSON(), "ERROR <<<<<<<<<<<<<");
+      setFilename(null);
+      setUploadProgress(0);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "error",
+        ms: 3000,
+      });
+    },
+  });
+
+  useEffect(() => {
+    openImagePicker({ source: "camera" });
+  }, []);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     requestPermission();
   }
+
   const name = "Camera";
 
   return (
@@ -57,35 +110,44 @@ export default function CameraScreen() {
           headerTransparent: true,
           title: separateNameNum(name?.toString() || "Select Course"),
           headerStyle: {
-            backgroundColor: "transparent", // Black with 80% opacity
+            backgroundColor: "transparent",
           },
           headerTitleStyle: {
-            color: "black", // #4561FF
+            color: "black",
             fontSize: 20,
             fontFamily: "PoppinsBold",
           },
           headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => router.back()} className="px-4">
               <Ionicons name="chevron-back" size={24} color={"black"} />
             </TouchableOpacity>
           ),
         }}
       />
-      <View className="flex-1 justify-center">
-        <CameraView
-          className="flex-1 justify-end items-center"
-          facing={"back"}
-          ref={cameraRef}
-          onCameraReady={() => {
-            console.log("Camera ready");
-          }}
-        >
-          <View className="bg-black-80 w-full justify-center items-center rounded-t-2xl opacity-90">
-            <TouchableOpacity onPress={takePicture}>
-              <View className="my-8 h-20 w-20 rounded-full bg-white-default"></View>
-            </TouchableOpacity>
+      <View className="flex-1 justify-center bg-white-default">
+        <View className="px-4 py-6">
+          <View className="mb-4">
+            <Progress value={uploadProgress} className="h-2" />
           </View>
-        </CameraView>
+          {isUploading && (
+            <View className="flex flex-row justify-between">
+              <CustomText styles="text-sm text-gray-600">
+                {filename || "No file selected"}
+              </CustomText>
+              <CustomText styles="text-sm text-gray-600">
+                {uploadProgress}%
+              </CustomText>
+            </View>
+          )}
+          <TouchableOpacity
+            className="mt-6 bg-primary p-4 rounded-lg items-center"
+            onPress={() => openImagePicker({ source: "camera" })}
+          >
+            <CustomText styles="text-white font-medium text-2xl">
+              Take Photo
+            </CustomText>
+          </TouchableOpacity>
+        </View>
       </View>
     </>
   );

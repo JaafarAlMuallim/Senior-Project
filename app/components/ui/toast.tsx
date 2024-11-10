@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { cn } from "@/lib/utils";
 import { Portal } from "@rn-primitives/portal";
 import * as ToastPrimitive from "@rn-primitives/toast";
 import { Ban, Check, Info, OctagonAlert, X } from "lucide-react-native";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomText from "../CustomText";
 
 type ToastType = "info" | "success" | "warning" | "error";
@@ -90,7 +90,6 @@ function Toast({
         return "text-toast-error";
     }
   };
-  console.log(actions);
 
   return (
     <Portal name="toast">
@@ -156,6 +155,7 @@ function Toast({
 let addToast: (payload: Omit<ToastPayload, "id" | "onClose">) => void;
 
 const toast = (payload: Omit<ToastPayload, "id" | "onClose">) => {
+  console.log("TOAST");
   if (addToast) {
     addToast(payload);
   }
@@ -193,4 +193,4 @@ const Toaster = () => {
   );
 };
 
-export { Toast, Toaster, toast };
+export { Toast, toast, Toaster };

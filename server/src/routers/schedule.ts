@@ -40,11 +40,10 @@ export const scheduleRouter = router({
         userId: z.string(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { userId, semester } = input;
-      console.log(userId, semester);
       try {
-        console.log("inside try");
+        console.log(ctx);
         const registrations = await postgresClient.registration.findMany({
           where: {
             userId,
@@ -58,7 +57,6 @@ export const scheduleRouter = router({
             },
           },
         });
-        console.log(registrations);
         return registrations;
       } catch (error) {
         console.log(error);

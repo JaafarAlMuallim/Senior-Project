@@ -1,22 +1,23 @@
+import CustomText from "@/components/CustomText";
+import { toast } from "@/components/ui/toast";
 import {
   useLiveMessages,
   useThrottledIsTypingMutation,
   useWhoIsTyping,
 } from "@/hooks/useChats";
 import { trpc } from "@/lib/trpc";
+import {
+  useDocumentUploader,
+  useImageUploader,
+  useUploadThing,
+} from "@/lib/uploadthing";
 import { separateNameNum } from "@/lib/utils";
 import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Redirect,
-  router,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-  usePathname,
-} from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { Audio } from "expo-av";
+import { router, Stack, useLocalSearchParams, usePathname } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import {
   Actions,
@@ -44,6 +45,9 @@ const Chat = () => {
   const { user } = useUserStore();
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordingDuration, setRecordingDuration] = useState(0);
   const utils = trpc.useUtils();
   const pathname = usePathname();
 
@@ -51,51 +55,51 @@ const Chat = () => {
 
   const liveMessages = useLiveMessages(chatId!);
 
-  const messages = useMemo(() => {
-    if (!liveMessages || !liveMessages.messages) return [];
-    return liveMessages.messages.map((message) => ({
-      _id: message.id,
-      text: message.text,
-      createdAt: new Date(message.createdAt),
-      user: {
-        _id: message.userId,
-        name: message.user.name,
-        // name: message.user,
-      },
-    }));
-  }, [liveMessages]);
-
-  const { mutate: subscribe } = trpc.groups.sub.useMutation({
-    onSuccess: () => {
-      console.log("Subscribed");
+  const { openDocumentPicker, isUploading: fileUploading } =
+    useDocumentUploader("pdf", {
+      onClientUploadComplete: () => Alert.alert("Upload Completed"),
+      onUploadError: (error) => Alert.alert("Upload Error", error.message),
+    });
+  const { openImagePicker, isUploading: imageUploading } = useImageUploader(
+    "image",
+    {
+      onClientUploadComplete: () => Alert.alert("Upload Completed"),
+      onUploadError: (error) => Alert.alert("Upload Error", error.message),
     },
-
-    onError: (err) => {
-      console.error("ERROR: ", err);
-    },
-    gcTime: 1000 * 60 * 60 * 24,
-  });
-
-  const { mutate: unsubscribe } = trpc.groups.unsub.useMutation({
-    onSuccess: () => {
-      console.log("Unsubscribed");
-    },
-
-    onError: (err) => {
-      console.error("ERROR: ", err);
-    },
-    gcTime: 1000 * 60 * 60 * 24,
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      subscribe({ groupId: chatId!, userId: user?.user.id! });
-
-      return () => {
-        unsubscribe({ groupId: chatId!, userId: user?.user.id! });
-      };
-    }, []),
   );
+
+  const { startUpload, isUploading: audioUploading } = useUploadThing("audio", {
+    onUploadBegin: () => {
+      toast({
+        title: "Uploading",
+        description: "Audio is being uploaded",
+        variant: "info",
+        ms: 3000,
+      });
+    },
+    onClientUploadComplete: (data) => {
+      // mutate({
+      //   groupId: chatId!,
+      //   userId: user?.user.id!,
+      //   text: "🎵 Audio Message",
+      //   audioUrl: data[0].url,
+      // });
+      toast({
+        title: "Success",
+        description: "Audio uploaded successfully",
+        variant: "success",
+        ms: 3000,
+      });
+    },
+    onUploadError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "error",
+        ms: 3000,
+      });
+    },
+  });
 
   const { mutate } = trpc.messages.add.useMutation({
     onError: (err) => {
@@ -110,7 +114,6 @@ const Chat = () => {
       setText("");
     },
   });
-
   const whoIsTyping = useWhoIsTyping(chatId!);
 
   useEffect(() => {
@@ -136,6 +139,183 @@ const Chat = () => {
     };
   }, [isFocused, text, isTypingMutation]);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRecording) {
+      interval = setInterval(() => {
+        setRecordingDuration((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isRecording]);
+
+  const startRecording = async () => {
+    try {
+      await Audio.requestPermissionsAsync();
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY,
+      );
+      setRecording(recording);
+      setIsRecording(true);
+      setRecordingDuration(0);
+    } catch (err) {
+      console.error("Failed to start recording", err);
+    }
+  };
+
+  const stopRecording = async (save: boolean) => {
+    if (!recording) return;
+
+    setIsRecording(false);
+
+    try {
+      await recording.stopAndUnloadAsync();
+      if (save) {
+        const { sound, status } = await recording!.createNewLoadedSoundAsync();
+        const uri = recording.getURI();
+        const x = {
+          sound,
+          duration: recordingDuration,
+          file: uri,
+        };
+        if (uri) {
+          console.log(uri);
+          const response = await fetch(uri);
+          if (!response.ok) {
+            console.error("Failed to fetch recording");
+            return;
+          }
+          console.log("RESPONSE OK");
+          const blob = await response.blob();
+          if (blob.size === 0) {
+            // Save the sound as a file instead
+            const file = new File([blob], "audio.mp3", { type: "audio/mp3" });
+            startUpload([file]);
+          } else {
+            const file = new File([blob], "audio.mp3", { type: "audio/mp3" });
+            startUpload([file]);
+          }
+          setRecordingDuration(0);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to stop recording", err);
+    }
+
+    setRecording(null);
+  };
+
+  const messages = useMemo(() => {
+    if (!liveMessages || !liveMessages.messages) return [];
+    return liveMessages.messages.map((message) => ({
+      _id: message.id,
+      text: message.text,
+      createdAt: new Date(message.createdAt),
+      user: {
+        _id: message.userId,
+        name: message.user.name,
+      },
+      // audio: message.audioUrl,
+    }));
+  }, [liveMessages]);
+
+  const renderComposer = (props: ComposerProps) => {
+    return (
+      <View className="flex-row flex-1 bg-white-default rounded-xl px-2 border border-gray-400 text-lg justify-center items-center">
+        {isRecording ? (
+          <View className="flex-row items-center justify-between px-2 bg-white-default flex-1 rounded-[20px] py-2 text-lg">
+            <View className="flex-row items-center">
+              <Ionicons name="radio" size={24} color="red" />
+              <CustomText styles="ml-2">
+                {recordingDuration.toFixed(0)}s
+              </CustomText>
+            </View>
+            <View className="flex-row">
+              <TouchableOpacity
+                onPress={() => stopRecording(true)}
+                className="mr-1"
+              >
+                <Ionicons name="send" size={24} color="#007AFF" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => stopRecording(false)}>
+                <Ionicons name="trash" size={24} color="red" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <>
+            <Composer
+              {...props}
+              text={text}
+              textInputProps={{
+                style: {
+                  backgroundColor: "#fff",
+                  flex: 1,
+                  borderRadius: 20,
+                  paddingHorizontal: 4,
+                  paddingVertical: 8,
+                  marginRight: 8,
+                  fontSize: 16,
+                },
+                placeholder: "Type a message...",
+                value: text,
+                onChangeText: setText,
+                autoFocus: false,
+                onFocus: () => setIsFocused(true),
+                onBlur: () => setIsFocused(false),
+              }}
+            />
+            <TouchableOpacity
+              onPress={async () =>
+                openImagePicker({
+                  source: "camera",
+                })
+              }
+            >
+              <Ionicons name="camera" size={24} color="#007AFF" />
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+    );
+  };
+
+  const renderSend = (props: SendProps<IMessage>) => {
+    return isFocused ? (
+      <TouchableWithoutFeedback
+        onPress={() => {
+          mutate({
+            groupId: chatId!,
+            userId: user?.user.id!,
+            text: text,
+          });
+        }}
+      >
+        <Send {...props}>
+          <View>
+            <Ionicons name="send" size={24} color="#007AFF" />
+          </View>
+        </Send>
+      </TouchableWithoutFeedback>
+    ) : (
+      <TouchableWithoutFeedback onPress={startRecording}>
+        <Send {...props}>
+          <View>
+            <Ionicons
+              name="mic"
+              size={24}
+              color={isRecording ? "red" : "#007AFF"}
+            />
+          </View>
+        </Send>
+      </TouchableWithoutFeedback>
+    );
+  };
   const renderBubble = (props: BubbleProps<IMessage>) => {
     return (
       <Bubble
@@ -161,7 +341,6 @@ const Chat = () => {
       />
     );
   };
-
   const renderTime = (props: TimeProps<IMessage>) => {
     return (
       <Time
@@ -192,7 +371,6 @@ const Chat = () => {
       />
     );
   };
-
   const renderActions = (props: ActionsProps) => (
     <Actions
       {...props}
@@ -207,8 +385,14 @@ const Chat = () => {
       }}
       icon={() => <Ionicons name="attach" size={24} color="#007AFF" />}
       options={{
-        "Choose From Library": () => {
-          console.log("Choose From Library");
+        "Choose From Library": async () => {
+          await openImagePicker({
+            source: "library",
+          });
+        },
+
+        "Choose From Files": async () => {
+          await openDocumentPicker({});
         },
         Cancel: () => {
           console.log("Cancel");
@@ -217,107 +401,6 @@ const Chat = () => {
       optionTintColor="#222B45"
     />
   );
-
-  // Custom Composer
-  const renderComposer = (props: ComposerProps) => {
-    return (
-      <View className="flex-row flex-1 bg-white-default rounded-xl px-2 border border-gray-400 text-lg justify-center items-center">
-        <Composer
-          {...props}
-          text={text}
-          textInputProps={{
-            style: {
-              backgroundColor: "#fff",
-              flex: 1,
-              borderRadius: 20,
-              paddingHorizontal: 4,
-              paddingVertical: 8,
-              marginRight: 8,
-              // borderWidth: 1,
-              // borderColor: "#ddd", // Border color of the input field
-              fontSize: 16, // Text size in the input field
-            },
-            placeholder: "Type a message...",
-            value: text,
-            onChangeText: setText,
-            autoFocus: false,
-            onFocus: () => setIsFocused(true),
-            onBlur: () => setIsFocused(false),
-          }}
-        />
-        <TouchableOpacity>
-          <Ionicons name="camera" size={24} color="#007AFF" />
-        </TouchableOpacity>
-      </View>
-    );
-
-    return (
-      <TextInput
-        // style={{
-        //   backgroundColor: "#fff",
-        //   borderRadius: 20,
-        //   paddingHorizontal: 12,
-        //   paddingVertical: 8,
-        //   marginRight: 8,
-        //   borderWidth: 1,
-        //   borderColor: "#ddd", // Border color of the input field
-        //   fontSize: 16, // Text size in the input field
-        // }}
-        className="flex-1 bg-white-default rounded-2xl px-4 border border-gray-400 text-lg justify-center items-center"
-        {...props}
-        placeholder="Type a message..."
-        value={text}
-        onChangeText={setText}
-        autoFocus={false}
-        onFocus={() => {
-          setIsFocused(true);
-        }}
-        onBlur={() => setIsFocused(false)}
-      />
-    );
-  };
-
-  // Custom Send button
-  const renderSend = (props: SendProps<IMessage>) => {
-    return isFocused ? (
-      <TouchableWithoutFeedback
-        onPress={() => {
-          mutate({
-            groupId: chatId!,
-            userId: user?.user.id!,
-            text: text,
-          });
-        }}
-      >
-        <Send {...props}>
-          <View>
-            <Ionicons name="send" size={24} color="#007AFF" />
-          </View>
-        </Send>
-      </TouchableWithoutFeedback>
-    ) : (
-      <TouchableWithoutFeedback
-        onPress={() => {
-          mutate({
-            groupId: chatId!,
-            userId: user?.user.id!,
-            text: text,
-          });
-        }}
-      >
-        <Send {...props}>
-          <View>
-            <Ionicons name="mic" size={24} color="#007AFF" />
-          </View>
-        </Send>
-      </TouchableWithoutFeedback>
-    );
-  };
-
-  if ((!chatId || !name) && pathname.includes("chat")) {
-    console.log("Redirecting to chats");
-    return <Redirect href="/(root)/(drawer)/(tabs)/(chat)/chats" />;
-  }
 
   return (
     <>
@@ -361,12 +444,11 @@ const Chat = () => {
           _id: user?.user.id,
           name: user?.user.name,
         }}
-        renderBubble={renderBubble} // Use the custom bubble renderer
-        renderTime={renderTime} // Use custom time renderer
+        renderBubble={renderBubble}
+        renderTime={renderTime}
         renderInputToolbar={renderInputToolbar}
         renderComposer={renderComposer}
         renderSend={renderSend}
-        //   renderMessage={(props) => <CustomMessage {...props} />}
       />
     </>
   );

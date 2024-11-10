@@ -30,12 +30,17 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "@prisma/react-native",
       "expo-router",
       "expo-asset",
       [
         "expo-camera",
         { "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera" }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+        }
       ]
     ],
     "assetBundlePatterns": ["**/*"]

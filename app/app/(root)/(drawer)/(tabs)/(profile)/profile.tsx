@@ -19,22 +19,21 @@ const Profile = () => {
   return (
     <View className="flex-1 flex-col bg-white-default w-full">
       <View className="w-full">
-        <View className="w-full rounded-b-[80px] bg-primary-light bg-opacity-70 h-[230px]" />
-        <View className="absolute top-32 left-24 w-56 h-56 rounded-full bg-primary-dark">
+        <View className="my-4 flex flex-col justify-center items-center rounded-full">
           <Image
-            className="w-56 h-56 rounded-full border-red"
+            className="w-32 h-32 rounded-full border-red"
             source={{ uri: clerkUser?.imageUrl }}
             resizeMode={"cover"}
           />
         </View>
-        <Moon className="w-10 h-10 self-end px-8 mt-4" size={32} />
-        <View className="flex flex-col justify-center items-center mt-20">
+        <View className="flex flex-col justify-center items-center">
           <CustomText styles="font-poppinsSemiBold text-2xl">
             {user?.user.name}
           </CustomText>
           <CustomText styles="text-lg">{user?.user.email}</CustomText>
         </View>
       </View>
+      <Moon className="w-10 h-10 self-end px-8" size={32} color={"black"} />
       <View className="w-full flex flex-col px-8">
         <CustomText styles="text-xl text-gray-400 mt-2">
           Account Setting
