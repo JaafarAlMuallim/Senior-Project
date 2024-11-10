@@ -45,6 +45,7 @@ import {
 } from "../components/ui/tabs";
 import {
     DropdownMenu,
+    DropdownMenuPortal,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -57,6 +58,20 @@ import { DataTable } from "../components/ui/data-table";
 import { FaUser, FaUsers, FaClipboardList } from 'react-icons/fa';
 import { MoreHorizontal, ArrowUpDown, TrendingUp } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+    Dialog,
+    DialogPortal,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogOverlay,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
+
 
 // types just for experiment
 type Users = {
@@ -67,8 +82,8 @@ type Users = {
 }
 
 const MainDashboard = () => {
-  const [viewMode, setViewMode] = useState("table");
 
+  //data
   const users: Users[] = [
     {
       id: "12345",
@@ -103,13 +118,58 @@ const MainDashboard = () => {
     { id: "18345", name: "SWE 316", courseId: "15967", date: "2024/12/06" },
   ];
 
-    const reports = [
-        { id: "12345", title: "Forgot password", category: "Security", date: "2024/12/06" },
-        { id: "12445", title: "University integration", category: "Suggestion", date: "2024/12/06" },
-        { id: "15345", title: "App crashed", category: "Bug", date: "2024/12/06" },
-        { id: "18345", title: "Forgot password", category: "Security", date: "2024/12/06" },
+    const [reports, setReports] = useState([
+        {
+            id: "12345",
+            title: "Forgot password",
+            category: "Security",
+            date: "2024/12/06",
+            description: "Password forgotten and email lost.",
+            status: "open",
+        },
+        {
+            id: "12445",
+            title: "University integration",
+            category: "Suggestion",
+            date: "2024/12/06",
+            description: "Suggestion: why not to integrate the app with KFUPM portal.",
+            status: "closed",
+        },
+        {
+            id: "15345",
+            title: "App crashed",
+            category: "Bug",
+            date: "2024/12/06",
+            description:
+                "I just encountered an issue with the app that I wanted to report.",
+            status: "open",
+        },
+        {
+            id: "18345",
+            title: "Forgot password",
+            category: "Security",
+            date: "2024/12/06",
+            description: "Password forgotten and email lost.",
+            status: "closed",
+        },
+    ]);
+
+    const messages = [
+        { date: "2024-11-01", groups: 30, ai: 10 },
+        { date: "2024-11-02", groups: 45, ai: 20 },
+        { date: "2024-11-03", groups: 50, ai: 15 },
+        { date: "2024-11-04", groups: 60, ai: 18 },
+        { date: "2024-11-05", groups: 35, ai: 20 },
+        { date: "2024-11-06", groups: 50, ai: 25 },
+        { date: "2024-11-07", groups: 80, ai: 40 },
+        { date: "2024-11-08", groups: 55, ai: 30 },
+        { date: "2024-11-09", groups: 60, ai: 25 },
+        { date: "2024-11-10", groups: 60, ai: 48 },
+        { date: "2024-11-11", groups: 35, ai: 20 },
+        { date: "2024-11-12", groups: 50, ai: 25 },
     ];
 
+    //report chart configuration
     const categoryCounts = reports.reduce((acc, report) => {
         const category = report.category;
         if (acc[category]) {
@@ -140,22 +200,6 @@ const MainDashboard = () => {
         }, {})
     } satisfies ChartConfig
 
-
-  const messages = [
-    { date: "2024-11-01", groups: 30, ai: 10 },
-    { date: "2024-11-02", groups: 45, ai: 20 },
-    { date: "2024-11-03", groups: 50, ai: 15 },
-    { date: "2024-11-04", groups: 60, ai: 18 },
-    { date: "2024-11-05", groups: 35, ai: 20 },
-    { date: "2024-11-06", groups: 50, ai: 25 },
-    { date: "2024-11-07", groups: 80, ai: 40 },
-    { date: "2024-11-08", groups: 55, ai: 30 },
-    { date: "2024-11-09", groups: 60, ai: 25 },
-    { date: "2024-11-10", groups: 60, ai: 48 },
-    { date: "2024-11-11", groups: 35, ai: 20 },
-    { date: "2024-11-12", groups: 50, ai: 25 },
-  ];
-
     const chartConfig = {
         views: {
             label: "Messgaes",
@@ -170,6 +214,7 @@ const MainDashboard = () => {
         },
     } satisfies ChartConfig
 
+    //data tables content (users, groups, reports)
     const columns: ColumnDef<Users>[] = [
         {
             id: "select",
@@ -376,95 +421,105 @@ const MainDashboard = () => {
             header: "Date Created",
         },
         {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => {
+                const status = row.original.status;
+                return (
+                    <span
+                        className={`font-semibold ${status === "open" ? "text-green-500" : "text-red-500"
+                            }`}
+                    >
+                        {status.charAt(0).toUpperCase() + status.slice(1)} 
+                    </span>
+                );
+            },
+        },
+        {
             id: "actions",
             cell: ({ row }) => {
                 const report = row.original
 
                 return (
+                    <Dialog>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
                                 <span className="sr-only">Open menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                        </DropdownMenuTrigger>
+                            </DropdownMenuTrigger>
+                        <DropdownMenuPortal>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(report.name)}
+                                onClick={() => navigator.clipboard.writeText(report.title)}
                             >
                                 Copy report name
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>Remove report</DropdownMenuItem>
+                            <DialogTrigger asChild>
+                            <DropdownMenuItem>
+                            Open
+                            </DropdownMenuItem>
+                            </DialogTrigger>
                         </DropdownMenuContent>
-                    </DropdownMenu>
+                        </DropdownMenuPortal>
+                        </DropdownMenu>
+                        <DialogPortal>
+                            <DialogOverlay className="DialogOverlay" />
+                            <DialogContent className="">
+                                <DialogHeader>
+                                    <DialogTitle>{report.title}</DialogTitle>
+                                </DialogHeader>
+                                <div className= "mx-3 border-2 rounded-md">
+                                    <div className="flex flex-row space-x-64 pt-6 border-b-2 p-2">
+                                    <div className=" ">
+                                        {report.category}
+                                    </div>
+                                    <div className="">
+                                        {report.date}
+                                    </div>
+                                </div>
+                                <div className="grid gap-4 py-4 p-2">
+                                    <div className="">
+                                        Description
+                                    </div>
+                                        <div className= "text-muted-foreground pb-8">
+                                            {report.description }
+                                    </div>
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button
+                                        onClick={() => {
+                                            setReports((prevReports) =>
+                                                prevReports.map((r) =>
+                                                    r.id === report.id
+                                                        ? { ...r, status: r.status === "open" ? "closed" : "open" }
+                                                        : r
+                                                )
+                                            );
+                                        }}
+                                        className={`mt-6 py-2 px-4 rounded-md ${report?.status === "open"
+                                                ? "bg-red-500"
+                                                : "bg-green-500"
+                                            }`}
+                                    >
+                                            {report?.status === "open"
+                                                ? "Mark as Closed"
+                                                : "Mark as Open"}
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </DialogPortal>
+                    </Dialog>
                 )
             },
         },
     ]
 
-
-  const renderTableContent = (contentType) => {
-    if (contentType === "users") {
-      return (
-          <div className="container mx-auto py-10">
-              <DataTable columns={columns} data={users} />
-          </div>
-      );
-    } else if (contentType === "groups") {
-      return (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Course ID</TableHead>
-              <TableHead>Date Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {groups.map((group) => (
-              <TableRow key={group.id}>
-                <TableCell>{group.id}</TableCell>
-                <TableCell>{group.name}</TableCell>
-                <TableCell>{group.courseId}</TableCell>
-                <TableCell>{group.date}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      );
-    }
-  };
-
-  const renderChartContent = (contentType) => {
-    const data =
-      contentType === "messagesInGroups"
-        ? messagesInGroupsData
-        : messagesInAIData;
-    const color = contentType === "messagesInGroups" ? "#4f46e5" : "#f97316";
-    const label =
-      contentType === "messagesInGroups"
-        ? "Messages in Groups"
-        : "Messages in AI";
-
-    return (
-      <ChartContainer config={{ messages: { label: "Messages", color } }}>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" />
-            <YAxis />
-            <Tooltip content={<ChartTooltipContent />} />
-            <Legend content={<ChartLegendContent />} />
-            <Line type="monotone" dataKey="messages" stroke={color} />
-          </LineChart>
-        </ResponsiveContainer>
-      </ChartContainer>
-    );
-    };
-
+    // table and chart view
     const [isTableView, setIsTableView] = useState(true);
 
     const [activeChart, setActiveChart] =
@@ -477,10 +532,10 @@ const MainDashboard = () => {
         []
     )
 
-
     const toggleView = () => {
         setIsTableView(!isTableView);
     };
+
 
   return (
       <Tabs defaultValue="users" className="mt-12  flex-col">
