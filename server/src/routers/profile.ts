@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -13,19 +13,20 @@ export const profileSchema = z.object({
 });
 
 export const profileRouter = router({
-  get: publicProcedure
-    .input(
-      z.object({
-        clerkId: z.string(),
-      }),
-    )
+  get: authProcedure
+    // .input(
+    //   z.object({
+    //     clerkId: z.string(),
+    //   }),
+    // )
     .query(async ({ input, ctx }) => {
-      const { clerkId } = input;
+      // const { clerkId } = input;
+      console.log("PROFILE");
       try {
         const profile = await postgresClient.profile.findFirst({
-          where: {
-            userId: clerkId,
-          },
+          // where: {
+          //   userId: clerkId,
+          // },
           include: {
             user: true,
           },
@@ -34,6 +35,7 @@ export const profileRouter = router({
         if (!profile) {
           throw new Error("Profile not found");
         }
+        console.log("RETURNED PRFOILE ", profile);
         return profile;
       } catch (e) {
         console.log(e);

@@ -1,9 +1,8 @@
 import CustomText from "@/components/CustomText";
 import GoogleAuth from "@/components/GoogleAuth";
 import Input from "@/components/Input";
-import { useUserStore } from "@/store/store";
 import { useTokenStore } from "@/store/tokenStore";
-import { useSignIn, useUser } from "@clerk/clerk-expo";
+import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { Mail, LockKeyhole } from "lucide-react-native";
 import React from "react";

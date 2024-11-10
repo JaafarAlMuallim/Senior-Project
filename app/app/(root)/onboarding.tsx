@@ -5,7 +5,7 @@ import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
 import { useUserStore } from "@/store/store";
 import { useTokenStore } from "@/store/tokenStore";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
   Bolt,
@@ -20,6 +20,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const OnBoarding = () => {
   const { user } = useUser();
+  const { session } = useSession();
   const { setUser } = useUserStore();
   const { setToken } = useTokenStore();
   const [phone, setPhone] = useState("");
@@ -34,21 +35,21 @@ const OnBoarding = () => {
   });
 
   useEffect(() => {
-    if (user) setToken({ token: user?.id! });
-    console.log(user?.id);
-  }, [user]);
+    const findToken = async () => {
+      const t = await session?.getToken({
+        template: "supabase",
+      });
+      console.log("Token: ", t);
+      if (t) setToken({ token: t });
+    };
+    findToken();
+  }, [session]);
 
-  const { data, isLoading } = trpc.profiles.get.useQuery(
-    {
-      clerkId: user?.id!,
-    },
-    {
-      enabled: !!user?.id,
-    },
-  );
+  const { data, isLoading } = trpc.profiles.get.useQuery();
 
   useEffect(() => {
     if (!isLoading && data?.university) {
+      console.log("DATA ONBOARDING: ", data);
       setUser(data);
       router.push("/(root)/(drawer)/(tabs)/(home)/home");
     }

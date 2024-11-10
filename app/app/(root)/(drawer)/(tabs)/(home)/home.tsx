@@ -35,6 +35,9 @@ const Page = () => {
   const { data: isTutor } = trpc.tutors.isTutor.useQuery({
     userId: userStore?.user.id!,
   });
+  console.log(isTutor);
+  console.log(userCourses);
+  console.log(userStore.user);
 
   if (isTutor && !tutor) {
     setTutor(isTutor);

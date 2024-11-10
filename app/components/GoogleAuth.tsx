@@ -5,7 +5,7 @@ import CustomText from "./CustomText";
 import { images } from "@/constants/images";
 import React from "react";
 import { trpc } from "@/lib/trpc";
-import { useTokenStore } from "@/store/tokenStore";
+import { router } from "expo-router";
 
 const GoogleAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -14,24 +14,20 @@ const GoogleAuth = () => {
       Alert.alert("Success", "You have successfully signed up!");
     },
   });
-  const { setToken } = useTokenStore();
 
   const handleGoogleSignIn = async () => {
     const result = await googleOAuth(startOAuthFlow);
     if (result.success) {
-      setToken({ token: result.data?.clerkId! });
       addUser({
         email: result.data?.email!,
         name: result.data?.name!,
         clerkId: result.data?.clerkId!,
       });
+      router.push("/(root)/onboarding");
     }
 
     if (result.code === "session_exists") {
       Alert.alert("Success", "Session exists. Redirecting to home screen.");
-    }
-    if (result.code === "") {
-      Alert.alert(result.success ? "Success" : "Error", result.message);
     }
   };
 

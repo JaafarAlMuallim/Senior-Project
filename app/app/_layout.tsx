@@ -20,13 +20,7 @@ import {
   splitLink,
   unstable_httpSubscriptionLink,
 } from "@trpc/client";
-import {
-  ActivityIndicator,
-  LogBox,
-  Platform,
-  StatusBar,
-  View,
-} from "react-native";
+import { LogBox, Platform, StatusBar } from "react-native";
 import { useTokenStore } from "@/store/tokenStore";
 // import { initializeDB } from "@/lib/db";
 
@@ -111,7 +105,7 @@ export default function RootLayout() {
             url: url,
             headers: () => {
               return {
-                Authorization: token.token,
+                Authorization: `Bearer ${token.token}`,
               };
             },
           }),
