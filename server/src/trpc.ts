@@ -2,15 +2,12 @@ import { initTRPC } from "@trpc/server";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { mongoClient, postgresClient, redisClient } from "./db";
 import jwt from "jsonwebtoken";
-import fs from "fs";
 
 export const createContext = async (opts: CreateExpressContextOptions) => {
   const token = opts.req.headers.authorization?.split(" ")[1];
-  // create new file and save the token
-  const file = fs.createWriteStream("token.txt");
-  file.write(token!);
   const user = await getSession(token!);
   return {
+    req: opts.req,
     user,
     mongoClient,
     postgresClient,
@@ -18,7 +15,7 @@ export const createContext = async (opts: CreateExpressContextOptions) => {
   };
 };
 
-const getSession = async (token: string | null) => {
+const getSession = async (token: string | undefined) => {
   if (!token) {
     return null;
   }
@@ -27,13 +24,15 @@ const getSession = async (token: string | null) => {
       token,
       process.env.SUPABASE_JWT_SECRET!,
     ) as jwt.JwtPayload;
-    console.log(decoded);
     const user = await postgresClient.user.findUnique({
       where: {
         clerkId: decoded.userId,
       },
+      include: {
+        Admin: true,
+        Tutor: true,
+      },
     });
-    console.log(user);
     return user;
   } catch (e) {
     console.log(e);
@@ -50,10 +49,40 @@ export const publicProcedure = trpc.procedure;
 export const router = trpc.router;
 
 export const authProcedure = trpc.procedure.use(async ({ ctx, next }) => {
-  console.log(ctx.user);
   if (!ctx.user) {
+    console.log("HERE HERE HERE");
     throw new Error("Unauthorized");
   }
-  // const user = {} as User;
+  console.log(ctx.user);
   return next({ ctx });
 });
+
+export const adminProcedure = trpc.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.user || !ctx.user.Admin) {
+    throw new Error("Unauthorized");
+  }
+  return next({ ctx });
+});
+
+export const tutorProcedure = trpc.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.user || !ctx.user.Tutor) {
+    throw new Error("Unauthorized");
+  }
+  return next({ ctx });
+});
+
+export const subscriptionAuthProcedure = trpc.procedure.use(
+  async ({ ctx, next }) => {
+    if (!ctx.user) {
+      // Attempt to fetch the user asynchronously before the subscription starts
+      const token = ctx.req.headers.authorization?.split(" ")[1];
+      ctx.user = await getSession(token);
+    }
+
+    if (!ctx.user) {
+      throw new Error("Unauthorized");
+    }
+
+    return next({ ctx });
+  },
+);

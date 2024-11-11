@@ -1,5 +1,5 @@
 import CustomText from "@/components/CustomText";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import {
   Link,
   Redirect,
@@ -8,7 +8,6 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import {
-  Image,
   TouchableOpacity,
   View,
   Animated,
@@ -18,43 +17,15 @@ import {
 } from "react-native";
 import {
   ArrowDownNarrowWide,
-  EllipsisVertical,
   File,
   Loader2,
   Search,
 } from "lucide-react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useCoursesStore } from "@/store/coursesStore";
 import { separateNameNum } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
-
-const COURSES = [
-  {
-    id: 1,
-    title: "Introdudction to Python",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 104",
-  },
-  {
-    id: 2,
-    title: "Data Structures and Algorithms",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 202",
-  },
-  {
-    id: 3,
-    title: "Discrete Mathematics",
-    description: "This is a course about computer science.",
-    courseCode: "ICS 253",
-  },
-  {
-    id: 4,
-    title: "Computer Organization and Architecture",
-    description: "This is a course about computer science.",
-    courseCode: "COE 301",
-  },
-];
 
 const TYPES = [
   {

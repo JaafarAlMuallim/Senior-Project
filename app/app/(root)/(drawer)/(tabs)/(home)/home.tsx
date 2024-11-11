@@ -18,13 +18,11 @@ import { Suspense, useEffect } from "react";
 import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
 
 const Page = () => {
-  console.log("home");
   const { user: userStore, tutor, setTutor } = useUserStore();
   const { setRegistrations } = useCoursesStore();
 
   const { data: userCourses } = trpc.schedule.getSchedule.useQuery(
     {
-      userId: userStore?.user.id!,
       semester: "241",
     },
     {
@@ -32,29 +30,15 @@ const Page = () => {
     },
   );
 
-  const { data: isTutor } = trpc.tutors.isTutor.useQuery({
-    userId: userStore?.user.id!,
-  });
-  console.log(isTutor);
-  console.log(userCourses);
-  console.log(userStore.user);
+  const { data: isTutor } = trpc.tutors.isTutor.useQuery();
 
   if (isTutor && !tutor) {
     setTutor(isTutor);
   }
 
-  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery(
-    {
-      tutorId: tutor?.id!,
-    },
-    {
-      enabled: !!tutor?.id,
-    },
-  );
+  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery();
   const { data: requests } = trpc.sessions.getPendingSessionTutorCount.useQuery(
-    {
-      tutorId: tutor?.id!,
-    },
+    undefined,
     {
       enabled: !!tutor?.id,
       refetchInterval: 10000,
@@ -211,7 +195,6 @@ const Page = () => {
                       renderItem={({ item }) => {
                         const time = item.date.split("T")[1].substring(0, 5);
                         const date = item.date.split("T")[0];
-                        console.log(item.date);
                         const endTime = add(new Date(item.date), {
                           minutes: 30,
                         })

@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { mongoClient, postgresClient, redisClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 import EventEmitter, { on } from "events";
 import { Message, User } from "@prisma/mongo/client";
 
@@ -29,7 +28,6 @@ class MyEventEmitter extends EventEmitter {
   }
 }
 
-// TODO: REDIS
 // In a real app, you'd probably use Redis or something
 export const ee = new MyEventEmitter();
 
@@ -75,29 +73,19 @@ setInterval(() => {
 }, 1e3).unref(); // Check every second, but only clear if 3 seconds have passed
 
 export const groupRouter = router({
-  list: publicProcedure.query(async () => {
-    return await postgresClient.group.findMany();
-    // return postgresClient.query.Group.findMany();
+  list: authProcedure.query(async ({ ctx }) => {
+    return await ctx.postgresClient.group.findMany();
   }),
-
-  isTyping: publicProcedure
+  isTyping: authProcedure
     .input(
       z.object({
         groupId: z.string(),
         typing: z.boolean(),
-        userId: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
-      // TODO: get name from ctx
-      // const { name } = opts.ctx.user;
-      const { userId, groupId, typing } = input;
-      const user = await postgresClient.user.findUnique({
-        where: {
-          id: userId,
-        },
-      });
-      const name = user?.name;
+    .mutation(async ({ input, ctx }) => {
+      const { groupId, typing } = input;
+      const name = ctx.user?.name;
 
       if (!currentlyTyping[groupId]) {
         currentlyTyping[groupId] = {};
@@ -113,80 +101,78 @@ export const groupRouter = router({
 
       ee.emit("isTypingUpdate", groupId, currentlyTyping[groupId]);
     }),
-
-  whoIsTyping: publicProcedure
+  whoIsTyping: authProcedure
     .input(
       z.object({
         groupId: z.string(),
       }),
     )
     .subscription(async function* ({ input, signal }) {
-      const { groupId: currGroup } = input;
-
-      let lastIsTyping = "";
-
-      /**
-       * yield who is typing if it has changed
-       * won't yield if it's the same as last time
-       */
       try {
-        function* maybeYield(who: WhoIsTyping) {
-          const idx = Object.keys(who).toSorted().toString();
-          if (idx === lastIsTyping) {
-            return;
-          }
-          yield Object.keys(who);
-          lastIsTyping = idx;
-        }
+        const { groupId: currGroup } = input;
+        console.log("CURR GROUP", currGroup);
 
-        // emit who is currently typing
-        yield* maybeYield(currentlyTyping[currGroup] ?? {});
+        let lastIsTyping = "";
 
-        for await (const [groupId, who] of ee.toIterable("isTypingUpdate", {
-          signal: signal,
-        })) {
-          if (groupId === currGroup) {
-            yield* maybeYield(who);
+        /**
+         * yield who is typing if it has changed
+         * won't yield if it's the same as last time
+         */
+        try {
+          function* maybeYield(who: WhoIsTyping) {
+            const idx = Object.keys(who).toSorted().toString();
+            if (idx === lastIsTyping) {
+              return;
+            }
+            yield Object.keys(who);
+            lastIsTyping = idx;
           }
+
+          // emit who is currently typing
+          yield* maybeYield(currentlyTyping[currGroup] ?? {});
+
+          for await (const [groupId, who] of ee.toIterable("isTypingUpdate", {
+            signal: signal,
+          })) {
+            if (groupId === currGroup) {
+              yield* maybeYield(who);
+            }
+          }
+        } catch (error) {
+          console.log(error);
+          throw new Error("Error getting who is typing");
         }
       } catch (error) {
         console.log(error);
         throw new Error("Error getting who is typing");
       }
     }),
-  getUserGroups: publicProcedure // TODO: Change to authProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const { userId } = input;
+  getUserGroups: authProcedure.query(async ({ ctx }) => {
+    try {
       try {
-        try {
-          const groups = await mongoClient.userGroups.findMany({
-            where: {
-              userId: userId,
-            },
-            include: {
-              group: true,
-            },
-          });
+        const groups = await ctx.mongoClient.userGroups.findMany({
+          where: {
+            userId: ctx.user?.id,
+          },
+          include: {
+            group: true,
+          },
+        });
 
-          if (!groups) {
-            throw new Error("User not found");
-          }
-          return groups.map((group) => group.group);
-        } catch (error) {
-          console.log(error);
-          throw new Error("Error getting user groups");
+        if (!groups) {
+          throw new Error("User not found");
         }
+        return groups.map((group) => group.group);
       } catch (error) {
         console.log(error);
         throw new Error("Error getting user groups");
       }
-    }),
-  getGroup: publicProcedure
+    } catch (error) {
+      console.log(error);
+      throw new Error("Error getting user groups");
+    }
+  }),
+  getGroup: authProcedure
     .input(
       z.object({
         groupId: z.string(),
@@ -195,7 +181,7 @@ export const groupRouter = router({
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
       try {
-        const group = await mongoClient.group.findUnique({
+        const group = await ctx.mongoClient.group.findUnique({
           where: {
             id: groupId,
           },
@@ -206,20 +192,22 @@ export const groupRouter = router({
         throw new Error("Error getting group");
       }
     }),
-  sub: publicProcedure
+  sub: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-        userId: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const { groupId, userId } = input;
-      console.log("sub", groupId, userId);
+    .mutation(async ({ input, ctx }) => {
+      const { groupId } = input;
+      console.log("sub", groupId);
       await Promise.all([
-        await redisClient.sadd(`group:${groupId}:subscriptions`, userId),
-        await redisClient.hset(
-          `group:${groupId}:userId:${userId}`,
+        await ctx.redisClient.sadd(
+          `group:${groupId}:subscriptions`,
+          ctx.user?.id!,
+        ),
+        await ctx.redisClient.hset(
+          `group:${groupId}:userId:${ctx.user?.id}`,
           "unread",
           "0",
         ),
@@ -227,16 +215,17 @@ export const groupRouter = router({
 
       // await redisClient.sadd(`group:${groupId}:subscriptions`, userId);
     }),
-  unsub: publicProcedure
+  unsub: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-        userId: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const { groupId, userId } = input;
-      console.log("unsub", groupId, userId);
-      await redisClient.srem(`group:${groupId}:subscriptions`, userId);
+    .mutation(async ({ input, ctx }) => {
+      const { groupId } = input;
+      await ctx.redisClient.srem(
+        `group:${groupId}:subscriptions`,
+        ctx.user?.id!,
+      );
     }),
 });

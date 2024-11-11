@@ -1,21 +1,19 @@
 import { z } from "zod";
-import { postgresClient } from "../db";
-import { authProcedure, publicProcedure, router } from "../trpc";
+import { authProcedure, router } from "../trpc";
 
 export const scheduleRouter = router({
-  createSchedule: publicProcedure // TODO: Change to authProcedure
+  createSchedule: authProcedure
     .input(
       z.object({
         sectionId: z.string(),
         semester: z.string(),
-        userId: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { userId, semester, sectionId } = input;
-      const registration = await postgresClient.registration.findFirst({
+      const { semester, sectionId } = input;
+      const registration = await ctx.postgresClient.registration.findFirst({
         where: {
-          userId, // TODO: Need to replace with ctx.user.id later
+          userId: ctx.user?.id,
           semester,
           sectionId,
         },
@@ -25,26 +23,24 @@ export const scheduleRouter = router({
         throw new Error("Registration already exists");
       }
 
-      return await postgresClient.registration.create({
+      return await ctx.postgresClient.registration.create({
         data: {
-          userId, // TODO: Need to replace with ctx.user.id later
+          userId: ctx.user?.id!,
           sectionId,
           semester,
         },
       });
     }),
-  getSchedule: authProcedure // TODO: Change to authProcedure
+  getSchedule: authProcedure
     .input(
       z.object({
         semester: z.string(),
-        userId: z.string(),
       }),
     )
     .query(async ({ input, ctx }) => {
       const { semester } = input;
-      console.log("SCHEDULE", ctx.user?.id);
       try {
-        const registrations = await postgresClient.registration.findMany({
+        const registrations = await ctx.postgresClient.registration.findMany({
           where: {
             userId: ctx.user?.id,
             semester,
@@ -57,6 +53,8 @@ export const scheduleRouter = router({
             },
           },
         });
+        console.log("REGISTRATIONS");
+        console.log(registrations);
         return registrations;
       } catch (error) {
         console.log(error);
@@ -64,22 +62,16 @@ export const scheduleRouter = router({
       }
     }),
 
-  getSemesters: publicProcedure
-    .input(
-      z.object({
-        userId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const uniqueSemesters = await postgresClient.registration.findMany({
-        where: {
-          userId: input.userId,
-        },
-        select: {
-          semester: true,
-        },
-        distinct: ["semester"],
-      });
-      return uniqueSemesters.map((registration) => registration.semester);
-    }),
+  getSemesters: authProcedure.query(async ({ ctx }) => {
+    const uniqueSemesters = await ctx.postgresClient.registration.findMany({
+      where: {
+        userId: ctx.user?.id,
+      },
+      select: {
+        semester: true,
+      },
+      distinct: ["semester"],
+    });
+    return uniqueSemesters.map((registration) => registration.semester);
+  }),
 });

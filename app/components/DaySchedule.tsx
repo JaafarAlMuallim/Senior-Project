@@ -1,16 +1,7 @@
 import { View } from "react-native";
 import CustomText from "./CustomText";
 import DailyClass from "./DailyClass";
-
-type Class = {
-  id: string;
-  title: string;
-  section: string;
-  start: string;
-  end: string;
-  location: string;
-  instructor: string;
-};
+import { Class } from "@/models/class";
 
 const DayMapper = {
   Sunday: "SUN",

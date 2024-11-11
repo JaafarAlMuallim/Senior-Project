@@ -1,13 +1,11 @@
 import { SessionStatus } from "@prisma/postgres/client";
 import { z } from "zod";
-import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { adminProcedure, authProcedure, router, tutorProcedure } from "../trpc";
 
 export const sessionRouter = router({
-  createSession: publicProcedure // TODO: Change to authProcedure
+  createSession: tutorProcedure
     .input(
       z.object({
-        tutorId: z.string(),
         time: z.string(),
         courseId: z.string(),
         date: z.coerce.date(),
@@ -17,16 +15,15 @@ export const sessionRouter = router({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { tutorId, time, courseId, date, courseName, requestedBy, status } =
-        input;
+      const { time, courseId, date, courseName, requestedBy, status } = input;
       try {
         const hours = time.split(":")[0];
         const minutes = time.split(":")[1];
         date.setHours(parseInt(hours));
         date.setMinutes(parseInt(minutes));
-        const session = await postgresClient.session.create({
+        const session = await ctx.postgresClient.session.create({
           data: {
-            tutorId,
+            tutorId: ctx.user?.Tutor[0].id!,
             courseId,
             startTime: date,
             requestedBy,
@@ -43,20 +40,20 @@ export const sessionRouter = router({
         throw new Error("Error creating session");
       }
     }),
-  getSessions: publicProcedure.query(async () => {
-    const sessions = await postgresClient.session.findMany();
+  getSessions: adminProcedure.query(async ({ ctx }) => {
+    const sessions = await ctx.postgresClient.session.findMany();
     return sessions;
   }),
-  changeSessionStatus: publicProcedure
+  changeSessionStatus: tutorProcedure
     .input(
       z.object({
         sessionId: z.string(),
         status: z.nativeEnum(SessionStatus),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { sessionId, status } = input;
-      const session = await postgresClient.session.update({
+      const session = await ctx.postgresClient.session.update({
         where: {
           id: sessionId,
         },
@@ -67,95 +64,67 @@ export const sessionRouter = router({
       return session;
     }),
 
-  getTutorSessions: publicProcedure
-    .input(
-      z.object({
-        tutorId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { tutorId } = input;
-      const sessions = await postgresClient.session.findMany({
-        where: {
-          tutorId,
-        },
-      });
-      return sessions;
-    }),
-  getCourseSessions: publicProcedure
+  getTutorSessions: tutorProcedure.query(async ({ ctx }) => {
+    const sessions = await ctx.postgresClient.session.findMany({
+      where: {
+        tutorId: ctx.user?.Tutor[0].id!,
+      },
+    });
+    return sessions;
+  }),
+  getCourseSessions: authProcedure
     .input(
       z.object({
         courseId: z.string(),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { courseId } = input;
-      const sessions = await postgresClient.session.findMany({
+      const sessions = await ctx.postgresClient.session.findMany({
         where: {
           courseId,
         },
       });
       return sessions;
     }),
-  getPendingSessionTutorCount: publicProcedure
-    .input(
-      z.object({
-        tutorId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { tutorId } = input;
-      try {
-        const sessions = await postgresClient.session.count({
-          where: {
-            tutorId,
-            status: SessionStatus.PENDING,
-          },
-        });
-        return sessions;
-      } catch (e) {
-        console.log(e);
-        throw new Error("Error");
-      }
-    }),
-  getPendingSessionTutor: publicProcedure
-    .input(
-      z.object({
-        tutorId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { tutorId } = input;
-      const sessions = await postgresClient.session.findMany({
+  getPendingSessionTutorCount: tutorProcedure.query(async ({ ctx }) => {
+    try {
+      const sessions = await ctx.postgresClient.session.count({
         where: {
-          tutorId,
+          tutorId: ctx.user?.Tutor[0].id!,
           status: SessionStatus.PENDING,
         },
-        include: {
-          requester: true,
-          course: true,
-        },
       });
       return sessions;
-    }),
-  getAcceptedSessionTutor: publicProcedure
-    .input(
-      z.object({
-        tutorId: z.string(),
-      }),
-    )
-    .query(async ({ input }) => {
-      const { tutorId } = input;
-      const sessions = await postgresClient.session.findMany({
-        where: {
-          tutorId,
-          status: SessionStatus.ACCEPTED,
-        },
-        include: {
-          requester: true,
-          course: true,
-        },
-      });
-      return sessions;
-    }),
+    } catch (e) {
+      console.log(e);
+      throw new Error("Error");
+    }
+  }),
+  getPendingSessionTutor: tutorProcedure.query(async ({ ctx }) => {
+    const sessions = await ctx.postgresClient.session.findMany({
+      where: {
+        tutorId: ctx.user?.Tutor[0].id!,
+        status: SessionStatus.PENDING,
+      },
+      include: {
+        requester: true,
+        course: true,
+      },
+    });
+    return sessions;
+  }),
+  getAcceptedSessionTutor: authProcedure.query(async ({ ctx }) => {
+    const sessions = await ctx.postgresClient.session.findMany({
+      where: {
+        tutorId: ctx.user?.Tutor[0].id!,
+        status: SessionStatus.ACCEPTED,
+      },
+      include: {
+        requester: true,
+        course: true,
+      },
+    });
+    return sessions;
+  }),
 });

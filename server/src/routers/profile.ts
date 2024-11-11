@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { postgresClient } from "../db";
-import { authProcedure, publicProcedure, router } from "../trpc";
+import { authProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -13,47 +12,39 @@ export const profileSchema = z.object({
 });
 
 export const profileRouter = router({
-  get: authProcedure
-    // .input(
-    //   z.object({
-    //     clerkId: z.string(),
-    //   }),
-    // )
-    .query(async ({ input, ctx }) => {
-      // const { clerkId } = input;
-      console.log("PROFILE");
-      try {
-        const profile = await postgresClient.profile.findFirst({
-          // where: {
-          //   userId: clerkId,
-          // },
-          include: {
-            user: true,
-          },
-        });
+  get: authProcedure.query(async ({ ctx }) => {
+    console.log("PROFILE");
+    try {
+      const profile = await ctx.postgresClient.profile.findFirst({
+        where: {
+          userId: ctx.user?.id,
+        },
+        include: {
+          user: true,
+        },
+      });
 
-        if (!profile) {
-          throw new Error("Profile not found");
-        }
-        console.log("RETURNED PRFOILE ", profile);
-        return profile;
-      } catch (e) {
-        console.log(e);
+      if (!profile) {
+        throw new Error("Profile not found");
       }
-    }),
-  update: publicProcedure
+      console.log("RETURNED PROFILE ", profile);
+      return profile;
+    } catch (e) {
+      console.log(e);
+    }
+  }),
+  update: authProcedure
     .input(
       z.object({
-        clerkId: z.string(),
         data: profileSchema.partial(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { clerkId, data } = input;
+      const { data } = input;
       try {
-        const profile = await postgresClient.profile.update({
+        const profile = await ctx.postgresClient.profile.update({
           where: {
-            userId: clerkId,
+            userId: ctx.user?.id,
           },
           data: {
             major: data.major,

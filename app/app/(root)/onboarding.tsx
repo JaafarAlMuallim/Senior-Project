@@ -81,7 +81,6 @@ const OnBoarding = () => {
     standing: string;
   }) =>
     mutate({
-      clerkId: data.clerkId,
       data: data,
     });
 

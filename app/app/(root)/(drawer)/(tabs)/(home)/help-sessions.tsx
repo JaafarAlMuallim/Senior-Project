@@ -18,9 +18,7 @@ const HelpSessionModal = () => {
   const [time, setTime] = useState<string>("");
 
   const { data: tutorCourses } = trpc.tutors.getTutorsCourseById.useQuery(
-    {
-      tutorId: tutor?.id!,
-    },
+    undefined,
     {
       enabled: !!tutor?.id,
     },
@@ -63,7 +61,6 @@ const HelpSessionModal = () => {
     }
 
     createSession({
-      tutorId: tutor.id,
       time: format(date, "HH:mm"),
       courseId: selectedCourseObj.course.id,
       date: date,

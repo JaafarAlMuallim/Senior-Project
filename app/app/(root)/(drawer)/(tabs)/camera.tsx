@@ -4,7 +4,6 @@ import { toast } from "@/components/ui/toast";
 import { trpc } from "@/lib/trpc";
 import { useImageUploader } from "@/lib/uploadthing";
 import { separateNameNum } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { useCameraPermissions } from "expo-camera";
 import { Stack, useRouter } from "expo-router";
@@ -17,7 +16,6 @@ export default function CameraScreen() {
   const router = useRouter();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [filename, setFilename] = useState<string | null>(null);
-  const { user } = useUserStore();
   const { mutate: addMaterial } = trpc.courses.addMaterial.useMutation({
     onSuccess: () => {
       toast({
@@ -53,10 +51,9 @@ export default function CameraScreen() {
       console.log("Progress", progress);
     },
     onClientUploadComplete: (
-      data: ClientUploadedFileData<{ url: string }>[]
+      data: ClientUploadedFileData<{ url: string }>[],
     ) => {
       addMaterial({
-        userId: user.user.id,
         file: {
           type: "image",
           size: 0,
