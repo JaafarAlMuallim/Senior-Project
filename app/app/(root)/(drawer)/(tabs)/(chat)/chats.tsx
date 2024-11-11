@@ -7,15 +7,12 @@ import CustomText from "@/components/CustomText";
 import { cn, separateNameNum } from "@/lib/utils";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { trpc } from "@/lib/trpc";
-import { useUserStore } from "@/store/store";
 import { Link, Redirect } from "expo-router";
 import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { Loader2 } from "lucide-react-native";
 
 const Chats = () => {
   const [value, setValue] = useState("AI");
-
-  const { user } = useUserStore();
 
   const spinValue = new Animated.Value(0);
   const rotate = spinValue.interpolate({
@@ -24,9 +21,7 @@ const Chats = () => {
   });
 
   const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery(
-    {
-      userId: user.user.id,
-    },
+    undefined,
     {
       refetchInterval: 5000,
     },

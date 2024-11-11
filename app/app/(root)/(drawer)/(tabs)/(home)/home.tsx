@@ -1,14 +1,12 @@
 import CustomText from "@/components/CustomText";
-import { Text } from "@/components/ui/text";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { trpc } from "@/lib/trpc";
 import { separateNameNum } from "@/lib/utils";
 import { useCoursesStore } from "@/store/coursesStore";
 import { useUserStore } from "@/store/store";
-import { SignedOut, useUser } from "@clerk/clerk-expo";
-import { Ionicons } from "@expo/vector-icons";
 import { add } from "date-fns";
-import { Link, Redirect, router, Stack } from "expo-router";
+import { Link, router, Stack } from "expo-router";
 import {
   ArrowDownNarrowWide,
   Bell,
@@ -17,24 +15,14 @@ import {
   UserRound,
 } from "lucide-react-native";
 import { Suspense, useEffect } from "react";
-import {
-  FlatList,
-  Pressable,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
 
 const Page = () => {
-  console.log("home");
-  const { user } = useUser();
   const { user: userStore, tutor, setTutor } = useUserStore();
   const { setRegistrations } = useCoursesStore();
-  console.log(tutor);
 
   const { data: userCourses } = trpc.schedule.getSchedule.useQuery(
     {
-      userId: userStore?.user.id!,
       semester: "241",
     },
     {
@@ -42,26 +30,15 @@ const Page = () => {
     },
   );
 
-  const { data: isTutor } = trpc.tutors.isTutor.useQuery({
-    userId: userStore?.user.id!,
-  });
+  const { data: isTutor } = trpc.tutors.isTutor.useQuery();
 
   if (isTutor && !tutor) {
     setTutor(isTutor);
   }
 
-  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery(
-    {
-      tutorId: tutor?.id!,
-    },
-    {
-      enabled: !!tutor?.id,
-    },
-  );
+  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery();
   const { data: requests } = trpc.sessions.getPendingSessionTutorCount.useQuery(
-    {
-      tutorId: tutor?.id!,
-    },
+    undefined,
     {
       enabled: !!tutor?.id,
       refetchInterval: 10000,
@@ -90,16 +67,6 @@ const Page = () => {
       ms: 3000, // 3 seconds
     });
   };
-
-  if (!user) {
-    return (
-      <View className="h-full flex flex-col p-8 bg-white-default">
-        <SignedOut>
-          <Redirect href={"/(auth)/welcome"} />
-        </SignedOut>
-      </View>
-    );
-  }
 
   return (
     <>
@@ -138,7 +105,13 @@ const Page = () => {
       />
 
       <View className="h-full flex flex-col p-8 pr-0 bg-white-default">
-        <Suspense fallback={<Text>Loading...</Text>}>
+        <Suspense
+          fallback={
+            <Skeleton
+              className={"w-56 h-32 p-4 rounded-xl shadow-sm shadow-gray-900"}
+            />
+          }
+        >
           <View>
             <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
               Recent
@@ -176,7 +149,15 @@ const Page = () => {
             </View>
           </View>
         </Suspense>
-        <Suspense fallback={<Text>Loading...</Text>}>
+        <Suspense
+          fallback={
+            <Skeleton
+              className={
+                "bg-primary-light w-56 h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900"
+              }
+            />
+          }
+        >
           {tutor && (
             <View>
               <View className="flex flex-row justify-between items-center">
@@ -214,7 +195,6 @@ const Page = () => {
                       renderItem={({ item }) => {
                         const time = item.date.split("T")[1].substring(0, 5);
                         const date = item.date.split("T")[0];
-                        console.log(item.date);
                         const endTime = add(new Date(item.date), {
                           minutes: 30,
                         })
@@ -250,7 +230,7 @@ const Page = () => {
           )}
         </Suspense>
 
-        <Suspense fallback={<Text>Loading...</Text>}>
+        <Suspense fallback={<CustomText>Loading...</CustomText>}>
           <View>
             <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
               Courses
@@ -298,10 +278,10 @@ const Page = () => {
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
         >
           <Pressable onPress={showSuccessToast}>
-            <Text>Show Success Toast</Text>
+            <CustomText>Show Success Toast</CustomText>
           </Pressable>
           <Pressable onPress={showErrorToast} style={{ marginTop: 20 }}>
-            <Text>Show Error Toast</Text>
+            <CustomText>Show Error Toast</CustomText>
           </Pressable>
         </View>
       </View>

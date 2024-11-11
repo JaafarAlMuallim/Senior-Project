@@ -56,7 +56,6 @@ const EditProfile = () => {
     data: any, // update types
   ) =>
     mutate({
-      clerkId: clerkUser?.id!,
       data,
     });
   const onUpdatePassword = async () => {

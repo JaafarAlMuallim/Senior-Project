@@ -15,7 +15,7 @@ import { separateNameNum } from "@/lib/utils";
 import { useUserStore } from "@/store/store";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
-import { router, Stack, useLocalSearchParams, usePathname } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, TouchableOpacity, View } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -49,7 +49,6 @@ const Chat = () => {
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const utils = trpc.useUtils();
-  const pathname = usePathname();
 
   const isTypingMutation = useThrottledIsTypingMutation(chatId!, user?.user.id);
 
@@ -78,12 +77,6 @@ const Chat = () => {
       });
     },
     onClientUploadComplete: (data) => {
-      // mutate({
-      //   groupId: chatId!,
-      //   userId: user?.user.id!,
-      //   text: "🎵 Audio Message",
-      //   audioUrl: data[0].url,
-      // });
       toast({
         title: "Success",
         description: "Audio uploaded successfully",
@@ -115,6 +108,8 @@ const Chat = () => {
     },
   });
   const whoIsTyping = useWhoIsTyping(chatId!);
+  console.log("WHO IS TYPING: ", whoIsTyping);
+  console.log("WHO IS TYPING: ", chatId);
 
   useEffect(() => {
     let typingTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -291,7 +286,6 @@ const Chat = () => {
         onPress={() => {
           mutate({
             groupId: chatId!,
-            userId: user?.user.id!,
             text: text,
           });
         }}

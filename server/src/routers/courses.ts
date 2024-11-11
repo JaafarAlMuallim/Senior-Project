@@ -1,39 +1,37 @@
 import { Category } from "@prisma/postgres/client";
 import { z } from "zod";
-import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, router } from "../trpc";
 
 export const courseRouter = router({
-  getCourses: publicProcedure.query(async () => {
-    const courses = await postgresClient.course.findMany();
+  getCourses: authProcedure.query(async ({ ctx }) => {
+    const courses = await ctx.postgresClient.course.findMany();
     return courses;
   }),
 
-  getCourse: publicProcedure
+  getCourse: authProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input: { id } }) => {
-      const course = await postgresClient.course.findUnique({ where: { id } });
+    .query(async ({ input: { id }, ctx }) => {
+      const course = await ctx.postgresClient.course.findUnique({
+        where: { id },
+      });
       return course;
     }),
 
-  getUserCourses: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input: { id }, ctx }) => {
-      try {
-        const enrolled = await postgresClient.registration.findMany({
-          where: { userId: id },
-          include: { section: { include: { course: true } } },
-        });
-        return enrolled;
-      } catch (e) {
-        console.log(e);
-        throw new Error("Error");
-      }
-    }),
-  addMaterial: publicProcedure
+  getUserCourses: authProcedure.query(async ({ ctx }) => {
+    try {
+      const enrolled = await ctx.postgresClient.registration.findMany({
+        where: { userId: ctx.user?.id },
+        include: { section: { include: { course: true } } },
+      });
+      return enrolled;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Error");
+    }
+  }),
+  addMaterial: authProcedure
     .input(
       z.object({
-        userId: z.string(),
         file: z.object({
           url: z.string(),
           type: z.string(),
@@ -43,13 +41,12 @@ export const courseRouter = router({
         }),
       }),
     )
-    .mutation(async ({ input }) => {
-      const { userId, file } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { file } = input;
 
-      // Check if user is enrolled in the course
-      const registrations = await postgresClient.registration.findMany({
+      const registrations = await ctx.postgresClient.registration.findMany({
         where: {
-          userId,
+          userId: ctx.user?.id,
         },
         include: {
           section: {
@@ -90,7 +87,7 @@ export const courseRouter = router({
       }
 
       try {
-        const material = await postgresClient.material.create({
+        const material = await ctx.postgresClient.material.create({
           data: {
             courseId,
             name: name ?? "Untitled",
@@ -109,12 +106,12 @@ export const courseRouter = router({
         };
       }
     }),
-  getMaterial: publicProcedure
+  getMaterial: authProcedure
     .input(z.object({ courseId: z.string(), category: z.nativeEnum(Category) }))
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { courseId, category } = input;
       try {
-        const materials = await postgresClient.material.findMany({
+        const materials = await ctx.postgresClient.material.findMany({
           where: { courseId, category },
         });
         return materials;

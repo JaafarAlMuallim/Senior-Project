@@ -27,24 +27,22 @@ const BookSession = () => {
   const { data: courseTutor, isLoading: isLoading } =
     trpc.tutors.getTutorsCourse.useQuery();
 
-  const { mutate: addSession, isError } =
-    trpc.sessions.createSession.useMutation({
-      onSuccess: () => {
-        Alert.alert("Session booked successfully");
-        router.push("/(root)/(drawer)/(tabs)/(home)/home");
-      },
-      onError: (e: any) => {
-        console.log(e);
-        Alert.alert("Error booking session");
-      },
-    });
+  const { mutate: addSession } = trpc.sessions.createSession.useMutation({
+    onSuccess: () => {
+      Alert.alert("Session booked successfully");
+      router.push("/(root)/(drawer)/(tabs)/(home)/home");
+    },
+    onError: (e: any) => {
+      console.log(e);
+      Alert.alert("Error booking session");
+    },
+  });
 
   const onSubmit = () => {
     if (!tutor || !course || !date || !time) {
       Alert.alert("Please fill all fields");
     }
     addSession({
-      tutorId: tutor,
       courseId: course,
       date: date!,
       requestedBy: user.user.id,

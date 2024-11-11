@@ -40,7 +40,7 @@ const Chat = () => {
   const [text, setText] = useState("");
   const utils = trpc.useUtils();
   console.log(chatId);
-  const { data, isLoading } = trpc.messages.getMessages.useQuery({
+  const { data } = trpc.messages.getMessages.useQuery({
     groupId: chatId!,
   });
 
@@ -189,7 +189,6 @@ const Chat = () => {
         onPress={() => {
           mutate({
             groupId: chatId!,
-            userId: user?.user.id!,
             text: text,
             agent: separateNameNum(name!),
           });
@@ -246,7 +245,6 @@ const Chat = () => {
         renderInputToolbar={renderInputToolbar}
         renderComposer={renderComposer}
         renderSend={renderSend}
-        //   renderMessage={(props) => <CustomMessage {...props} />}
       />
     </>
   );

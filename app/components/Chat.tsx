@@ -1,7 +1,6 @@
 import { useWhoIsTyping } from "@/hooks/useChats";
 import { trpc } from "@/lib/trpc";
 import { cn, listWithAnd, pluralize } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
 import { router } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -22,25 +21,26 @@ const Chat = ({
   routeTo: string;
   styles?: string;
 }) => {
-  const { user } = useUserStore();
   const [content, setContent] = useState("");
+  console.log("GROUP ID: ", groupId);
   const currentlyTyping = useWhoIsTyping(groupId);
+  console.log("WHO IS TYPING: ", currentlyTyping);
+  console.log("WHO IS TYPING: ", groupId);
   const { data: lastMessage, isLoading } =
     trpc.messages.getLastMessage.useQuery(
       { groupId },
       {
         refetchInterval: 20000,
-      }
+      },
     );
 
   const { data: unreadCount } = trpc.messages.getUnreadCount.useQuery(
     {
       groupId,
-      userId: user.user.id,
     },
     {
       refetchInterval: 20000,
-    }
+    },
   );
 
   useEffect(() => {
@@ -49,15 +49,15 @@ const Chat = ({
         `${listWithAnd(currentlyTyping)} ${pluralize(
           currentlyTyping.length,
           "is",
-          "are"
-        )} typing...`
+          "are",
+        )} typing...`,
       );
     } else if (isLoading) {
       setContent("Loading...");
     } else {
       setContent(
         `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
-          "No messages"
+          "No messages",
       );
     }
   }, [currentlyTyping, lastMessage, isLoading]);
@@ -72,7 +72,7 @@ const Chat = ({
     <TouchableOpacity
       className={cn(
         `items-start justify-start min-h-16 px-8 py-4 rounded-2xl flex-wrap flex-row border-b border-gray-400`,
-        styles
+        styles,
       )}
       {...touchableProps}
       onPress={() => {

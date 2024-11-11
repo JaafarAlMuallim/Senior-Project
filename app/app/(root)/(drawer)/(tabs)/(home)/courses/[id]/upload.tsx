@@ -9,10 +9,26 @@ import { useState } from "react";
 import { Alert, TouchableOpacity, View } from "react-native";
 
 const UploadModalPage = () => {
-  const { id, type } = useLocalSearchParams<{ id?: string; type?: string }>();
+  const { id } = useLocalSearchParams<{ id?: string; type?: string }>();
   const [progress, setProgress] = useState<number>(0);
-  const { openDocumentPicker, isUploading } = useDocumentUploader("pdf", {
-    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+  const { openDocumentPicker } = useDocumentUploader("pdf", {
+    onClientUploadComplete: (url) => {
+      toast({
+        title: "Success",
+        description: "Material added successfully",
+        variant: "success",
+        ms: 3000,
+      });
+      addMaterial({
+        file: {
+          type: "pdf",
+          size: 0,
+          url: url[0].url,
+          name: "test",
+          category: "SLIDE",
+        },
+      });
+    },
     onUploadError: (error) => Alert.alert("Upload Error", error.message),
     onUploadProgress: (progress) => setProgress(progress),
   });

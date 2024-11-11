@@ -1,7 +1,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { trpc } from "@/lib/trpc";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
+import { ClerkLoaded, ClerkProvider, useSession } from "@clerk/clerk-expo";
 import {
   DarkTheme,
   DefaultTheme,
@@ -11,7 +11,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "reflect-metadata";
 import "../global.css";
@@ -20,14 +20,9 @@ import {
   splitLink,
   unstable_httpSubscriptionLink,
 } from "@trpc/client";
-import {
-  ActivityIndicator,
-  LogBox,
-  Platform,
-  StatusBar,
-  View,
-} from "react-native";
-// import { initializeDB } from "@/lib/db";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import { LogBox, Platform, StatusBar } from "react-native";
+import { useTokenStore } from "@/store/tokenStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -79,14 +74,7 @@ export default function RootLayout() {
     PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
   });
-  // const [isInitialized, setIsInitialized] = useState(false);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     await initializeDB();
-  //     setIsInitialized(true);
-  //   })();
-  // }, []);
+  const { token } = useTokenStore();
 
   const url = Platform.select({
     web: "http://localhost:3000/trpc",
@@ -102,10 +90,25 @@ export default function RootLayout() {
         splitLink({
           condition: (op) => op.type === "subscription",
           true: unstable_httpSubscriptionLink({
-            url: url,
+            url: `${url}`,
+            EventSource: EventSourcePolyfill,
+            eventSourceOptions: () => {
+              console.log("WS");
+              console.log(token.token);
+              return {
+                headers: {
+                  Authorization: `Bearer ${token.token}`,
+                },
+              };
+            },
           }),
           false: httpBatchLink({
             url: url,
+            headers: () => {
+              return {
+                Authorization: `Bearer ${token.token}`,
+              };
+            },
           }),
         }),
       ],

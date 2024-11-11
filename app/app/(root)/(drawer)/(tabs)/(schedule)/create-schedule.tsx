@@ -1,9 +1,7 @@
 import CustomText from "@/components/CustomText";
-import Dropdown, { OptionItem } from "@/components/Dropdown";
-import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
+import Dropdown from "@/components/Dropdown";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useUserStore } from "@/store/store";
-import { Bolt, GraduationCap, University } from "lucide-react-native";
+import { University } from "lucide-react-native";
 import React, { useState } from "react";
 import { View, FlatList, TouchableOpacity, Alert } from "react-native";
 import { cn } from "@/lib/utils";
@@ -145,7 +143,6 @@ type Course = {
 };
 
 const Page = () => {
-  // const { user, setUser } = useUserStore();
   const [dept, setDept] = useState("");
   const [courses, setCourses] = useState<Course[]>([]);
   return (

@@ -24,9 +24,7 @@ const Tutoring = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpc.profiles.get.useQuery({
-    clerkId: user?.id!,
-  });
+  const { data, isLoading } = trpc.profiles.get.useQuery();
   const { data: courses, isLoading: coursesLoading } =
     trpc.courses.getCourses.useQuery();
 
@@ -38,7 +36,7 @@ const Tutoring = () => {
   });
 
   const addTutor = (data: { userId: string; course: string; grade: string }) =>
-    mutate({ userId: data.userId, courseId: data.course, grade });
+    mutate({ courseId: data.course, grade });
 
   const onSubmit = () => {
     if (!grade || !course) {
