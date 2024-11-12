@@ -27,3 +27,20 @@ export const REPORT = {
     },
   ],
 };
+export const USER = {
+  name: "user",
+  options: [
+    {
+      label: "Student",
+      value: "student",
+    },
+    {
+      label: "Tutor",
+      value: "tutor",
+    },
+    {
+      label: "Admin",
+      value: "admin",
+    },
+  ],
+};

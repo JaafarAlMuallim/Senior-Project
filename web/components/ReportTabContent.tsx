@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -19,6 +20,13 @@ import {
 import { REPORT_CHART } from "@/validators/chart-options";
 import { useMemo } from "react";
 import { REPORT } from "@/validators/option-validators";
+import {
+  TrendingUp,
+  TrendingDown,
+  MessageSquareWarning,
+  FileStack,
+  FileCheck,
+} from "lucide-react";
 
 const reportChartConfig = {
   reports: {
@@ -49,15 +57,69 @@ const ReportTabContent = ({
 
   const totalReports = Object.values(categoryCounts).reduce(
     (acc, curr) => acc + curr,
-    0,
+    0
   );
 
   return (
     <TabsContent value="reports" className="p-3">
       {isTableView ? (
         <>
-          <h2 className="text-2xl">Table of reports</h2>
           <div className="container mx-auto py-10">
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Total Reports
+                  </CardTitle>
+                  <FileStack className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black ">{data.length}</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingUp color="#5A8156" />
+                    4% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Closed Reports
+                  </CardTitle>
+                  <FileCheck className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black">234</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingDown color="#BB5653" />
+                    12% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Most Reported Category
+                  </CardTitle>
+                  <MessageSquareWarning className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black">Suggestion</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingUp color="#5A8156" />
+                    8% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+            </div>
             <DataTable
               columns={reportColumns}
               data={data}
@@ -68,7 +130,6 @@ const ReportTabContent = ({
         </>
       ) : (
         <>
-          <h2 className="text-2xl">Chart of reports</h2>
           <div className="container mx-auto py-10">
             <Card>
               <CardHeader>

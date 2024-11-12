@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -17,6 +18,13 @@ import { DataTable } from "./DataTable";
 import { Group, groupColumns } from "@/models/group-columns";
 import { useMemo, useState } from "react";
 import { Message } from "@/models/MessageModel";
+import {
+  TrendingUp,
+  TrendingDown,
+  BotMessageSquare,
+  MessageSquare,
+  MessagesSquare,
+} from "lucide-react";
 
 const chartConfig = {
   msg: {
@@ -48,15 +56,69 @@ const GroupTabContent = ({
       groups: messages.reduce((acc, curr) => acc + curr.groups, 0),
       ai: messages.reduce((acc, curr) => acc + curr.ai, 0),
     }),
-    [],
+    []
   );
   return (
     <TabsContent value="groups" className="p-3">
       {/* Switch Chart & Table */}
       {isTableView ? (
         <>
-          <h2 className="text-2xl">Table of groups</h2>
           <div className="container mx-auto py-10">
+            <div className="grid gap-4 md:grid-cols-3 mb-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Total Messages
+                  </CardTitle>
+                  <MessagesSquare className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black ">{data.length}</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingUp color="#5A8156" />
+                    4% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Group Messages
+                  </CardTitle>
+                  <MessageSquare className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black">1,234</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingDown color="#BB5653" />
+                    12% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    AI Messages
+                  </CardTitle>
+                  <BotMessageSquare className="h-8 w-8" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-black">145</div>
+                </CardContent>
+                <CardFooter className="flex items-center justify-between">
+                  <CardDescription className="flex items-center gap-2">
+                    <TrendingUp color="#5A8156" />
+                    8% from last month
+                  </CardDescription>
+                </CardFooter>
+              </Card>
+            </div>
             <DataTable
               columns={groupColumns}
               data={data}
@@ -67,7 +129,6 @@ const GroupTabContent = ({
         </>
       ) : (
         <>
-          <h2 className="text-2xl">Chart of messgaes</h2>
           <div className="container mx-auto py-10">
             <Card>
               <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row">

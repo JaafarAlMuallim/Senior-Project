@@ -24,3 +24,17 @@ export const REPORT_CHART = {
     color: "hsl(var(--chart-6))",
   },
 };
+export const USER_CHART = {
+  student: {
+    label: "Student",
+    color: "hsl(var(--chart-1))",
+  },
+  tutor: {
+    label: "Tutor",
+    color: "hsl(var(--chart-2))",
+  },
+  admin: {
+    label: "Admin",
+    color: "hsl(var(--chart-3))",
+  },
+};
