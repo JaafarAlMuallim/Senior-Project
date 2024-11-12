@@ -14,6 +14,10 @@ const categoryCounts = {
   bug: 3,
   other: 1,
 };
+const typeCounts = {
+  student: 8,
+  tutor: 3,
+};
 
 const MainDashboard = () => {
   const [tab, setTab] = useState("users");
@@ -40,7 +44,11 @@ const MainDashboard = () => {
             </TabsTrigger>
           </TabsList>
         </MaxWidthWrapper>
-        <UserTabContent data={USERS} />
+        <UserTabContent
+          data={USERS}
+          isTableView={isTableView}
+          typeCounts={typeCounts}
+        />
         <GroupTabContent
           isTableView={isTableView}
           data={GROUPS}
