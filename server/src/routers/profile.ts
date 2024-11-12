@@ -13,7 +13,6 @@ export const profileSchema = z.object({
 
 export const profileRouter = router({
   get: authProcedure.query(async ({ ctx }) => {
-    console.log("PROFILE");
     try {
       const profile = await ctx.postgresClient.profile.findFirst({
         where: {
@@ -27,7 +26,6 @@ export const profileRouter = router({
       if (!profile) {
         throw new Error("Profile not found");
       }
-      console.log("RETURNED PROFILE ", profile);
       return profile;
     } catch (e) {
       console.log(e);

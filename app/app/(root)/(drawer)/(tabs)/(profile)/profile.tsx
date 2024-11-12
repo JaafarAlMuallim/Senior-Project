@@ -10,11 +10,11 @@ import { Text, View, Image } from "react-native";
 import ProfileOption from "@/components/ProfileOption";
 import CustomText from "@/components/CustomText";
 import { useUser } from "@clerk/clerk-expo";
-import { useUserStore } from "@/store/store";
+import { useOfflineStore } from "@/store/offlineStorage";
 
 const Profile = () => {
   const { user: clerkUser } = useUser();
-  const { user } = useUserStore();
+  const { user } = useOfflineStore();
 
   return (
     <View className="flex-1 flex-col bg-white-default w-full">

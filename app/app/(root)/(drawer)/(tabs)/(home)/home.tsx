@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { trpc } from "@/lib/trpc";
 import { separateNameNum } from "@/lib/utils";
-import { useCoursesStore } from "@/store/coursesStore";
+import { useOfflineStore } from "@/store/offlineStorage"; // Import the store
 import { useUserStore } from "@/store/store";
 import { add } from "date-fns";
 import { Link, router, Stack } from "expo-router";
@@ -18,15 +18,15 @@ import { Suspense, useEffect } from "react";
 import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
 
 const Page = () => {
-  const { user: userStore, tutor, setTutor } = useUserStore();
-  const { setRegistrations } = useCoursesStore();
+  const { tutor, setTutor } = useUserStore();
+  const { setRegistrations, registrations, user } = useOfflineStore();
 
   const { data: userCourses } = trpc.schedule.getSchedule.useQuery(
     {
       semester: "241",
     },
     {
-      enabled: !!userStore?.user.id,
+      enabled: !!user?.user.id,
     },
   );
 
@@ -105,13 +105,7 @@ const Page = () => {
       />
 
       <View className="h-full flex flex-col p-8 pr-0 bg-white-default">
-        <Suspense
-          fallback={
-            <Skeleton
-              className={"w-56 h-32 p-4 rounded-xl shadow-sm shadow-gray-900"}
-            />
-          }
-        >
+        <Suspense fallback={<CustomText>Loading...</CustomText>}>
           <View>
             <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
               Recent
@@ -124,7 +118,7 @@ const Page = () => {
                 className="flex flex-row gap-2 py-2"
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                data={userCourses}
+                data={registrations}
                 ItemSeparatorComponent={() => <View className="w-6" />}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => {
@@ -241,7 +235,7 @@ const Page = () => {
             <View className="w-full flex flex-col my-2">
               <FlatList
                 className="flex flex-col w-full gap-2 py-2 pr-12"
-                data={userCourses}
+                data={registrations}
                 showsVerticalScrollIndicator={false}
                 ItemSeparatorComponent={() => <View className="h-4" />}
                 renderItem={({ item }) => {

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { Avatar, AvatarFallback, AvatarImage } from "./Avatar";
 import CustomText from "./CustomText";
+import { useOfflineStore } from "@/store/offlineStorage";
 
 const Chat = ({
   imageUri,
@@ -21,7 +22,8 @@ const Chat = ({
   routeTo: string;
   styles?: string;
 }) => {
-  const [content, setContent] = useState("");
+  const { lastMessage: offlineLastMsg, setLastMessage } = useOfflineStore();
+  const [content, setContent] = useState(offlineLastMsg[groupId]?.text || "");
   console.log("GROUP ID: ", groupId);
   const currentlyTyping = useWhoIsTyping(groupId);
   console.log("WHO IS TYPING: ", currentlyTyping);
@@ -33,6 +35,12 @@ const Chat = ({
         refetchInterval: 20000,
       },
     );
+
+  useEffect(() => {
+    if (lastMessage) {
+      setLastMessage(groupId, lastMessage);
+    }
+  }, [lastMessage]);
 
   const { data: unreadCount } = trpc.messages.getUnreadCount.useQuery(
     {

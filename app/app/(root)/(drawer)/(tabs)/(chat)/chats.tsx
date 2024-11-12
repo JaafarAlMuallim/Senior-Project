@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Animated, Easing } from "react-native";
+import { View } from "react-native";
 import { Root, List, Trigger, Content } from "@rn-primitives/tabs";
 import Chat from "@/components/Chat";
 import AiChat from "@/components/AiChat";
@@ -7,60 +7,22 @@ import CustomText from "@/components/CustomText";
 import { cn, separateNameNum } from "@/lib/utils";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { trpc } from "@/lib/trpc";
-import { Link, Redirect } from "expo-router";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { Loader2 } from "lucide-react-native";
+import { Link } from "expo-router";
+import { useOfflineStore } from "@/store/offlineStorage";
 
 const Chats = () => {
   const [value, setValue] = useState("AI");
+  const { groups: storageGroups, setGroups } = useOfflineStore();
 
-  const spinValue = new Animated.Value(0);
-  const rotate = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+  const { data: groups } = trpc.groups.getUserGroups.useQuery(undefined, {
+    refetchInterval: 5000,
   });
 
-  const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery(
-    undefined,
-    {
-      refetchInterval: 5000,
-    },
-  );
-
   useEffect(() => {
-    if (isLoading) {
-      Animated.loop(
-        Animated.timing(spinValue, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }),
-      ).start();
-    } else {
-      spinValue.setValue(0);
+    if (groups) {
+      setGroups(groups);
     }
-  }, [isLoading]);
-
-  if (isLoading) {
-    return (
-      <View className="h-full flex flex-col p-8 bg-white-default">
-        <SignedIn>
-          <Animated.View
-            style={{
-              transform: [{ rotate }],
-            }}
-            className="flex-1 items-center justify-center"
-          >
-            <Loader2 className="h-48 w-48" size={96} />
-          </Animated.View>
-        </SignedIn>
-        <SignedOut>
-          <Redirect href={"/(auth)/welcome"} />
-        </SignedOut>
-      </View>
-    );
-  }
+  }, [groups]);
 
   return (
     <SafeAreaView>
@@ -104,8 +66,8 @@ const Chats = () => {
               </View>
             </List>
             <Content value="AI">
-              {!groups ||
-                (!groups.length && (
+              {!storageGroups ||
+                (!storageGroups.length && (
                   <View className="flex h-full grow items-center py-24 flex-wrap px-8">
                     <CustomText styles="text-2xl text-wrap text-center">
                       Register Your{" "}
@@ -119,8 +81,8 @@ const Chats = () => {
                     </CustomText>
                   </View>
                 ))}
-              {groups &&
-                groups
+              {storageGroups &&
+                storageGroups
                   .filter((group) => group.type === "AI")
                   .map((group) => (
                     <AiChat
@@ -133,8 +95,8 @@ const Chats = () => {
             </Content>
             <Content value="messages">
               <View className="flex flex-column justify-between">
-                {!groups ||
-                  (!groups.length && (
+                {!storageGroups ||
+                  (!storageGroups.length && (
                     <View className="flex h-full grow items-center py-24 flex-wrap px-8">
                       <CustomText styles="text-2xl text-wrap text-center">
                         Register Your{" "}
@@ -148,8 +110,8 @@ const Chats = () => {
                       </CustomText>
                     </View>
                   ))}
-                {groups &&
-                  groups
+                {storageGroups &&
+                  storageGroups
                     .filter((group) => group.type === "GROUP")
                     .map((group) => (
                       <Chat

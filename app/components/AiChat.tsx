@@ -1,8 +1,9 @@
 import { router } from "expo-router";
-import React, { useState } from "react";
-import { TouchableOpacity, View, Image } from "react-native";
+import React, { useEffect } from "react";
+import { TouchableOpacity, View } from "react-native";
 import CustomText from "./CustomText";
 import { trpc } from "@/lib/trpc";
+import { useOfflineStore } from "@/store/offlineStorage";
 
 const AiChat = ({
   chatName,
@@ -16,7 +17,7 @@ const AiChat = ({
   routeTo: string;
   styles?: string;
 }) => {
-  console.log(groupId);
+  const { lastMessage: offlineLastMsg, setLastMessage } = useOfflineStore();
   const { data: lastMessage, isLoading } =
     trpc.messages.getLastMessage.useQuery(
       { groupId },
@@ -24,6 +25,12 @@ const AiChat = ({
         refetchInterval: 2000,
       },
     );
+
+  useEffect(() => {
+    if (lastMessage) {
+      setLastMessage(groupId, lastMessage);
+    }
+  }, [lastMessage]);
 
   return (
     <TouchableOpacity
@@ -36,10 +43,12 @@ const AiChat = ({
       <View className="flex flex-column items-start justify-start">
         <CustomText styles="text-primary-light text-2xl">{chatName}</CustomText>
         <CustomText styles="text-gray-light text-lg">
-          {isLoading
-            ? "Loading..."
-            : `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
-              "No messages"}
+          {offlineLastMsg[groupId]
+            ? `${offlineLastMsg[groupId]?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}`
+            : isLoading
+              ? "Loading..."
+              : `${lastMessage?.text.substring(0, 30).trim()}${lastMessage!.text.length > 30 ? "..." : ""}` ||
+                "No messages"}
         </CustomText>
       </View>
     </TouchableOpacity>

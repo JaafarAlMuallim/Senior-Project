@@ -3,6 +3,7 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
+import { useOfflineStore } from "@/store/offlineStorage"; // Import the store
 import { useUserStore } from "@/store/store";
 import { useTokenStore } from "@/store/tokenStore";
 import { SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo";
@@ -19,10 +20,10 @@ import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const OnBoarding = () => {
+  const { setUser } = useOfflineStore();
   const { user } = useUser();
   const { session } = useSession();
-  const { setUser } = useUserStore();
-  const { setToken } = useTokenStore();
+  const { token, setToken } = useTokenStore();
   const [phone, setPhone] = useState("");
   const [university, setUniversity] = useState("");
   const [major, setMajor] = useState("");
@@ -48,8 +49,7 @@ const OnBoarding = () => {
   const { data, isLoading } = trpc.profiles.get.useQuery();
 
   useEffect(() => {
-    if (!isLoading && data?.university) {
-      console.log("DATA ONBOARDING: ", data);
+    if (!isLoading && data?.university && token.token) {
       setUser(data);
       router.push("/(root)/(drawer)/(tabs)/(home)/home");
     }
