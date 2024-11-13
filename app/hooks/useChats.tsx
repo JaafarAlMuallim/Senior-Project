@@ -6,7 +6,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 export function useWhoIsTyping(groupId: string) {
   const [currentlyTyping, setCurrentlyTyping] = useState<string[]>([]);
   const { token } = useTokenStore();
-  console.log("INSIDE WHO IS TYPING: ", groupId);
   trpc.groups.whoIsTyping.useSubscription(
     { groupId },
     {

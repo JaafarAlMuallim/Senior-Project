@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authProcedure, publicProcedure, router } from "../trpc";
+import { authProcedure, router } from "../trpc";
 import EventEmitter, { on } from "events";
 import { Message, User } from "@prisma/mongo/client";
 
@@ -22,7 +22,7 @@ declare interface MyEventEmitter {
 class MyEventEmitter extends EventEmitter {
   public toIterable<TEv extends keyof MyEvents>(
     event: TEv,
-    opts: NonNullable<Parameters<typeof on>[2]>,
+    opts: NonNullable<Parameters<typeof on>[2]>
   ): AsyncIterable<Parameters<MyEvents[TEv]>> {
     return on(this, event, opts) as AsyncIterable<Parameters<MyEvents[TEv]>>;
   }
@@ -81,7 +81,7 @@ export const groupRouter = router({
       z.object({
         groupId: z.string(),
         typing: z.boolean(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId, typing } = input;
@@ -105,7 +105,7 @@ export const groupRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .subscription(async function* ({ input, signal }) {
       try {
@@ -130,6 +130,7 @@ export const groupRouter = router({
 
           // emit who is currently typing
           yield* maybeYield(currentlyTyping[currGroup] ?? {});
+          console.log(currentlyTyping[currGroup]);
 
           for await (const [groupId, who] of ee.toIterable("isTypingUpdate", {
             signal: signal,
@@ -162,7 +163,8 @@ export const groupRouter = router({
         if (!groups) {
           throw new Error("User not found");
         }
-        return groups.map((group) => group.group);
+        console.log("GROUPS", groups);
+        return groups;
       } catch (error) {
         console.log(error);
         throw new Error("Error getting user groups");
@@ -172,11 +174,35 @@ export const groupRouter = router({
       throw new Error("Error getting user groups");
     }
   }),
+  changeMute: authProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        status: z.boolean(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { groupId, status } = input;
+      try {
+        const changeMute = await ctx.mongoClient.userGroups.update({
+          where: {
+            id: groupId,
+          },
+          data: {
+            isMuted: status,
+          },
+        });
+        return changeMute;
+      } catch (error) {
+        console.log(error);
+        throw new Error("Error changing mute status");
+      }
+    }),
   getGroup: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
@@ -196,7 +222,7 @@ export const groupRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId } = input;
@@ -204,12 +230,12 @@ export const groupRouter = router({
       await Promise.all([
         await ctx.redisClient.sadd(
           `group:${groupId}:subscriptions`,
-          ctx.user?.id!,
+          ctx.user?.id!
         ),
         await ctx.redisClient.hset(
           `group:${groupId}:userId:${ctx.user?.id}`,
           "unread",
-          "0",
+          "0"
         ),
       ]);
 
@@ -219,13 +245,13 @@ export const groupRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId } = input;
       await ctx.redisClient.srem(
         `group:${groupId}:subscriptions`,
-        ctx.user?.id!,
+        ctx.user?.id!
       );
     }),
 });

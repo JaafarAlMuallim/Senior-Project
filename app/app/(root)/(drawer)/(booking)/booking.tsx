@@ -9,7 +9,7 @@ import { Book, Loader2, UserIcon } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
-import { useUserStore } from "@/store/store";
+import { useOfflineStore } from "@/store/offlineStorage";
 
 const BookSession = () => {
   const [course, setCourse] = useState("");
@@ -22,7 +22,7 @@ const BookSession = () => {
     inputRange: [0, 1],
     outputRange: ["0deg", "360deg"],
   });
-  const { user } = useUserStore();
+  const { user } = useOfflineStore();
 
   const { data: courseTutor, isLoading: isLoading } =
     trpc.tutors.getTutorsCourse.useQuery();

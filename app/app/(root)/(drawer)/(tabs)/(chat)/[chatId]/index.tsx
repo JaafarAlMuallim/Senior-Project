@@ -12,7 +12,7 @@ import {
   useUploadThing,
 } from "@/lib/uploadthing";
 import { separateNameNum } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
+import { useOfflineStore } from "@/store/offlineStorage";
 import { Ionicons } from "@expo/vector-icons";
 import { Audio } from "expo-av";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -42,7 +42,7 @@ const Chat = () => {
     name?: string;
   }>();
 
-  const { user } = useUserStore();
+  const { user } = useOfflineStore();
   const [text, setText] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -108,8 +108,6 @@ const Chat = () => {
     },
   });
   const whoIsTyping = useWhoIsTyping(chatId!);
-  console.log("WHO IS TYPING: ", whoIsTyping);
-  console.log("WHO IS TYPING: ", chatId);
 
   useEffect(() => {
     let typingTimeout: ReturnType<typeof setTimeout> | null = null;

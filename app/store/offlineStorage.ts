@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type Course = {
+export type Course = {
   code: string;
   id: string;
   createdAt: string;
   updatedAt: string;
   name: string;
 };
-type Section = {
+export type Section = {
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -22,7 +22,7 @@ type Section = {
   courseId: string;
   course: Course;
 };
-type Registration = {
+export type Registration = {
   id: string;
   semester: string;
   createdAt: string;
@@ -32,7 +32,7 @@ type Registration = {
   section: Section;
 };
 
-type User = {
+export type User = {
   id: string;
   email: string;
   name: string;
@@ -41,7 +41,7 @@ type User = {
   createdAt: string;
   updatedAt: string;
 };
-type Profile = {
+export type Profile = {
   id: string;
   user: User;
   major: string | null;
@@ -52,14 +52,20 @@ type Profile = {
   updatedAt: string;
 };
 
-type Group = {
+export type Group = {
   id: string;
-  name: string;
   groupId: string;
-  type: string;
-  ownerId: string | null;
+  group: {
+    name: string;
+    id: string;
+    groupId: string;
+    type: string;
+    ownerId: string | null;
+  };
+  userId: string;
+  isMuted: boolean;
 };
-type LastMessage = {
+export type LastMessage = {
   groupId: string;
   id: string;
   createdAt: string;
@@ -68,7 +74,7 @@ type LastMessage = {
   text: string;
 };
 
-interface UserStore {
+export interface UserStore {
   user: Profile; // Define your user type
   registrations: Registration[]; // Define your schedule type
   groups: Group[]; // Define your groups type

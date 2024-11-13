@@ -106,7 +106,7 @@ export default function RootLayout() {
             url: url,
             headers: () => {
               return {
-                Authorization: `Bearer ${token.token}`,
+                authorization: `Bearer ${token.token}`,
               };
             },
           }),

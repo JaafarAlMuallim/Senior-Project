@@ -48,9 +48,10 @@ model Message {
 }
 
 model UserGroups {
-    id      String @id @default(auto()) @map("_id") @db.ObjectId
+    id      String  @id @default(auto()) @map("_id") @db.ObjectId
     userId  String
-    user    User   @relation(fields: [userId], references: [userId])
-    groupId String @db.ObjectId
-    group   Group  @relation(fields: [groupId], references: [id])
+    user    User    @relation(fields: [userId], references: [userId])
+    groupId String  @db.ObjectId
+    group   Group   @relation(fields: [groupId], references: [id])
+    isMuted Boolean @default(false)
 }

@@ -1,16 +1,6 @@
 import CustomText from "@/components/CustomText";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
-import * as DocumentPicker from "expo-document-picker";
-import {
-  Image,
-  TouchableOpacity,
-  View,
-  Animated,
-  Easing,
-  FlatList,
-  Alert,
-} from "react-native";
+import { TouchableOpacity, View, FlatList } from "react-native";
 import {
   ArrowDownNarrowWide,
   EllipsisVertical,

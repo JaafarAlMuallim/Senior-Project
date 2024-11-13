@@ -4,7 +4,6 @@ import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
 import { useOfflineStore } from "@/store/offlineStorage"; // Import the store
-import { useUserStore } from "@/store/store";
 import { useTokenStore } from "@/store/tokenStore";
 import { SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";

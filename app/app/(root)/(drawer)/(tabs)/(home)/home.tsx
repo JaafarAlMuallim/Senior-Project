@@ -1,6 +1,5 @@
 import CustomText from "@/components/CustomText";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "@/components/ui/toast";
 import { trpc } from "@/lib/trpc";
 import { separateNameNum } from "@/lib/utils";
 import { useOfflineStore } from "@/store/offlineStorage"; // Import the store
@@ -15,7 +14,7 @@ import {
   UserRound,
 } from "lucide-react-native";
 import { Suspense, useEffect } from "react";
-import { FlatList, Pressable, TouchableOpacity, View } from "react-native";
+import { FlatList, TouchableOpacity, View } from "react-native";
 
 const Page = () => {
   const { tutor, setTutor } = useUserStore();
@@ -30,13 +29,18 @@ const Page = () => {
     },
   );
 
-  const { data: isTutor } = trpc.tutors.isTutor.useQuery();
+  const { data: isTutor } = trpc.tutors.isTutor.useQuery(undefined, {});
 
   if (isTutor && !tutor) {
     setTutor(isTutor);
   }
 
-  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery();
+  const { data: sessions } = trpc.sessions.getAcceptedSessionTutor.useQuery(
+    undefined,
+    {
+      suspense: true,
+    },
+  );
   const { data: requests } = trpc.sessions.getPendingSessionTutorCount.useQuery(
     undefined,
     {
@@ -50,23 +54,6 @@ const Page = () => {
       setRegistrations(userCourses);
     }
   }, [userCourses]);
-  const showSuccessToast = () => {
-    toast({
-      title: "Success!",
-      description: "This is a success message.",
-      ms: 3000, // 3 seconds
-      variant: "success",
-    });
-  };
-
-  const showErrorToast = () => {
-    toast({
-      title: "Error!",
-      description: "Something went wrong.",
-      variant: "error",
-      ms: 3000, // 3 seconds
-    });
-  };
 
   return (
     <>
@@ -108,10 +95,10 @@ const Page = () => {
         <Suspense fallback={<CustomText>Loading...</CustomText>}>
           <View>
             <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
-              Recent
+              Courses
             </CustomText>
             <CustomText styles={"text-md font-poppins text-gray-light"}>
-              Recent Courses & Activities
+              All Courses
             </CustomText>
             <View className="w-full flex flex-row my-2">
               <FlatList
@@ -143,11 +130,56 @@ const Page = () => {
             </View>
           </View>
         </Suspense>
+
+        {/*<Suspense fallback={<CustomText>Loading...</CustomText>}>
+          <View>
+            <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
+              Courses
+            </CustomText>
+            <CustomText styles={"text-md font-poppins text-gray-light"}>
+              All Courses
+            </CustomText>
+            <View className="w-full flex flex-col my-2">
+              <FlatList
+                className="flex flex-col w-full gap-2 py-2 pr-12"
+                data={registrations}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View className="h-4" />}
+                renderItem={({ item }) => {
+                  return (
+                    <TouchableOpacity
+                      className="bg-primary-light w-full h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900"
+                      onPress={() => {
+                        router.push(`/courses/${item.section.course.id}`);
+                      }}
+                    >
+                      <View className="flex flex-col">
+                        <View className="flex-row w-full justify-between">
+                          <View className="flex flex-row justify-center items-center">
+                            <FolderClosed size={32} color={"white"} />
+                            <CustomText styles="ml-4 text-white-default text-lg font-poppinsBold uppercase">
+                              {separateNameNum(item.section.course.code)}
+                            </CustomText>
+                          </View>
+                          <EllipsisVertical size={32} color={"white"} />
+                        </View>
+                        <CustomText styles="ml-12 text-white-default text-md capitalize">
+                          {item.section.course.name}
+                        </CustomText>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </Suspense>*/}
+
         <Suspense
           fallback={
             <Skeleton
               className={
-                "bg-primary-light w-56 h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900"
+                "w-56 h-32 rounded-xl flex justify-between shadow-sm shadow-gray-900"
               }
             />
           }
@@ -223,61 +255,6 @@ const Page = () => {
             </View>
           )}
         </Suspense>
-
-        <Suspense fallback={<CustomText>Loading...</CustomText>}>
-          <View>
-            <CustomText styles={"text-primary-light text-3xl font-poppinsBold"}>
-              Courses
-            </CustomText>
-            <CustomText styles={"text-md font-poppins text-gray-light"}>
-              All Courses
-            </CustomText>
-            <View className="w-full flex flex-col my-2">
-              <FlatList
-                className="flex flex-col w-full gap-2 py-2 pr-12"
-                data={registrations}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View className="h-4" />}
-                renderItem={({ item }) => {
-                  return (
-                    <TouchableOpacity
-                      className="bg-primary-light w-full h-32 p-4 rounded-xl flex justify-between shadow-sm shadow-gray-900"
-                      onPress={() => {
-                        router.push(`/courses/${item.section.course.id}`);
-                      }}
-                    >
-                      <View className="flex flex-col">
-                        <View className="flex-row w-full justify-between">
-                          <View className="flex flex-row justify-center items-center">
-                            <FolderClosed size={32} color={"white"} />
-                            <CustomText styles="ml-4 text-white-default text-lg font-poppinsBold uppercase">
-                              {separateNameNum(item.section.course.code)}
-                            </CustomText>
-                          </View>
-                          <EllipsisVertical size={32} color={"white"} />
-                        </View>
-                        <CustomText styles="ml-12 text-white-default text-md capitalize">
-                          {item.section.course.name}
-                        </CustomText>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
-            </View>
-          </View>
-        </Suspense>
-
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Pressable onPress={showSuccessToast}>
-            <CustomText>Show Success Toast</CustomText>
-          </Pressable>
-          <Pressable onPress={showErrorToast} style={{ marginTop: 20 }}>
-            <CustomText>Show Error Toast</CustomText>
-          </Pressable>
-        </View>
       </View>
     </>
   );

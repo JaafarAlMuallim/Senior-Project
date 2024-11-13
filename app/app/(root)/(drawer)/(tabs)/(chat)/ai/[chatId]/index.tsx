@@ -1,6 +1,6 @@
 import { trpc } from "@/lib/trpc";
 import { separateNameNum } from "@/lib/utils";
-import { useUserStore } from "@/store/store";
+import { useOfflineStore } from "@/store/offlineStorage";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Redirect,
@@ -35,7 +35,7 @@ const Chat = () => {
     name?: string;
   }>();
 
-  const { user } = useUserStore();
+  const { user } = useOfflineStore();
   const pathname = usePathname();
   const [text, setText] = useState("");
   const utils = trpc.useUtils();
