@@ -106,3 +106,405 @@ export const REPORTS = [
     status: "closed",
   },
 ];
+
+export const UNIVERSITIES = [
+  {
+    label: "KFUPM",
+    value: "kfupm",
+  },
+  {
+    label: "KAUST",
+    value: "kaust",
+  },
+  {
+    label: "KFSH",
+    value: "kfsh",
+  },
+  {
+    label: "KACST",
+    value: "kacst",
+  },
+  {
+    label: "KSU",
+    value: "ksu",
+  },
+];
+
+export const MAJORS = [
+  {
+    label: "Computer Science",
+    value: "cs",
+  },
+  {
+    label: "Electrical Engineering",
+    value: "ee",
+  },
+  {
+    label: "Mechanical Engineering",
+    value: "me",
+  },
+  {
+    label: "Civil Engineering",
+    value: "ce",
+  },
+  {
+    label: "Chemical Engineering",
+    value: "che",
+  },
+  {
+    label: "Petroleum Engineering",
+    value: "pe",
+  },
+  {
+    label: "Industrial Engineering",
+    value: "ie",
+  },
+  {
+    label: "Systems Engineering",
+    value: "se",
+  },
+  {
+    label: "Business Administration",
+    value: "ba",
+  },
+  {
+    label: "Finance",
+    value: "fin",
+  },
+  {
+    label: "Accounting",
+    value: "acc",
+  },
+  {
+    label: "Marketing",
+    value: "mkt",
+  },
+  {
+    label: "Management",
+    value: "mgmt",
+  },
+  {
+    label: "Human Resources",
+    value: "hr",
+  },
+  {
+    label: "Supply Chain",
+    value: "scm",
+  },
+  {
+    label: "Operations Management",
+    value: "om",
+  },
+  {
+    label: "Information Systems",
+    value: "is",
+  },
+  {
+    label: "Software Engineering",
+    value: "swe",
+  },
+  {
+    label: "Computer Engineering",
+    value: "coe",
+  },
+  {
+    label: "Cybersecurity",
+    value: "cys",
+  },
+  {
+    label: "Data Science",
+    value: "ds",
+  },
+  {
+    label: "Artificial Intelligence",
+    value: "ai",
+  },
+  {
+    label: "Machine Learning",
+    value: "ml",
+  },
+];
+
+export const STANDINGS = [
+  {
+    label: "Freshman",
+    value: "freshman",
+  },
+  {
+    label: "Sophomore",
+    value: "sophomore",
+  },
+  {
+    label: "Junior",
+    value: "junior",
+  },
+  {
+    label: "Senior",
+    value: "senior",
+  },
+  {
+    label: "Graduate",
+    value: "graduate",
+  },
+  {
+    label: "Post-Graduate",
+    value: "post-graduate",
+  },
+  {
+    label: "PhD",
+    value: "phd",
+  },
+  {
+    label: "Post-Doctorate",
+    value: "post-doctorate",
+  },
+  {
+    label: "Faculty",
+    value: "faculty",
+  },
+  {
+    label: "Staff",
+    value: "staff",
+  },
+  {
+    label: "Alumni",
+    value: "alumni",
+  },
+  {
+    label: "Other",
+    value: "other",
+  },
+];
+
+export const COURSES = [
+  {
+    label: "Big Data Analytics",
+    value: "ics474",
+    dept: "cs",
+  },
+  {
+    label: "Quality Engineering",
+    value: "swe439",
+    dept: "swe",
+  },
+  {
+    label: "Software Design",
+    value: "swe316",
+    dept: "swe",
+  },
+  {
+    label: "Software Testing",
+    value: "swe326",
+    dept: "swe",
+  },
+  {
+    label: "Software Architecture",
+    value: "swe416",
+    dept: "swe",
+  },
+  {
+    label: "Software Project Management",
+    value: "swe387",
+    dept: "swe",
+  },
+];
+
+export const AVAILABLE_TIMES = [
+  {
+    date: new Date("2022-10-02"),
+    time: "10:00 AM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-04"),
+    time: "10:00 AM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-06"),
+    time: "10:00 AM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-07"),
+    time: "10:00 AM",
+    duration: "2",
+  },
+
+  {
+    date: new Date("2022-10-07"),
+    time: "14:00 PM",
+    duration: "2",
+  },
+  {
+    date: new Date("2022-10-10"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-11"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+  {
+    date: new Date("2022-10-12"),
+    time: "10:00 AM",
+    duration: "1",
+  },
+];
+
+export const DAYS_OF_WEEK = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+];
+export const TIME_SLOTS = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "01:00",
+  "02:00",
+  "03:00",
+  "04:00",
+  "05:00",
+  "06:00",
+];
+export const EVENTS = [
+  {
+    day: "Sunday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "9:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Monday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Tuesday",
+    classes: [
+      {
+        id: "3",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "4",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Wednesday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "57",
+        start: "10:00",
+        end: "13:30",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+  {
+    day: "Thursday",
+    classes: [
+      {
+        id: "1",
+        title: "MATH 101",
+        section: "06",
+        start: "09:00",
+        end: "09:50",
+        location: "6-135",
+        instructor: "TAMEM AL-SHORMAN",
+      },
+      {
+        id: "2",
+        title: "PHYS 101",
+        section: "06",
+        start: "10:00",
+        end: "10:50",
+        location: "6-235",
+        instructor: "A GHANNAM",
+      },
+    ],
+  },
+];
+
+export const DEPTS = [
+  { value: "cs", label: "Computer Science" },
+  { value: "math", label: "Mathematics" },
+  { value: "eng", label: "Engineering" },
+];
+
+export const TYPES = [
+  { value: "lecture", label: "Lecture" },
+  { value: "lab", label: "Laboratory" },
+  { value: "seminar", label: "Seminar" },
+];
+
+export const INSTRUCTORS = ["Dr. Smith", "Prof. Johnson", "Dr. Williams"];
+
+export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+export const TIMES = ["08:00", "10:00", "12:00", "14:00", "16:00"];
+export const LOCATIONS = ["Room 101", "Room 102", "Lab A", "Lab B"];

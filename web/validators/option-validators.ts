@@ -44,3 +44,8 @@ export const USER = {
     },
   ],
 };
+
+export const GRADES = {
+  name: "grades",
+  options: ["A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"],
+};
