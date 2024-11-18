@@ -1,15 +1,15 @@
+import { DateSelector } from "@/components/booking/DateSelector";
+import { LoadingSpinner } from "@/components/booking/LoadingSpinner";
+import { TimeSelector } from "@/components/booking/TimeSelector";
 import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import { AVAILABLE_TIMES } from "@/constants/data";
-import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { Redirect, router } from "expo-router";
-import { Book, Loader2, UserIcon } from "lucide-react-native";
+import { useOfflineStore } from "@/store/offlineStorage";
+import { router } from "expo-router";
+import { Book, UserIcon } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
-import { useOfflineStore } from "@/store/offlineStorage";
 
 const BookSession = () => {
   const [course, setCourse] = useState("");
@@ -89,24 +89,9 @@ const BookSession = () => {
   }, [courseTutor, course])!;
 
   if (isLoading) {
-    return (
-      <View className="h-full flex flex-col p-8 bg-white-default">
-        <SignedIn>
-          <Animated.View
-            style={{
-              transform: [{ rotate }],
-            }}
-            className="flex-1 items-center justify-center"
-          >
-            <Loader2 className="h-48 w-48" size={96} />
-          </Animated.View>
-        </SignedIn>
-        <SignedOut>
-          <Redirect href={"/(auth)/welcome"} />
-        </SignedOut>
-      </View>
-    );
+    return <LoadingSpinner rotate={rotate} />;
   }
+
   const uniqueDates = new Map<string, any>();
   const uniqueDatesArray = AVAILABLE_TIMES.filter((date) => {
     if (!uniqueDates.has(date.date.toDateString())) {
@@ -121,9 +106,7 @@ const BookSession = () => {
       <View className="flex flex-col mt-8 p-4">
         <Dropdown
           data={coursesData}
-          onChange={(item) => {
-            setCourse(item.value);
-          }}
+          onChange={(item) => setCourse(item.value)}
           placeholder={"Course"}
           icon={<Book />}
           label={"Tutoring Course"}
@@ -131,117 +114,31 @@ const BookSession = () => {
         {course && (
           <Dropdown
             data={tutorsData}
-            onChange={(item) => {
-              setTutor(item.value);
-            }}
+            onChange={(item) => setTutor(item.value)}
             placeholder={"Tutor"}
             icon={<UserIcon />}
             label={"Tutor"}
           />
         )}
         {tutor && (
-          <View>
-            <CustomText styles="text-lg text-black-default mb-2">
-              Select Date
-            </CustomText>
-            <FlatList
-              className="flex flex-row"
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              data={uniqueDatesArray}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="mx-2"
-                  onPress={() => {
-                    setDate(item.date);
-                  }}
-                >
-                  <View
-                    className={cn(
-                      "border h-28 w-20 rounded-lg",
-                      date?.toISOString() === item.date.toISOString()
-                        ? "bg-primary-light border-primary-light"
-                        : "bg-white border-gray-200",
-                    )}
-                  >
-                    <View className="h-full flex flex-col justify-between items-center py-4">
-                      <CustomText
-                        styles={cn(
-                          "text-lg flex font-poppinsBlack text-3xl pt-4",
-                          date?.toISOString() === item.date.toISOString()
-                            ? "text-white-default"
-                            : "text-gray-500",
-                        )}
-                      >
-                        {item.date.toDateString().slice(8, 10)}
-                      </CustomText>
-                      <CustomText
-                        styles={cn(
-                          "font-poppinsBlack text-lg",
-                          date?.toISOString() === item.date.toISOString()
-                            ? "text-white-default"
-                            : "text-gray-500",
-                        )}
-                      >
-                        {item.date.toDateString().slice(0, 3)}
-                      </CustomText>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+          <DateSelector
+            dates={uniqueDatesArray}
+            selectedDate={date}
+            onDateSelect={setDate}
+          />
         )}
         {date && (
-          <View className="my-8">
-            <CustomText styles="text-lg text-black-default mb-2">
-              Available Time
-            </CustomText>
-            <FlatList
-              className="flex flex-row"
-              numColumns={3}
-              showsHorizontalScrollIndicator={false}
-              data={AVAILABLE_TIMES.filter(
-                (availableDate) =>
-                  date?.toISOString() === availableDate.date.toISOString(),
-              )}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="mx-2 my-2"
-                  onPress={() => {
-                    setTime(item.time);
-                  }}
-                >
-                  <View
-                    className={cn(
-                      "border h-12 w-28 rounded-lg justify-center items-center",
-                      time === item.time
-                        ? "border-primary-light bg-primary-light"
-                        : "border-gray-200",
-                    )}
-                  >
-                    <CustomText
-                      styles={cn(
-                        "text-lg font-poppinsBlack",
-                        time === item.time
-                          ? "text-white-default"
-                          : "text-gray-500",
-                      )}
-                    >
-                      {item.time}
-                    </CustomText>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+          <TimeSelector
+            availableTimes={AVAILABLE_TIMES}
+            selectedTime={time}
+            selectedDate={date}
+            onTimeSelect={setTime}
+          />
         )}
         {time && (
           <TouchableOpacity
             className="items-center justify-center mt-5 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-primary-light z-0"
-            onPress={() => {
-              onSubmit();
-            }}
+            onPress={onSubmit}
           >
             <CustomText styles="text-white-default font-poppinsBold text-lg">
               Submit
