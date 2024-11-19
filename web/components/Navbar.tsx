@@ -15,13 +15,9 @@ const Navbar = () => {
   const router = useRouter();
 
   return (
-    <nav className="sticky z-[100] h-14 inset-x-0 top-0 w-full backdrop-blur-lg transition-all print:hidden">
+    <nav className="sticky z-20 h-12 inset-x-0 top-0 w-full backdrop-blur-lg transition-all print:hidden">
       <div className="flex h-14 items-center justify-center flex-row w-full px-8">
-        <div className="flex flex-row gap-4 mr-auto">
-          <Link href="/" className="flex z-40 font-semibold text-2xl">
-            <Image src="/logo.svg" alt="logo" width={201} height={200} />
-          </Link>
-        </div>
+        <div className="flex flex-row gap-4 mr-auto"></div>
         <div className="h-full flex items-center">
           <Link
             href="/"
