@@ -68,7 +68,7 @@ const Tutoring = () => {
 
   return (
     <MaxWidthWrapper className="my-8 flex flex-col justify-center items-center gap-4">
-      <Card className="w-[380px] bg-primary-light text-white">
+      <Card id= "onboarding-tutoring" className="w-[380px] bg-primary-light text-white">
         <CardHeader className="pb-2">
           <CardTitle>Jaafar Al Muallim</CardTitle>
           <CardDescription className="text-secondary-lightGray flex justify-between items-center">

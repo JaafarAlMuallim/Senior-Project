@@ -18,7 +18,7 @@ const Navbar = () => {
     <nav className="sticky z-20 h-12 inset-x-0 top-0 w-full backdrop-blur-lg transition-all print:hidden">
       <div className="flex h-14 items-center justify-center flex-row w-full px-8">
         <div className="flex flex-row gap-4 mr-auto"></div>
-        <div className="h-full flex items-center">
+        <div className="h-full flex items-center"  id="onboarding-home-button">
           <Link
             href="/"
             className={buttonVariants({

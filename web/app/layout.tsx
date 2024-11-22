@@ -3,6 +3,8 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
+import Onboarding from "@/components/OnBoarding";
+import { OnboardingProvider } from '@/components/OnBoardingContext';
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,9 +27,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.className} antialiased`}>
         <Navbar />
+        <OnboardingProvider>
         <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
           {children}
         </main>
+              <Onboarding />
+          </OnboardingProvider>
         <Toaster />
       </body>
     </html>

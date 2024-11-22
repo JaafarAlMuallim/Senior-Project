@@ -1,3 +1,4 @@
+'use client';
 import { Suspense } from "react";
 import { FolderIcon, UserCircle } from "lucide-react";
 import { add } from "date-fns";
@@ -203,7 +204,7 @@ const HomePage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3" id="onboarding-home">
           <h3 className="text-2xl font-semibold text-primary mb-4">
             My Courses
           </h3>
@@ -216,7 +217,7 @@ const HomePage = () => {
           </Suspense>
         </div>
 
-        <div>
+        <div  id="onboarding-home-schedule">
           <h3 className="text-2xl font-semibold text-primary mb-4">Schedule</h3>
           <div className="text-sm text-gray-500">
             Today -{" "}
@@ -239,7 +240,7 @@ const HomePage = () => {
       </div>
 
       {tutor && (
-        <div className="mt-8">
+        <div className="mt-8"  id="onboarding-home-sessions">
           <h3 className="text-2xl font-semibold text-primary mb-4">
             Tutoring Sessions
           </h3>

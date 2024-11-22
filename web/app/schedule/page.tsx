@@ -51,7 +51,7 @@ const Schedule = () => {
   return (
     <MaxWidthWrapper className="my-8 px-12">
       <div className="w-full space-y-4">
-        <div className="flex justify-between gap-2 w-full text-sm font-normal">
+        <div id= "onboarding-schedule" className="flex justify-between gap-2 w-full text-sm font-normal">
           <div className="flex flex-col gap-4">
             <Popover>
               <PopoverTrigger asChild>
@@ -405,7 +405,7 @@ const Schedule = () => {
         </div>
 
         {/* Table */}
-        <div className="rounded-md border">
+              <div id="onboarding-schedule-courses" className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>

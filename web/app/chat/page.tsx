@@ -31,7 +31,7 @@ const ChatPage = () => {
             placeholder="Search Chat"
           />
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea id= "onboarding-chat" className="flex-1">
           <div className="flex flex-col gap-4">
             {["MATH 101", "ICS 474", "ICS 344"].map((chat) => (
               <Card
@@ -63,7 +63,7 @@ const ChatPage = () => {
           </div>
         </ScrollArea>
       </div>
-      <div className="flex-1 flex flex-col">
+      <div id= "onboarding-chat-AI" className="flex-1 flex flex-col">
         {selectedChat ? (
           <>
             <div className="bg-white border-b p-4">

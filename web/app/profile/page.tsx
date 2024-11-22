@@ -67,6 +67,7 @@ const ProfilePage = () => {
           <Dialog>
             <DialogTrigger asChild>
               <Button
+                id="onboarding-profile"
                 className={buttonVariants({
                   variant: "default",
                   className: "w-full bg-primary-light",

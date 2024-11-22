@@ -69,7 +69,7 @@ const Booking = () => {
 
   return (
     <MaxWidthWrapper className="my-8 flex flex-col justify-center items-center gap-4">
-      <Card className="w-[480px]">
+      <Card id= "onboarding-booking" className="w-[480px]">
         <CardHeader className="pb-2">
           <CardTitle>Request Session</CardTitle>
           <CardDescription>
