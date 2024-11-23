@@ -18,7 +18,7 @@ const OnboardingStep: React.FC<OnboardingStepProps> = ({
   isFirstStep,
   isLastStep,
 }) => {
-  const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+    const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     const targetElement = document.getElementById(stepContent.targetId);

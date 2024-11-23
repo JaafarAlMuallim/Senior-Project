@@ -18,6 +18,7 @@ const Onboarding: React.FC = () => {
     const [step, setStep] = useState(0);
     const router = useRouter();
     const pathname = usePathname();
+    const [dialogOpen, setDialogOpen] = useState(true); 
 
     const steps: StepContent[] = [
         {
@@ -110,10 +111,20 @@ const Onboarding: React.FC = () => {
         }
     };
 
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+        stopOnboarding();
+    };
+
     if (!isOnboarding || !currentStep) return null;
 
     return (
-        <Dialog open>
+        <Dialog open={dialogOpen} onOpenChange={(open) => {
+            setDialogOpen(open);
+            if (!open) {
+                stopOnboarding();
+            }
+        }}>
             <OnboardingStep
                 stepContent={currentStep}
                 onNext={handleNext}
