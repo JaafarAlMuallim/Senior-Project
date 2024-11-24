@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FaUser, FaUsers, FaClipboardList } from "react-icons/fa";
 import { USERS, MESSAGES, REPORTS, GROUPS } from "@/validators/Placeholders";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import UserTabContent from "@/components/UserTabContent";
 import GroupTabContent from "@/components/GroupTabContent";
 import ReportTabContent from "@/components/ReportTabContent";
 import { Button } from "@/components/ui/button";
+import { ClipboardList, User, Users } from "lucide-react";
 
 const categoryCounts = {
   security: 8,
@@ -34,13 +34,13 @@ const MainDashboard = () => {
         <MaxWidthWrapper>
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="users" className="flex gap-2">
-              <FaUser /> Users
+              <User /> Users
             </TabsTrigger>
             <TabsTrigger value="groups" className="flex gap-2">
-              <FaUsers /> Groups
+              <Users /> Groups
             </TabsTrigger>
             <TabsTrigger value="reports" className="flex gap-2">
-              <FaClipboardList /> Reports
+              <ClipboardList /> Reports
             </TabsTrigger>
           </TabsList>
         </MaxWidthWrapper>
