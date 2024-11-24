@@ -165,26 +165,29 @@ export default function Chats() {
     }
   };
 
-  const renderContent = (type: ChatType) => (
-    <Suspense fallback={<LoadingMessage />}>
-      {isLoading ? (
-        <LoadingMessage />
-      ) : (
-        <View>
-          {(netInfo.isConnected ? onlineGroups : offlineGroups)
-            ?.filter((group) => group.group.type === type)
-            .map((group) => (
-              <ChatItem
-                key={group.id}
-                group={group}
-                type={type}
-                onMute={handleMuteAction}
-              />
-            )) || <NoGroupsMessage />}
-        </View>
-      )}
-    </Suspense>
-  );
+  const renderContent = (type: ChatType) => {
+    console.log("IS LOADING: ", isLoading);
+    return (
+      <View>
+        {isLoading ? (
+          <LoadingMessage />
+        ) : (
+          <View>
+            {(netInfo.isConnected ? onlineGroups : offlineGroups)
+              ?.filter((group) => group.group.type === type)
+              .map((group) => (
+                <ChatItem
+                  key={group.id}
+                  group={group}
+                  type={type}
+                  onMute={handleMuteAction}
+                />
+              )) || <NoGroupsMessage />}
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView>

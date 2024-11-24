@@ -56,7 +56,7 @@ const GroupTabContent = ({
       groups: messages.reduce((acc, curr) => acc + curr.groups, 0),
       ai: messages.reduce((acc, curr) => acc + curr.ai, 0),
     }),
-    []
+    [],
   );
   return (
     <TabsContent value="groups" className="p-3">
@@ -73,7 +73,7 @@ const GroupTabContent = ({
                   <MessagesSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black ">{data.length}</div>
+                  <div className="text-4xl font-semibold ">{data.length}</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -91,7 +91,7 @@ const GroupTabContent = ({
                   <MessageSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black">1,234</div>
+                  <div className="text-4xl font-semibold">1,234</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -109,7 +109,7 @@ const GroupTabContent = ({
                   <BotMessageSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black">145</div>
+                  <div className="text-4xl font-semibold">145</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -151,7 +151,7 @@ const GroupTabContent = ({
                         <span className="text-xs">
                           {chartConfig[chart].label}
                         </span>
-                        <span className="text-lg font-bold leading-none sm:text-3xl">
+                        <span className="text-lg font-semibold leading-none sm:text-3xl">
                           {total[key as keyof typeof total].toLocaleString()}
                         </span>
                       </button>

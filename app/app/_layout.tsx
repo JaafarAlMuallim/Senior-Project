@@ -76,6 +76,13 @@ export default function RootLayout() {
   });
   const { token } = useTokenStore();
 
+  // const url = Platform.select({
+  //   web: "http://192.168.147.27:3000/trpc",
+  //   ios: "http://192.168.147.27:3000/trpc",
+  //   android: "http://192.168.147.27:3000/trpc",
+  //   default: "http://192.168.147.27:3000/trpc",
+  // });
+
   const url = Platform.select({
     web: "http://localhost:3000/trpc",
     ios: "http://localhost:3000/trpc",
@@ -106,7 +113,7 @@ export default function RootLayout() {
             url: url,
             headers: () => {
               return {
-                authorization: `Bearer ${token.token}`,
+                Authorization: `Bearer ${token.token}`,
               };
             },
           }),

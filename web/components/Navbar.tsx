@@ -2,45 +2,135 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
-// import { useAuthStore } from "@/store/AuthStore";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   // const { user, login, logout } = useAuthStore();
-  const router = useRouter();
+  const user = null;
 
   return (
-    <nav className="sticky z-20 h-12 inset-x-0 top-0 w-full backdrop-blur-lg transition-all print:hidden">
-      <div className="flex h-14 items-center justify-center flex-row w-full px-8">
-        <div className="flex flex-row gap-4 mr-auto"></div>
+    <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
+      <div className="flex h-16 items-center justify-between flex-row w-full px-8">
+        <div className="flex flex-row gap-4 text-primary-light justify-center items-center font-bold text-2xl">
+          <Image src={"/logo.png"} alt={"Logo"} width={64} height={64} />
+          EduLink
+        </div>
         <div className="h-full flex items-center">
-          <Link
-            href="/"
-            className={buttonVariants({
-              className: "text-lg font-semibold",
-              variant: "ghost",
-            })}
-          >
-            Home
-          </Link>
+          {!!user ? (
+            <>
+              <Link
+                href="/"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Home
+              </Link>
+              <Link
+                href="#features"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Chat
+              </Link>
+              <Link
+                href="#stats"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Schedule
+              </Link>
+              <Link
+                href="#start"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Material
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Home
+              </Link>
+              <Link
+                href="#features"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Features
+              </Link>
+              <Link
+                href="#stats"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Statistics
+              </Link>
+              <Link
+                href="#start"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Start Learning
+              </Link>
+            </>
+          )}
+        </div>
 
-          {/*<Link
-            href="/"
-            onClick={() => {
-              logout();
-            }}
-            className={buttonVariants({
-              className: "text-lg",
-              variant: "default",
-            })}
-          >
-            Logout
-          </Link>*/}
+        <div className="h-full flex items-center">
+          {!!user ? (
+            <Button
+              className={buttonVariants({
+                className: "font-semibold",
+                variant: "ghost",
+              })}
+              onClick={() => {
+                // TODO: LOGOUT
+              }}
+            >
+              Logout
+            </Button>
+          ) : (
+            <>
+              <Link
+                href="/auth?tab=login"
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Login
+              </Link>
+              <Link
+                href="/auth?tab=register"
+                className={buttonVariants({
+                  className: "font-semibold bg-primary-light text-white",
+                  variant: "default",
+                })}
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

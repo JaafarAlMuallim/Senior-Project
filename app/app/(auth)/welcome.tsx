@@ -10,7 +10,9 @@ export default function WelcomePage() {
     <SafeAreaView className="px-8 flex-1 items-center justify-center bg-white-default h-full">
       <View className="w-full px-4 flex-1 justify-center bg-white h-full">
         <CustomText styles={"text-2xl my-2"}>Welcome to</CustomText>
-        <CustomText styles={"text-primary-light text-4xl font-bold my-2"}>
+        <CustomText
+          styles={"text-primary-light text-4xl font-poppinsSemiBold my-2"}
+        >
           EduLink
         </CustomText>
         <View>
@@ -22,7 +24,7 @@ export default function WelcomePage() {
         <View>
           <GoogleAuth />
           <TouchableOpacity
-            className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
+            className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50 mb-6"
             onPress={() => {
               router.push("/sign-up");
             }}
@@ -34,14 +36,8 @@ export default function WelcomePage() {
               @
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            className="items-center justify-center mt-2 min-h-16 p-3 rounded-2xl flex-wrap flex-row bg-blue-def50"
-            onPress={() => {
-              router.push("");
-            }}
-          ></TouchableOpacity>
         </View>
-        <CustomText styles={"text-lg text-center mt-4"}>
+        <CustomText styles={"text-lg text-center flex flex-row gap-2 text-sm"}>
           Already have an account?{" "}
           <Link
             href={"/sign-in"}

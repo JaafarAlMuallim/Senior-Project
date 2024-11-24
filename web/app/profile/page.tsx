@@ -30,6 +30,38 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+const COURSES = [
+  {
+    id: 1,
+    code: "MATH 101",
+    name: "Calculus 101",
+    days: ["Monday", "Wednesday", "Friday"],
+    time: "10:00 AM",
+  },
+  {
+    id: 2,
+    code: "MATH 102",
+    name: "Calculus 102",
+    days: ["Tuesday", "Thursday"],
+    time: "11:00 AM",
+  },
+  {
+    id: 3,
+    code: "MATH 103",
+    name: "Calculus 103",
+    days: ["Monday", "Wednesday", "Friday"],
+    time: "1:00 PM",
+  },
+  {
+    id: 4,
+    code: "MATH 104",
+    name: "Calculus 104",
+    days: ["Tuesday", "Thursday"],
+    time: "2:00 PM",
+  },
+];
+
 import { MoveRight } from "lucide-react";
 const formSchema = z.object({
   name: z.string().min(3).optional(),
@@ -55,7 +87,7 @@ const ProfilePage = () => {
 
   return (
     <MaxWidthWrapper className="my-8 px-4 mx-4">
-      <div className="flex flex-row gap-32">
+      <div className="flex flex-row gap-16">
         <div className="flex flex-col gap-4 justify-start items-center">
           <Avatar className="h-64 w-64">
             <AvatarImage src="https://github.com/shadcn.png" />
@@ -163,144 +195,21 @@ const ProfilePage = () => {
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl font-semibold">Schedule</h2>
-            <div className="grow grid grid-cols-2 grid-rows-2 gap-8">
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
+            <div className="grow grid grid-cols-3 gap-8">
+              {COURSES.map((course) => (
+                <Card className="w-64 hover:bg-primary-light hover:text-white transition-all group">
+                  <CardHeader>
+                    <CardTitle>{course.code}</CardTitle>
+                    <CardDescription className="group-hover:text-secondary-lightGray">
+                      {course.name}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex justify-end items-center gap-2">
+                    74 File Uploads
                     <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h2 className="text-2xl font-semibold">Tutoring</h2>
-            <div className="grow grid grid-cols-2 grid-rows-2 gap-8">
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
-                <CardHeader>
-                  <CardTitle>MATH 101</CardTitle>
-                  <CardDescription className="group-hover:text-secondary-lightGray">
-                    Calculs 101
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-                    <li>174 Students</li>
-                    <li>4 Tutors</li>
-                    <li>74 File Uploads</li>
-                    <MoveRight size={24} />
-                  </ul>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { authProcedure, router } from "../trpc";
 import EventEmitter, { on } from "events";
 import { Message, User } from "@prisma/mongo/client";
+import { mongoClient } from "../db";
 
 export type WhoIsTyping = Record<string, { lastTyped: Date }>;
 
@@ -151,7 +152,7 @@ export const groupRouter = router({
   getUserGroups: authProcedure.query(async ({ ctx }) => {
     try {
       try {
-        const groups = await ctx.mongoClient.userGroups.findMany({
+        const groups = await mongoClient.userGroups.findMany({
           where: {
             userId: ctx.user?.id,
           },

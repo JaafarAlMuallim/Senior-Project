@@ -53,7 +53,7 @@ const UserTabContent = ({
 
   const totalUsers = Object.values(typeCounts).reduce(
     (acc, curr) => acc + curr,
-    0
+    0,
   );
   return (
     <TabsContent value="users" className="p-3">
@@ -68,7 +68,7 @@ const UserTabContent = ({
                 <Users className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-black ">{data.length}</div>
+                <div className="text-4xl font-semibold ">{data.length}</div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
@@ -86,7 +86,7 @@ const UserTabContent = ({
                 <UserCheck className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-black">1,234</div>
+                <div className="text-4xl font-semibold">1,234</div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
@@ -102,7 +102,7 @@ const UserTabContent = ({
                 <UserPlus className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-black">145</div>
+                <div className="text-4xl font-semibold">145</div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
@@ -158,7 +158,7 @@ const UserTabContent = ({
                               <tspan
                                 x={viewBox.cx}
                                 y={viewBox.cy}
-                                className="fill-foreground text-3xl font-bold"
+                                className="fill-foreground text-3xl font-semibold"
                               >
                                 {totalUsers}
                               </tspan>

@@ -67,7 +67,7 @@ const HomePage = () => {
     {
       id: 1,
       code: "SWE326",
-      name: "Software testing",
+      name: "Software Testing",
       days: ["MON", "WED"],
       time: "10:00",
     },
@@ -93,11 +93,11 @@ const HomePage = () => {
     .toUpperCase();
 
   const todaysCourses = mockCourses.filter((course) =>
-    course.days.includes(todayDay)
+    course.days.includes(todayDay),
   );
 
   const sortedCourses = [...todaysCourses].sort((a, b) =>
-    a.time.localeCompare(b.time)
+    a.time.localeCompare(b.time),
   );
   function separateFirstName(name: string | undefined): React.ReactNode {
     if (!name) return name;
@@ -113,9 +113,7 @@ const HomePage = () => {
     return (
       <>
         {letters}
-        <span className="text-primary text-primary group-hover:text-white">
-          {numbers}
-        </span>
+        <span className="text-primary group-hover:text-white">{numbers}</span>
       </>
     );
   }
@@ -129,7 +127,7 @@ const HomePage = () => {
               <h4 className="text-lg font-semibold text-primary group-hover:text-white">
                 {separateNameNum(course.code)}
               </h4>
-              <FolderIcon className="text-primary h-6 w-6 text-primary group-hover:text-white" />
+              <FolderIcon className="text-primary h-6 w-6 group-hover:text-white" />
             </div>
             <p className="text-gray-600 font-medium group-hover:text-secondary-lightGray">
               {course.name}
