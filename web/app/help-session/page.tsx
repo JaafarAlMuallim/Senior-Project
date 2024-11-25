@@ -13,8 +13,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { add } from "date-fns";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CourseSelect } from "./course-select";
-import { DateSelect } from "./date-select";
+import { CourseSelect } from "./CourseSelect";
+import { DateSelect } from "./DateSelect";
 
 const formSchema = z.object({
   course: z.string(),

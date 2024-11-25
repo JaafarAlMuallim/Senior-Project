@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { CourseSelect } from "./course-select";
-import { GradeSelect } from "./grade-select";
+import { CourseSelect } from "./CourseSelect";
+import { GradeSelect } from "./GradeSelect";
 import { FormValues } from "./types";
 
 type TutorApplicationFormProps = {
@@ -17,7 +17,7 @@ type TutorApplicationFormProps = {
   onSubmit: (values: FormValues) => void;
 };
 
-export const TutorApplicationForm = ({ 
+export const TutorForm = ({ 
   form, 
   onSubmit 
 }: TutorApplicationFormProps) => (

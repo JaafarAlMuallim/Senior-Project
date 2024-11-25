@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProfileUpdateDialog } from "./profile-update-dialog";
+import { ProfileUpdateDialog } from "./ProfileUpdateDialog";
 
 export const ProfileSection = () => {
   return (

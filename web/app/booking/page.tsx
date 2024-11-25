@@ -20,10 +20,10 @@ import { AVAILABLE_TIMES } from "@/validators/Placeholders";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CourseSelect } from "./course-select";
-import { DateSelect } from "./date-select";
+import { CourseSelect } from "./CourseSelect";
+import { DateSelect } from "./DateSelect";
 import { getUniqueDates } from "./getUniqueDates";
-import { TutorSelect } from "./tutor-select";
+import { TutorSelect } from "./TutorSelect";
 
 const formSchema = z.object({
   tutor: z.string(),

@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ProfileUpdateForm } from "./profile-update-form";
+import { ProfileUpdateForm } from "./ProfileUpdateForm";
 
 export const ProfileUpdateDialog = () => {
   return (

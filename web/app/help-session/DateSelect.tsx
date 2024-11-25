@@ -15,7 +15,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock } from "lucide-react";
-import { TimeSelector } from "./time-selector";
+import { TimeSelector } from "./TimeSelector";
 
 export const DateSelect = ({
   field,

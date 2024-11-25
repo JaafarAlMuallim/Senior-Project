@@ -1,8 +1,8 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { z } from "zod";
-import { CourseGrid } from "./course-grid";
-import { ProfileSection } from "./profile-selection";
+import { CourseGrid } from "./CourseGrid";
+import { ProfileSection } from "./ProfileSection";
 
 const formSchema = z.object({
   name: z.string().min(3).optional(),

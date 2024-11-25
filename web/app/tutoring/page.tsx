@@ -2,8 +2,8 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { TutorApplicationForm } from "./tutor-form";
-import { TutorProfileCard } from "./tutor-profile-card";
+import { TutorForm } from "./TutorForm";
+import { TutorProfileCard } from "./TutorProfileCard";
 import { FormValues, formSchema } from "./types";
 
 const Tutoring = () => {
@@ -29,7 +29,7 @@ const Tutoring = () => {
         phone="+966 50 000 0000"
         institution="KFUPM - SWE"
       />
-      <TutorApplicationForm form={form} onSubmit={onSubmit} />
+      <TutorForm form={form} onSubmit={onSubmit} />
     </MaxWidthWrapper>
   );
 };

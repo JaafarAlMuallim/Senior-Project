@@ -13,10 +13,10 @@ import {
   TYPES,
 } from "@/validators/Placeholders";
 import { useState } from "react";
-import { GenderSelector } from "./gender-selector";
-import { MultiSelector } from "./multi-selector";
-import { SingleSelector } from "./single-selector";
-import { ScheduleTable } from "./table";
+import { GenderSelector } from "./GenderSelector";
+import { MultiSelector } from "./MultiSelector";
+import { ScheduleTable } from "./ScheduleTable";
+import { SingleSelector } from "./SingleSelector";
 
 const Schedule = () => {
   const [gender, setGender] = useState("male");
