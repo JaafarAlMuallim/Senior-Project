@@ -1,4 +1,5 @@
 "use client";
+import { SubmitButton } from "@/components/ SubmitButton";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import {
   Card,
@@ -22,7 +23,6 @@ import { z } from "zod";
 import { CourseSelect } from "./course-select";
 import { DateSelect } from "./date-select";
 import { getUniqueDates } from "./getUniqueDates";
-import { SubmitButton } from "./submit-button";
 import { TutorSelect } from "./tutor-select";
 
 const formSchema = z.object({
@@ -99,7 +99,7 @@ const Booking = () => {
                   </FormItem>
                 )}
               />
-              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+              <SubmitButton isSubmitting={form.formState.isSubmitting}  />
             </form>
           </Form>
         </CardContent>

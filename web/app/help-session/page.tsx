@@ -1,4 +1,5 @@
 "use client";
+import { SubmitButton } from "@/components/ SubmitButton";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import {
   Card,
@@ -14,7 +15,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CourseSelect } from "./course-select";
 import { DateSelect } from "./date-select";
-import { SubmitButton } from "./submit-button";
 
 const formSchema = z.object({
   course: z.string(),
@@ -49,7 +49,7 @@ const HelpSession = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 w-full">
               <CourseSelect field={form.getValues("course")} form={form} />
               <DateSelect field={form.getValues("date")} form={form} />
-              <SubmitButton isSubmitting={form.formState.isSubmitting} />
+              <SubmitButton isSubmitting={form.formState.isSubmitting} text="Submit Application" />
             </form>
           </Form>
         </CardContent>
