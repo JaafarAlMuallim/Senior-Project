@@ -1,5 +1,6 @@
 "use client";
 import { Button, buttonVariants } from "@/components/ui/button";
+import GoogleAuth from "@/components/GoogleAuth";
 import Image from "next/image";
 
 import {
@@ -39,6 +40,7 @@ const LoginContent = () => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
   };
+
   return (
     <Card className="w-[440px] space-y-2">
       <CardHeader className="pb-2">

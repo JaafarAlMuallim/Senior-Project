@@ -5,6 +5,7 @@ import LoginContent from "@/components/LoginContent";
 import RegisterContent from "@/components/RegisterContent";
 import { useState } from "react";
 import { User, UserPlus } from "lucide-react";
+import { SignIn } from "@clerk/nextjs";
 
 export default function Auth() {
   const [tab, setTab] = useState("login");
@@ -27,7 +28,7 @@ export default function Auth() {
         </div>
         <div className="my-8">
           <TabsContent value="login" className="px-0">
-            <LoginContent />
+            <SignIn />
           </TabsContent>
           <TabsContent value="register">
             <RegisterContent />
