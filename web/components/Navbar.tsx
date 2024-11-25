@@ -2,12 +2,12 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   // const { user, login, logout } = useAuthStore();
   const user = null;
-  const isAdmin = true;
+  const isAdmin = false;
 
   return (
     <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
@@ -56,7 +56,7 @@ const Navbar = () => {
             </Link>
             {isAdmin && (
               <Link
-                href="../app/admin"
+                href="/admin"
                 className={buttonVariants({
                   className: "font-semibold",
                   variant: "ghost",
@@ -109,7 +109,7 @@ const Navbar = () => {
 
         <div className="h-full flex items-center">
           <SignedIn>
-            <Button
+            {/* <Button
               className={buttonVariants({
                 className: "font-semibold",
                 variant: "ghost",
@@ -119,7 +119,18 @@ const Navbar = () => {
               }}
             >
               Logout
-            </Button>
+            </Button> */}
+
+            <SignOutButton>
+              <Button
+                className={buttonVariants({
+                  className: "font-semibold",
+                  variant: "ghost",
+                })}
+              >
+                Logout
+              </Button>
+            </SignOutButton>
           </SignedIn>
 
           <SignedOut>
