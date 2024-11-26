@@ -57,7 +57,7 @@ const ReportTabContent = ({
 
   const totalReports = Object.values(categoryCounts).reduce(
     (acc, curr) => acc + curr,
-    0
+    0,
   );
 
   return (
@@ -74,7 +74,7 @@ const ReportTabContent = ({
                   <FileStack className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black ">{data.length}</div>
+                  <div className="text-4xl font-semibold ">{data.length}</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -92,7 +92,7 @@ const ReportTabContent = ({
                   <FileCheck className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black">234</div>
+                  <div className="text-4xl font-semibold">234</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -110,7 +110,7 @@ const ReportTabContent = ({
                   <MessageSquareWarning className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-black">Suggestion</div>
+                  <div className="text-4xl font-semibold">Suggestion</div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
@@ -168,7 +168,7 @@ const ReportTabContent = ({
                                 <tspan
                                   x={viewBox.cx}
                                   y={viewBox.cy}
-                                  className="fill-foreground text-3xl font-bold"
+                                  className="fill-foreground text-3xl font-semibold"
                                 >
                                   {totalReports}
                                 </tspan>
