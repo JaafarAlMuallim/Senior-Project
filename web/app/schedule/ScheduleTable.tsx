@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,7 +10,7 @@ import {
 
 export const ScheduleTable = ({ department }: { department: string }) => {
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border w-full">
       <Table>
         <TableHeader>
           <TableRow>

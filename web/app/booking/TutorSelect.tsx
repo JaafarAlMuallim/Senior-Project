@@ -1,11 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { GRADES } from "@/validators/option-validators";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { CommandEmpty, CommandGroup, CommandItem, CommandList } from "cmdk";
-import { Check, ChevronsUpDown, Command, UserRound } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  Command,
+} from "@/components/ui/command";
+import { Check, ChevronsUpDown, UserRound } from "lucide-react";
 
-export function TutorSelect({ field }: { field: any; }) {
+export function TutorSelect({ field }: { field: any }) {
   return (
     <Popover>
       <PopoverTrigger asChild id="tutor">
@@ -14,7 +24,7 @@ export function TutorSelect({ field }: { field: any; }) {
           role="combobox"
           className={cn(
             "justify-between w-[420px]",
-            !field.value && "text-muted-foreground"
+            !field.value && "text-muted-foreground",
           )}
         >
           <div className="flex gap-2 items-center w-[420px]">
@@ -38,10 +48,9 @@ export function TutorSelect({ field }: { field: any; }) {
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      grade === field.value
-                        ? "opacity-100"
-                        : "opacity-0"
-                    )} />
+                      grade === field.value ? "opacity-100" : "opacity-0",
+                    )}
+                  />
                   {grade}
                 </CommandItem>
               ))}

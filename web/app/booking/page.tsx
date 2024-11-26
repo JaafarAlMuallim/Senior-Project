@@ -1,5 +1,5 @@
 "use client";
-import { SubmitButton } from "@/components/ SubmitButton";
+import SubmitButton from "@/components/SubmitButton";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import {
   Card,
@@ -20,9 +20,9 @@ import { AVAILABLE_TIMES } from "@/validators/Placeholders";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CourseSelect } from "./CourseSelect";
+import CourseSelect from "@/components/CourseSelect";
 import { DateSelect } from "./DateSelect";
-import { getUniqueDates } from "./getUniqueDates";
+import { getUniqueDates } from "@/lib/utils";
 import { TutorSelect } from "./TutorSelect";
 
 const formSchema = z.object({
@@ -47,7 +47,6 @@ const Booking = () => {
     console.log("submitted");
     console.log(values);
   };
-
   return (
     <MaxWidthWrapper className="my-8 flex flex-col justify-center items-center gap-4">
       <Card className="w-[480px]">
@@ -59,7 +58,10 @@ const Booking = () => {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full grid gap-4 py-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full grid gap-4 py-4"
+            >
               <FormField
                 control={form.control}
                 name="course"
@@ -99,7 +101,7 @@ const Booking = () => {
                   </FormItem>
                 )}
               />
-              <SubmitButton isSubmitting={form.formState.isSubmitting}  />
+              <SubmitButton isSubmitting={form.formState.isSubmitting} />
             </form>
           </Form>
         </CardContent>

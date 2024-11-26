@@ -1,6 +1,5 @@
 "use client";
 
-
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Toggle } from "@/components/ui/toggle";
 import {
@@ -17,6 +16,7 @@ import { GenderSelector } from "./GenderSelector";
 import { MultiSelector } from "./MultiSelector";
 import { ScheduleTable } from "./ScheduleTable";
 import { SingleSelector } from "./SingleSelector";
+import { cn } from "@/lib/utils";
 
 const Schedule = () => {
   const [gender, setGender] = useState("male");
@@ -28,6 +28,7 @@ const Schedule = () => {
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  // TODO: convert to URLSearchParams
 
   return (
     <MaxWidthWrapper className="my-8 px-12">
@@ -38,13 +39,17 @@ const Schedule = () => {
             <div className="flex items-center gap-2 w-28">
               <Toggle
                 onPressedChange={setAddableOnly}
-                className="bg-white border border-muted shadow whitespace-nowrap"
+                className={cn(
+                  "bg-white border border-muted shadow whitespace-nowrap",
+                  addableOnly
+                    ? "bg-primary-light border-primary-foreground"
+                    : "",
+                )}
               >
                 Addable Only
               </Toggle>
             </div>
           </div>
-
           <div className="flex flex-col gap-4 w-[420px]">
             <SingleSelector
               items={DEPTS}
@@ -52,14 +57,16 @@ const Schedule = () => {
               setValue={setDepartment}
               placeholder="Select Department"
               searchPlaceholder="Search department..."
+              className="w-[400px]"
             />
             <div className="flex gap-4">
               <MultiSelector
-                title="Select Instructors"
-                items={INSTRUCTORS}
-                selected={selectedInstructors}
-                setSelected={setSelectedInstructors}
-                searchPlaceholder="Search instructors..."
+                title="Select Days"
+                items={DAYS}
+                selected={selectedDays}
+                setSelected={setSelectedDays}
+                searchPlaceholder="Search days..."
+                className="w-[193px]"
               />
               <MultiSelector
                 title="Select Times"
@@ -67,6 +74,7 @@ const Schedule = () => {
                 selected={selectedTimes}
                 setSelected={setSelectedTimes}
                 searchPlaceholder="Search times..."
+                className="w-[193px]"
               />
             </div>
           </div>
@@ -78,13 +86,16 @@ const Schedule = () => {
               setValue={setCourse}
               placeholder="Select Course"
               searchPlaceholder="Search course..."
+              className="w-[380px]"
             />
+
             <MultiSelector
-              title="Select Days"
-              items={DAYS}
-              selected={selectedDays}
-              setSelected={setSelectedDays}
-              searchPlaceholder="Search days..."
+              title="Select Instructors"
+              items={INSTRUCTORS}
+              selected={selectedInstructors}
+              setSelected={setSelectedInstructors}
+              searchPlaceholder="Search instructors..."
+              className="w-[380px]"
             />
           </div>
 
@@ -95,6 +106,7 @@ const Schedule = () => {
               setValue={setType}
               placeholder="Select Type"
               searchPlaceholder="Search type..."
+              className="w-[200px]"
             />
             <MultiSelector
               title="Select Locations"
@@ -102,6 +114,7 @@ const Schedule = () => {
               selected={selectedLocations}
               setSelected={setSelectedLocations}
               searchPlaceholder="Search locations..."
+              className="w-[200px]"
             />
           </div>
         </div>

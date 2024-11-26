@@ -15,31 +15,38 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-
 export const MultiSelector = ({
   title,
   items,
   selected,
   setSelected,
   searchPlaceholder,
-  width = "w-[200px]",
+  className,
 }: {
   title: string;
   items: string[];
   selected: string[];
   setSelected: (value: string[]) => void;
   searchPlaceholder: string;
-  width?: string;
+  className?: string;
 }) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className={`justify-between ${width}`}>
+        <Button
+          variant="outline"
+          role="combobox"
+          className={cn(
+            `justify-between`,
+            className,
+            selected.length === 0 ? "text-muted-foreground" : "",
+          )}
+        >
           {`${title} (${selected.length})`}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={`${width} p-0`}>
+      <PopoverContent className={cn(`p-0`, className)}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandEmpty>No {title.toLowerCase()} found.</CommandEmpty>
@@ -52,14 +59,14 @@ export const MultiSelector = ({
                   setSelected(
                     selected.includes(item)
                       ? selected.filter((i) => i !== item)
-                      : [...selected, item]
+                      : [...selected, item],
                   );
                 }}
               >
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    selected.includes(item) ? "opacity-100" : "opacity-0"
+                    selected.includes(item) ? "opacity-100" : "opacity-0",
                   )}
                 />
                 {item}

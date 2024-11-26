@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -9,7 +9,7 @@ type SubmitButtonProps = {
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 };
 
-export const SubmitButton = ({
+const SubmitButton = ({
   isSubmitting,
   text = "Submit Application",
   className = "w-full bg-primary-light hover:bg-primary-dark",
@@ -24,10 +24,8 @@ export const SubmitButton = ({
     onClick={onClick}
     disabled={isSubmitting}
   >
-    {isSubmitting ? (
-      <Loader2 className="h-6 w-6 animate-spin" />
-    ) : (
-      text
-    )}
+    {isSubmitting ? <Loader2 className="h-6 w-6 animate-spin" /> : text}
   </Button>
 );
+export default SubmitButton;
+

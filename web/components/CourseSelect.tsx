@@ -1,11 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { COURSES } from "@/validators/Placeholders";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "cmdk";
-import { Book, Check, ChevronsUpDown, Command } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Book, Check, ChevronsUpDown } from "lucide-react";
+import { ControllerRenderProps } from "react-hook-form";
 
-export function CourseSelect({ field }: { field: any; }) {
+export default function CourseSelect({
+  field,
+  className,
+}: {
+  field: ControllerRenderProps<any, "course">;
+  className?: string;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild id="course">
@@ -13,21 +31,20 @@ export function CourseSelect({ field }: { field: any; }) {
           variant="outline"
           role="combobox"
           className={cn(
-            "justify-between w-[420px]",
-            !field.value && "text-muted-foreground"
+            "justify-between",
+            !field.value && "text-muted-foreground",
           )}
         >
           <div className="flex gap-2 items-center">
             <Book className="h-4 w-4" />
             {field.value
-              ? COURSES.find((c) => c.value === field.value)
-                ?.label
+              ? COURSES.find((c) => c.value === field.value)?.label
               : "Select Course"}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[420px]">
+      <PopoverContent className={cn("p-0 z-10", className)}>
         <Command>
           <CommandInput placeholder="Search Courses..." />
           <CommandList>
@@ -44,8 +61,9 @@ export function CourseSelect({ field }: { field: any; }) {
                       "mr-2 h-4 w-4",
                       course.value === field.value
                         ? "opacity-100"
-                        : "opacity-0"
-                    )} />
+                        : "opacity-0",
+                    )}
+                  />
                   {course.label}
                 </CommandItem>
               ))}

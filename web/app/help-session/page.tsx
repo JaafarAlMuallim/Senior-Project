@@ -1,5 +1,5 @@
 "use client";
-import { SubmitButton } from "@/components/ SubmitButton";
+import SubmitButton from "@/components/SubmitButton";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import {
   Card,
@@ -8,13 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { add } from "date-fns";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CourseSelect } from "./CourseSelect";
-import { DateSelect } from "./DateSelect";
+import { DatePicker } from "./DateSelect";
+import CourseSelect from "@/components/CourseSelect";
 
 const formSchema = z.object({
   course: z.string(),
@@ -44,12 +51,44 @@ const HelpSession = () => {
             Create Help Session For All Student Enrolled In A Course
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col">
+        <CardContent className="flex flex-col w-[440px]">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 w-full">
-              <CourseSelect field={form.getValues("course")} form={form} />
-              <DateSelect field={form.getValues("date")} form={form} />
-              <SubmitButton isSubmitting={form.formState.isSubmitting} text="Submit Application" />
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-4 py-4"
+            >
+              <FormField
+                control={form.control}
+                name="course"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel htmlFor="course">Course</FormLabel>
+                    <FormControl>
+                      <CourseSelect field={field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-2">
+                    <FormLabel htmlFor="date">Date &amp; Time</FormLabel>
+                    <FormControl>
+                      <DatePicker field={field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <SubmitButton
+                isSubmitting={form.formState.isSubmitting}
+                text="Submit Application"
+              />
             </form>
           </Form>
         </CardContent>

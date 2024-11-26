@@ -7,39 +7,35 @@ import Image from "next/image";
 const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
-      <header className="relative min-h-[90vh] overflow-hidden">
-        <nav className="absolute top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"></nav>
-
-        <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-xl"
-          >
-            <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight text-transparent sm:text-7xl">
-              EduLink
-            </h1>
-            <p className="mb-8 text-xl text-muted-foreground">
-              your best learning assistant
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="w-full max-w-2xl"
-          >
-            <Image
-              src="/app-mockup.svg"
-              alt="App Preview"
-              width={1200}
-              height={800}
-              className="rounded-xl border shadow-2xl"
-            />
-          </motion.div>
-        </div>
-      </header>
+      <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-xl"
+        >
+          <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight text-transparent sm:text-7xl">
+            EduLink
+          </h1>
+          <p className="mb-8 text-xl text-muted-foreground">
+            your best learning assistant
+          </p>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="w-full max-w-2xl"
+        >
+          <Image
+            src="/app-mockup.svg"
+            alt="App Preview"
+            width={1200}
+            height={800}
+            className="rounded-xl border shadow-2xl"
+          />
+        </motion.div>
+      </div>
 
       <section id="features" className="py-24">
         <div className="container mx-auto px-4">
