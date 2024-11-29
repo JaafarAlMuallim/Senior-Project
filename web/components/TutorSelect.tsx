@@ -14,8 +14,15 @@ import {
   Command,
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown, UserRound } from "lucide-react";
+import { ControllerRenderProps } from "react-hook-form";
 
-export function TutorSelect({ field }: { field: any }) {
+export default function TutorSelect({
+  field,
+  className,
+}: {
+  field: ControllerRenderProps<any, "tutor">;
+  className?: string;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild id="tutor">
@@ -23,18 +30,19 @@ export function TutorSelect({ field }: { field: any }) {
           variant="outline"
           role="combobox"
           className={cn(
-            "justify-between w-[420px]",
+            "flex justify-between items-center",
             !field.value && "text-muted-foreground",
+            className,
           )}
         >
-          <div className="flex gap-2 items-center w-[420px]">
+          <div className={cn("flex gap-2 items-center", className)}>
             <UserRound className="h-4 w-4" />
             {field.value || "Select a Tutor"}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="p-0 w-[440px]">
+      <PopoverContent className={cn("p-0", className)}>
         <Command>
           <CommandList>
             <CommandEmpty>No Tutors Available</CommandEmpty>

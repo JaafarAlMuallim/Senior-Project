@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-export const TimeSelector = ({
+const TimePicker = ({
   type,
   getValue,
   setValue,
@@ -61,3 +61,4 @@ export const TimeSelector = ({
   </Popover>
 );
 
+export default TimePicker;

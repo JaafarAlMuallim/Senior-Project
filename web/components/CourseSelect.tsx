@@ -31,8 +31,9 @@ export default function CourseSelect({
           variant="outline"
           role="combobox"
           className={cn(
-            "justify-between",
+            "flex justify-between items-center",
             !field.value && "text-muted-foreground",
+            className,
           )}
         >
           <div className="flex gap-2 items-center">

@@ -4,8 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
+import { TRPCProvider } from "@/trpc/client";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,13 +26,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
-        <body className={`${poppins.className} antialiased`}>
-          <Navbar />
-          <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
-            {children}
-          </main>
-          <Toaster />
-        </body>
+        <TRPCProvider>
+          <body className={`${poppins.className} antialiased`}>
+            <Navbar />
+            <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
+              {children}
+            </main>
+            <Toaster />
+          </body>
+        </TRPCProvider>
       </ClerkProvider>
     </html>
   );
