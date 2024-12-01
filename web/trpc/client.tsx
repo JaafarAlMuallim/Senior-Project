@@ -1,20 +1,19 @@
 "use client";
-// ^-- to make sure we can mount the Provider from a server component
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import { httpBatchLink, unstable_httpSubscriptionLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
 import { makeQueryClient } from "./query-client";
 import type { AppRouter } from "../../server/src/routers/index";
+import { useSession } from "@clerk/nextjs";
 export const trpc = createTRPCReact<AppRouter>();
 let clientQueryClientSingleton: QueryClient;
 function getQueryClient() {
   if (typeof window === "undefined") {
-    // Server: always make a new query client
     return makeQueryClient();
   }
-  // Browser: use singleton pattern to keep the same query client
   return (clientQueryClientSingleton ??= makeQueryClient());
 }
 function getUrl() {
@@ -28,17 +27,39 @@ export function TRPCProvider(
     children: React.ReactNode;
   }>,
 ) {
-  // NOTE: Avoid useState when initializing the query client if you don't
-  //       have a suspense boundary between this and the code that may
-  //       suspend because React will throw away the client on the initial
-  //       render if it suspends and there is no boundary
+  const { session } = useSession();
+  console.log(session);
+
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
         httpBatchLink({
-          // transformer: superjson, <-- if you use a data transformer
           url: getUrl(),
+          headers: async () => {
+            const token = await session?.getToken({
+              template: "supabase",
+            });
+            console.log(token);
+            return {
+              authorization: `Bearer ${token}`,
+            };
+          },
+        }),
+        unstable_httpSubscriptionLink({
+          url: getUrl(),
+          EventSource: EventSourcePolyfill,
+          eventSourceOptions: async () => {
+            const token = await session?.getToken({
+              template: "supabase",
+            });
+            console.log(token);
+            return {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            };
+          },
         }),
       ],
     }),

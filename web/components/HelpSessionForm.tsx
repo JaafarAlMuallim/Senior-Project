@@ -4,7 +4,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CirclePlus } from "lucide-react";
 import SubmitButton from "@/components/SubmitButton";
 import {
   Form,
@@ -20,6 +19,7 @@ import { z } from "zod";
 import DatePicker from "@/components/DatePicker";
 import CourseSelect from "@/components/CourseSelect";
 import { add } from "date-fns";
+import { Button, buttonVariants } from "./ui/button";
 
 const formSchema = z.object({
   course: z.string(),
@@ -42,7 +42,14 @@ const HelpSessionForm = () => {
   return (
     <Popover>
       <PopoverTrigger asChild id="university" className="cursor-pointer">
-        <CirclePlus color="#4561FF" size={34} />
+        <Button
+          className={buttonVariants({
+            variant: "outline",
+            className: "text-black",
+          })}
+        >
+          New Help Session
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent className="flex flex-col">
