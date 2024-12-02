@@ -2,7 +2,9 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { z } from "zod";
 
-import { CourseGrid } from "./CourseGrid";
+import { CourseGridTutoring } from "./CourseGridTutoring";
+import { CourseGridSchedule } from "./CourseGridSchedule";
+
 import { ProfileSection } from "./ProfileSection";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,15 +48,16 @@ const COURSES = [
 ];
 
 import { MoveRight } from "lucide-react";
+import { trpc } from "@/trpc/server";
 
-const ProfilePage = () => {
+const ProfilePage = async () => {
   return (
     <MaxWidthWrapper className="my-8 px-4 mx-4">
       <div className="flex flex-row gap-32">
         <ProfileSection />
         <div className="flex flex-col gap-8">
-          <CourseGrid title="Schedule" />
-          <CourseGrid title="Tutoring" />
+          <CourseGridSchedule />
+          <CourseGridTutoring />
         </div>
       </div>
     </MaxWidthWrapper>
