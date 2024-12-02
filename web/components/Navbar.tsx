@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
 import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
+import ThemeSwitch from "@/components/theme-switch"
 
 const Navbar = () => {
   // const { user, login, logout } = useAuthStore();
@@ -120,6 +121,7 @@ const Navbar = () => {
             >
               Logout
             </Button> */}
+            <ThemeSwitch />
 
             <SignOutButton>
               <Button
