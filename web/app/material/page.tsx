@@ -37,7 +37,7 @@ const Folder: React.FC<{ folder: Folder; onDelete: (id: number) => void }> = ({
 
   return (
     <div
-      className="folder bg-white shadow-md rounded-lg p-6 flex items-center transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-blue-500 cursor-pointer"
+      className="bg-white-default shadow-md rounded-lg p-6 flex items-center transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-blue-500 cursor-pointer"
       onClick={handleFolderClick}
     >
       <span className="folder-icon mr-2 text-3xl">📁</span>
@@ -55,10 +55,10 @@ const Folder: React.FC<{ folder: Folder; onDelete: (id: number) => void }> = ({
           ...
         </button>
         {isDialogOpen && (
-          <ul className="absolute bg-white shadow-md rounded-lg p-2">
+          <ul className="absolute bg-white-default shadow-md rounded-lg p-2">
             <li>
               <button
-                className="bg-white rounded-md text-black w-20 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-blue-500 cursor-pointer"
+                className="bg-white-default rounded-md text-black w-20 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-blue-500 cursor-pointer"
                 onClick={() => onDelete(folder.id)}
               >
                 Delete
