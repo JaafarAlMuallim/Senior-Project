@@ -528,6 +528,7 @@ export const SESSIONS = [
     },
   },
 ] as Session[];
+
 export const MOCK_COURSES = [
   {
     id: 1,
@@ -540,14 +541,14 @@ export const MOCK_COURSES = [
     id: 2,
     code: "ICS321",
     name: "Database Systems",
-    days: ["SON", "TUE", "THU"],
+    days: ["SUN", "TUE", "THU"],
     time: "13:00",
   },
   {
     id: 3,
     code: "MTH201",
     name: "Calculus III",
-    days: ["SON", "TUE", "THU"],
+    days: ["SUN", "TUE", "THU"],
     time: "08:30",
   },
 ] as Course[];

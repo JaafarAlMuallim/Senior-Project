@@ -18,7 +18,8 @@ const LandingPage = () => {
             EduLink
           </h1>
           <p className="mb-8 text-xl text-muted-foreground">
-            your best learning assistant
+            Your all-in-one platform for learning, collaborating, and sharing
+            resources with your classmates and tutors.
           </p>
         </motion.div>
         <motion.div
@@ -32,7 +33,6 @@ const LandingPage = () => {
             alt="App Preview"
             width={1200}
             height={800}
-            className="rounded-xl border shadow-2xl"
           />
         </motion.div>
       </div>

@@ -1,9 +1,22 @@
 import { initTRPC } from "@trpc/server";
-import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { mongoClient, postgresClient, redisClient } from "./db";
 import jwt from "jsonwebtoken";
 
-export const createContext = async (opts?: CreateExpressContextOptions) => {
+type ContextRequest = {
+  headers: {
+    authorization?: string;
+    [key: string]: string | string[] | undefined;
+  };
+  [key: string]: any;
+};
+
+// Updated context options type
+type ContextOptions = {
+  req: ContextRequest;
+};
+
+export const createContext = async (opts?: ContextOptions) => {
+  console.log("HEADERS: ", opts?.req.headers);
   const token = opts?.req.headers.authorization?.split(" ")[1];
   const user = await getSession(token!);
   return {
@@ -76,7 +89,6 @@ export const tutorProcedure = trpc.procedure.use(async ({ ctx, next }) => {
 export const subscriptionAuthProcedure = trpc.procedure.use(
   async ({ ctx, next }) => {
     if (!ctx.user) {
-      // Attempt to fetch the user asynchronously before the subscription starts
       const token = ctx.req?.headers.authorization?.split(" ")[1];
       ctx.user = await getSession(token);
     }

@@ -35,7 +35,7 @@ export const profileRouter = router({
     .input(
       z.object({
         data: profileSchema.partial(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { data } = input;
@@ -62,4 +62,26 @@ export const profileRouter = router({
         throw new Error("Profile not found");
       }
     }),
+  roles: authProcedure.query(async ({ ctx }) => {
+    try {
+      const allRoles = await ctx.postgresClient.user.findFirst({
+        where: {
+          id: ctx.user?.id,
+        },
+        include: {
+          Admin: true,
+          Tutor: true,
+        },
+      });
+      const roles = {
+        admin: !!allRoles?.Admin,
+        tutor: !!allRoles?.Tutor,
+      };
+
+      return roles;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Roles not found");
+    }
+  }),
 });
