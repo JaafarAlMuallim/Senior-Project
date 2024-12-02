@@ -6,6 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/home",
   "/",
   "/chat",
+  "/material",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
