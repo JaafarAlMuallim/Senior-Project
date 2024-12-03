@@ -1,7 +1,7 @@
 import { trpc } from "@/trpc/server";
 import CourseCard from "./CourseCard";
 
-export const CourseGridTutoring = async () => {
+const CourseGridTutoring = async () => {
   const tutorCourses = await trpc.tutors.getTutorsCourseById();
   return (
     <div className="flex flex-col gap-4">
@@ -19,3 +19,4 @@ export const CourseGridTutoring = async () => {
     </div>
   );
 };
+export default CourseGridTutoring;

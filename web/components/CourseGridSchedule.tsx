@@ -1,7 +1,7 @@
 import { trpc } from "@/trpc/server";
 import CourseCard from "./CourseCard";
 
-export const CourseGridSchedule = async () => {
+const CourseGridSchedule = async () => {
   const schedule = await trpc.schedule.getSchedule({ semester: "241" });
   return (
     <div className="flex flex-col gap-4">
@@ -19,3 +19,4 @@ export const CourseGridSchedule = async () => {
     </div>
   );
 };
+export default CourseGridSchedule;

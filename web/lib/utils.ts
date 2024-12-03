@@ -68,14 +68,13 @@ export const separateNameNum = (name: string) => {
   return split ? `${split[1]} ${split[2]}` : name;
 };
 
-<<<<<<< HEAD
 export const getInitials = (name: string) => {
   const words = name.trim().split(" ");
   if (words.length === 0) return ""; // Handle empty input
   const firstLetter = words[0][0]?.toUpperCase() || ""; // First letter of the first name
   const lastLetter = words[words.length - 1][0]?.toUpperCase() || ""; // First letter of the last name
   return firstLetter + lastLetter;
-=======
+};
 export const pluralize = (count: number, singular: string, plural: string) =>
   count === 1 ? singular : plural;
 
@@ -132,5 +131,4 @@ export const updateMultipleSearchParams = (
 
 export const formatNumber = (num: number) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
->>>>>>> feat/web-chat
 };

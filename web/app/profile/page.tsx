@@ -1,6 +1,6 @@
+import CourseGridSchedule from "@/components/CourseGridSchedule";
+import CourseGridTutoring from "@/components/CourseGridTutoring";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { CourseGridTutoring } from "./CourseGridTutoring";
-import { CourseGridSchedule } from "./CourseGridSchedule";
 import { ProfileSection } from "@/components/ProfileSection";
 
 const ProfilePage = async () => {
