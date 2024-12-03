@@ -17,6 +17,7 @@ import { MultiSelector } from "./MultiSelector";
 import { ScheduleTable } from "./ScheduleTable";
 import { SingleSelector } from "./SingleSelector";
 import { cn } from "@/lib/utils";
+import ScheduleVis from "./scheduleVis";
 
 const Schedule = () => {
   const [gender, setGender] = useState("male");
@@ -32,6 +33,7 @@ const Schedule = () => {
 
   return (
     <MaxWidthWrapper className="my-8 px-12">
+      <ScheduleVis></ScheduleVis>
       <div className="w-full space-y-4">
         <div className="flex justify-between gap-2 w-full text-sm font-normal">
           <div className="flex flex-col gap-4">
@@ -43,7 +45,7 @@ const Schedule = () => {
                   "bg-white border border-muted shadow whitespace-nowrap",
                   addableOnly
                     ? "bg-primary-light border-primary-foreground"
-                    : "",
+                    : ""
                 )}
               >
                 Addable Only
