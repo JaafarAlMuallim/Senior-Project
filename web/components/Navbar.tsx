@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
 import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
+import ThemeSwitch from "@/components/theme-switch"
 import { trpc } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,8 +35,7 @@ const Navbar = async () => {
               <NavLink href="#start">Start Learning</NavLink>
             </SignedOut>
           </div>
-
-          <div className="h-full flex items-center">
+          <div className="h-full flex items-center gap-4">
             <SignedIn>
               <SignOutButton>
                 <Button
@@ -63,6 +63,7 @@ const Navbar = async () => {
                 </NavLink>
               </div>
             </SignedOut>
+           <ThemeSwitch />
           </div>
         </div>
       </nav>
@@ -97,14 +98,6 @@ const NavLink = ({
   >
     {children}
   </Link>
-);
-
-const NavbarSkeleton = () => (
-  <>
-    {[...Array(1)].map((_, i) => (
-      <Skeleton key={i} className="w-20 h-4 mx-2" />
-    ))}
-  </>
 );
 
 const NavbarError = () => (
