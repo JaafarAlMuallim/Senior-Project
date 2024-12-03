@@ -91,7 +91,7 @@ export default function SignUpPage() {
                       <SignUp.Action submit asChild>
                         <Button
                           disabled={isGlobalLoading}
-                          className="bg-primary-light text-primary-white"
+                          className="bg-primary-light text-white-default"
                         >
                           <Clerk.Loading>
                             {(isLoading) => {

@@ -4,9 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme-provider";
 import { TRPCProvider } from "@/trpc/client";
 
 const poppins = Poppins({
@@ -27,23 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <ClerkProvider>
         <TRPCProvider>
-        <body className={`${poppins.className} antialiased`}>
-         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-          <Navbar />
-          <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
-            {children}
-          </main>
-          <Toaster />
-         </ThemeProvider>
-        </body>
+          <body className={`${poppins.className} antialiased`}>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <Navbar />
+              <main className="dark:grainy-dark flex light:grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
+                {children}
+              </main>
+              <Toaster />
+            </ThemeProvider>
+          </body>
         </TRPCProvider>
       </ClerkProvider>
     </html>
