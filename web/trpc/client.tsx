@@ -2,7 +2,11 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { EventSourcePolyfill } from "event-source-polyfill";
-import { httpBatchLink, unstable_httpSubscriptionLink } from "@trpc/client";
+import {
+  httpBatchLink,
+  splitLink,
+  unstable_httpSubscriptionLink,
+} from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
 import { makeQueryClient } from "./query-client";
@@ -34,32 +38,33 @@ export function TRPCProvider(
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
-          url: getUrl(),
-          headers: async () => {
-            const token = await session?.getToken({
-              template: "supabase",
-            });
-            console.log(token);
-            return {
-              authorization: `Bearer ${token}`,
-            };
-          },
-        }),
-        unstable_httpSubscriptionLink({
-          url: getUrl(),
-          EventSource: EventSourcePolyfill,
-          eventSourceOptions: async () => {
-            const token = await session?.getToken({
-              template: "supabase",
-            });
-            console.log(token);
-            return {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            };
-          },
+        splitLink({
+          condition: (op) => op.type === "subscription",
+          true: unstable_httpSubscriptionLink({
+            url: getUrl(),
+            EventSource: EventSourcePolyfill,
+            eventSourceOptions: async () => {
+              const token = await session?.getToken({
+                template: "supabase",
+              });
+              return {
+                headers: {
+                  authorization: `Bearer ${token}`,
+                },
+              };
+            },
+          }),
+          false: httpBatchLink({
+            url: getUrl(),
+            headers: async () => {
+              const token = await session?.getToken({
+                template: "supabase",
+              });
+              return {
+                authorization: `Bearer ${token}`,
+              };
+            },
+          }),
         }),
       ],
     }),

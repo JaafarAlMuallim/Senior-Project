@@ -16,7 +16,6 @@ type ContextOptions = {
 };
 
 export const createContext = async (opts?: ContextOptions) => {
-  console.log("HEADERS: ", opts?.req.headers);
   const token = opts?.req.headers.authorization?.split(" ")[1];
   const user = await getSession(token!);
   return {
@@ -29,9 +28,10 @@ export const createContext = async (opts?: ContextOptions) => {
 };
 
 export const getSession = async (token: string | undefined) => {
-  if (!token) {
+  if (!token || !process.env.SUPABASE_JWT_SECRET) {
     return null;
   }
+
   try {
     const decoded = jwt.verify(
       token,
@@ -65,10 +65,8 @@ export const createCallerFactory = trpc.createCallerFactory;
 
 export const authProcedure = trpc.procedure.use(async ({ ctx, next }) => {
   if (!ctx.user) {
-    console.log("HERE HERE HERE");
     throw new Error("Unauthorized");
   }
-  console.log(ctx.user);
   return next({ ctx });
 });
 

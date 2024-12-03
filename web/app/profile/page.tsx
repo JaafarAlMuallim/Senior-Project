@@ -1,9 +1,7 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-
 import { CourseGridTutoring } from "./CourseGridTutoring";
 import { CourseGridSchedule } from "./CourseGridSchedule";
-
-import { ProfileSection } from "./ProfileSection";
+import { ProfileSection } from "@/components/ProfileSection";
 
 const ProfilePage = async () => {
   return (
