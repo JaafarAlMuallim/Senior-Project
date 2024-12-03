@@ -44,7 +44,9 @@ export function TRPCProvider(
             url: getUrl(),
             EventSource: EventSourcePolyfill,
             eventSourceOptions: async () => {
-              const token = await session?.getToken();
+              const token = await session?.getToken({
+                template: "supabase",
+              });
               return {
                 headers: {
                   authorization: `Bearer ${token}`,
@@ -55,7 +57,9 @@ export function TRPCProvider(
           false: httpBatchLink({
             url: getUrl(),
             headers: async () => {
-              const token = await session?.getToken();
+              const token = await session?.getToken({
+                template: "supabase",
+              });
               return {
                 authorization: `Bearer ${token}`,
               };

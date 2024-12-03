@@ -33,15 +33,15 @@ const ChatCard = ({
         </Avatar>
         <div className="flex-1">
           <h4 className="text-lg font-semibold">{chat.group.name}</h4>
-          <p className="text-sm text-gray-500">
-            {isLoading ? (
-              <Skeleton className="w-12 h-2" />
-            ) : !!lastMsg ? (
-              `${lastMsg?.text.substring(0, 30)}${lastMsg.text.length > 10 ? "..." : ""}`
-            ) : (
-              "No messages"
-            )}
-          </p>
+          {isLoading ? (
+            <Skeleton className="w-28 h-4" />
+          ) : !!lastMsg ? (
+            <p className="text-sm text-gray-500">
+              {`${lastMsg?.text.substring(0, 30)}${lastMsg.text.length > 10 ? "..." : ""}`}
+            </p>
+          ) : (
+            <p className="text-sm text-gray-500">No messages</p>
+          )}
         </div>
         <div className="flex flex-col items-end space-y-1">
           <p className="text-xs text-gray-500">14:07</p>

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { isWithinInterval, parseISO } from "date-fns";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -85,3 +86,42 @@ export const listWithAnd = (list: string[]) => {
 };
 
 export const run = <TResult>(fn: () => TResult): TResult => fn();
+
+export const updateSearchParams = (
+  key: string,
+  value: string | null,
+  searchParams: string,
+  pathname: string,
+  router: AppRouterInstance
+) => {
+  const newParams = new URLSearchParams(searchParams);
+  // check if key is not null
+  if (value) {
+    newParams.set(key, value);
+  } else {
+    newParams.delete(key);
+  }
+  router.replace(pathname + "?" + newParams.toString(), { scroll: false });
+};
+
+export const updateMultipleSearchParams = (
+  keys: string[],
+  values: (string | null)[],
+  searchParams: string,
+  pathname: string,
+  router: AppRouterInstance
+) => {
+  const newParams = new URLSearchParams(searchParams);
+  keys.forEach((key, index) => {
+    if (values[index]) {
+      newParams.set(key, values[index]);
+    } else {
+      newParams.delete(key);
+    }
+  });
+  router.replace(pathname + "?" + newParams.toString(), { scroll: false });
+};
+
+export const formatNumber = (num: number) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

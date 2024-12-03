@@ -28,8 +28,6 @@ export const createContext = async (opts?: ContextOptions) => {
 };
 
 export const getSession = async (token: string | undefined) => {
-  // parse JWT
-
   if (!token || !process.env.SUPABASE_JWT_SECRET) {
     return null;
   }

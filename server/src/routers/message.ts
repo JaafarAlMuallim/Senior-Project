@@ -185,7 +185,7 @@ export const messageRouter = router({
           user: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: "asc",
         },
         take: take + 1,
       });
