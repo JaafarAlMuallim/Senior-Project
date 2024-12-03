@@ -1,6 +1,5 @@
 import BookTutorDialog from "@/components/BookTutorDialog";
 import HelpSessionForm from "@/components/HelpSessionForm";
-import { MOCK_COURSES } from "@/validators/Placeholders";
 import ScheduleItem from "@/components/ScheduleItem";
 import CourseCard from "@/components/CourseCard";
 import TutorSession from "@/components/TutorSessions";

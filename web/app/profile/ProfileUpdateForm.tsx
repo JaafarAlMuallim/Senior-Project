@@ -1,3 +1,4 @@
+"use client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
@@ -31,7 +32,10 @@ export const ProfileUpdateForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4 w-full">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid gap-4 py-4 w-full"
+      >
         {/* ... keep existing FormField components ... */}
         <DialogFooter>
           <Button type="reset" variant={"destructive"}>

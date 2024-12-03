@@ -4,7 +4,6 @@ import {
   Inbox,
   Search,
   Settings,
-  BellOff,
   ChevronDown,
 } from "lucide-react";
 
@@ -13,9 +12,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 
 import {
   Sidebar,
@@ -28,6 +24,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { trpc } from "@/trpc/client";
+import ChatCard from "../ChatCard";
 
 // Menu items.
 const items = [
@@ -85,16 +83,16 @@ export function AppSidebar() {
 }
 
 export function ChatSidebar({
-  aiChat,
-  regularChats,
   onClick,
   selectedChat,
 }: {
-  aiChat: any;
-  regularChats: any;
   onClick: (arg: string) => void;
   selectedChat: string;
 }) {
+  const chats = trpc.groups.getUserGroups.useQuery();
+  const aiChat = chats.data?.filter((chat) => chat.group.type === "AI");
+  const regularChats = chats.data?.filter((chat) => chat.group.type !== "AI");
+
   return (
     <Sidebar className="mt-16">
       <SidebarContent>
@@ -108,36 +106,15 @@ export function ChatSidebar({
             </SidebarGroupLabel>
             <CollapsibleContent>
               <SidebarGroupContent className="list-none flex flex-col gap-2">
-                {aiChat.map((chat: any) => (
-                  <SidebarMenuItem key={chat} onClick={() => onClick(chat)}>
-                    <Card
-                      key={chat}
-                      className={`bg-white hover:bg-secondary-lightGray cursor-pointer transition-colors ${selectedChat === chat ? "ring-2 ring-blue-500" : ""}`}
+                {!!aiChat &&
+                  aiChat.map((chat) => (
+                    <SidebarMenuItem
+                      key={chat.group.groupId}
+                      onClick={() => onClick(chat.group.groupId)}
                     >
-                      <CardContent className="p-4 flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={`https://github.com/shadcn.png`} />
-                          <AvatarFallback className="bg-violet-700 text-white">
-                            JA
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold">{chat}</h4>
-                          <p className="text-sm text-gray-500">
-                            Last message...
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end space-y-1">
-                          <p className="text-xs text-gray-500">14:07</p>
-                          <div className="flex items-center gap-4">
-                            <Badge className="bg-blue-500 text-white">2</Badge>
-                            <BellOff size={16} className="text-red-500" />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </SidebarMenuItem>
-                ))}
+                      <ChatCard chat={chat} selectedChat={selectedChat} />
+                    </SidebarMenuItem>
+                  ))}
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>
@@ -152,37 +129,15 @@ export function ChatSidebar({
             </SidebarGroupLabel>
             <CollapsibleContent>
               <SidebarGroupContent className="list-none flex flex-col gap-2">
-                {regularChats.map((chat: any) => (
-                  <SidebarMenuItem key={chat}>
-                    <Card
+                {!!regularChats &&
+                  regularChats.map((chat: any) => (
+                    <SidebarMenuItem
                       key={chat}
-                      className={`bg-white hover:bg-secondary-lightGray cursor-pointer transition-colors ${selectedChat === chat ? "ring-2 ring-blue-500" : ""}`}
-                      onClick={() => onClick(chat)}
+                      onClick={() => onClick(chat.group.groupId)}
                     >
-                      <CardContent className="p-4 flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={`https://github.com/shadcn.png`} />
-                          <AvatarFallback className="bg-violet-700 text-white">
-                            JA
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-semibold">{chat}</h4>
-                          <p className="text-sm text-gray-500">
-                            Last message...
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end space-y-1">
-                          <p className="text-xs text-gray-500">14:07</p>
-                          <div className="flex items-center gap-4">
-                            <Badge className="bg-blue-500 text-white">2</Badge>
-                            <BellOff size={16} className="text-red-500" />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </SidebarMenuItem>
-                ))}
+                      <ChatCard chat={chat} selectedChat={selectedChat} />
+                    </SidebarMenuItem>
+                  ))}
               </SidebarGroupContent>
             </CollapsibleContent>
           </SidebarGroup>

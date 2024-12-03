@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { authProcedure, createTRPCRouter, publicProcedure } from "../trpc";
 import { authRouter } from "./auth";
 import { courseRouter } from "./courses";
 import { groupRouter } from "./groups";
@@ -18,6 +18,7 @@ export const appRouter = createTRPCRouter({
   schedule: scheduleRouter,
   groups: groupRouter,
   messages: messageRouter,
+
   hello: publicProcedure
     .input(
       z.object({

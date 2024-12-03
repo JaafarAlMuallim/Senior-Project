@@ -2,12 +2,7 @@ import { tracked } from "@trpc/server";
 import { streamToAsyncIterable } from "../lib/streamToAsync";
 import { Message, User } from "@prisma/mongo/client";
 import { z } from "zod";
-import {
-  authProcedure,
-  publicProcedure,
-  router,
-  subscriptionAuthProcedure,
-} from "../trpc";
+import { authProcedure, router, subscriptionAuthProcedure } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
 import { model } from "../ai";
@@ -19,12 +14,12 @@ export const messageRouter = router({
       z.object({
         groupId: z.string(),
         text: z.string().trim().min(1),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId, text } = input;
       const currentSubscriptions = await ctx.redisClient.smembers(
-        `group:${groupId}:subscriptions`,
+        `group:${groupId}:subscriptions`
       );
 
       const notSubscribed = await ctx.postgresClient.user.findMany({
@@ -61,9 +56,9 @@ export const messageRouter = router({
           await ctx.redisClient.hincrby(
             `group:${groupId}:userId:${user.id}`,
             "unread",
-            1,
+            1
           );
-        }),
+        })
       );
 
       return message;
@@ -73,7 +68,7 @@ export const messageRouter = router({
       z.object({
         groupId: z.string(),
         text: z.string().trim().min(1),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId, text } = input;
@@ -91,7 +86,7 @@ export const messageRouter = router({
         groupId: z.string(),
         text: z.string().trim().min(1),
         agent: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId, agent, text } = input;
@@ -171,7 +166,7 @@ export const messageRouter = router({
         groupId: z.string(),
         cursor: z.date().nullish(),
         take: z.number().min(1).max(50).nullish(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { cursor, groupId } = input;
@@ -208,7 +203,7 @@ export const messageRouter = router({
       };
     }),
 
-  onAdd: authProcedure
+  onAdd: subscriptionAuthProcedure
     .input(
       z.object({
         groupId: z.string(),
@@ -216,7 +211,7 @@ export const messageRouter = router({
         // On the first call, it will be whatever was passed in the initial setup
         // If the client reconnects, it will be the last event id that the client received
         lastEventId: z.string().nullish(),
-      }),
+      })
     )
     .subscription(async function* ({ input, signal, ctx }) {
       try {
@@ -295,10 +290,11 @@ export const messageRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
+      console.log(groupId);
       const message = await ctx.mongoClient.message.findFirst({
         where: {
           groupId,
@@ -307,6 +303,7 @@ export const messageRouter = router({
           createdAt: "desc",
         },
       });
+      console.log(message);
       return message;
     }),
 
@@ -314,13 +311,13 @@ export const messageRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
       const count = await ctx.redisClient.hget(
         `group:${groupId}:userId:${ctx.user?.id!}`,
-        "unread",
+        "unread"
       );
       return parseInt(count ?? "0");
     }),
@@ -328,7 +325,7 @@ export const messageRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { groupId } = input;

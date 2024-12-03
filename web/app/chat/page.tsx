@@ -1,35 +1,45 @@
 "use client";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Image as ImageIcon,
-  Mic,
-  MessageSquare,
-  Paperclip,
-  Send,
-} from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ChatSidebar } from "@/components/ui/app-sidebar";
+import { Chat } from "@/components/Chat";
 
 const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const selectChat = (chat: string) => {
+    console.log(chat);
     setSelectedChat(chat);
   };
 
   return (
     <SidebarProvider>
-      <ChatSidebar
-        aiChat={["MATH 101", "ICS 104"]}
-        regularChats={["MATH 102", "ICS 108"]}
-        onClick={selectChat}
-        selectedChat={selectedChat ?? ""}
-      />
+      <ChatSidebar onClick={selectChat} selectedChat={selectedChat ?? ""} />
       <div className="flex-1 flex flex-col">
-        {selectedChat ? (
-          <>
+        {!!selectedChat ? (
+          <Chat groupId={selectedChat} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-gray-50">
+            <div className="text-center">
+              <MessageSquare size={48} className="mx-auto text-gray-400 mb-4" />
+              <h2 className="text-2xl font-semibold text-gray-700 mb-2">
+                No Chat Selected
+              </h2>
+              <p className="text-gray-500">
+                Choose a chat from the sidebar to start messaging
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </SidebarProvider>
+  );
+};
+
+export default ChatPage;
+
+{
+  /*<>
             <div className="bg-white border-b p-4">
               <h2 className="text-xl font-semibold">{selectedChat}</h2>
             </div>
@@ -96,21 +106,5 @@ const ChatPage = () => {
               </div>
             </div>
           </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <MessageSquare size={48} className="mx-auto text-gray-400 mb-4" />
-              <h2 className="text-2xl font-semibold text-gray-700 mb-2">
-                No Chat Selected
-              </h2>
-              <p className="text-gray-500">
-                Choose a chat from the sidebar to start messaging
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </SidebarProvider>
-  );
-};
-export default ChatPage;
+            */
+}
