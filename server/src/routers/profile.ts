@@ -3,12 +3,14 @@ import { authProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
+  email: z.string(),
   userId: z.string(),
   major: z.string(),
   standing: z.string(),
   university: z.string(),
   phone: z.string(),
   name: z.string(),
+  password: z.string(),
 });
 
 export const profileRouter = router({

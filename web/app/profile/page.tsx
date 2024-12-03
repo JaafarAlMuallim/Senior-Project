@@ -1,54 +1,9 @@
-"use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { z } from "zod";
 
 import { CourseGridTutoring } from "./CourseGridTutoring";
 import { CourseGridSchedule } from "./CourseGridSchedule";
 
 import { ProfileSection } from "./ProfileSection";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-const COURSES = [
-  {
-    id: 1,
-    code: "MATH 101",
-    name: "Calculus 101",
-    days: ["Monday", "Wednesday", "Friday"],
-    time: "10:00 AM",
-  },
-  {
-    id: 2,
-    code: "MATH 102",
-    name: "Calculus 102",
-    days: ["Tuesday", "Thursday"],
-    time: "11:00 AM",
-  },
-  {
-    id: 3,
-    code: "MATH 103",
-    name: "Calculus 103",
-    days: ["Monday", "Wednesday", "Friday"],
-    time: "1:00 PM",
-  },
-  {
-    id: 4,
-    code: "MATH 104",
-    name: "Calculus 104",
-    days: ["Tuesday", "Thursday"],
-    time: "2:00 PM",
-  },
-];
-
-import { MoveRight } from "lucide-react";
-import { trpc } from "@/trpc/server";
 
 const ProfilePage = async () => {
   return (
