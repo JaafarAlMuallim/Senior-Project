@@ -1,13 +1,26 @@
 import { initTRPC } from "@trpc/server";
-import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import { mongoClient, postgresClient, redisClient } from "./db";
 import jwt from "jsonwebtoken";
 
-export const createContext = async (opts: CreateExpressContextOptions) => {
-  const token = opts.req.headers.authorization?.split(" ")[1];
+type ContextRequest = {
+  headers: {
+    authorization?: string;
+    [key: string]: string | string[] | undefined;
+  };
+  [key: string]: any;
+};
+
+// Updated context options type
+type ContextOptions = {
+  req: ContextRequest;
+};
+
+export const createContext = async (opts?: ContextOptions) => {
+  console.log("HEADERS: ", opts?.req.headers);
+  const token = opts?.req.headers.authorization?.split(" ")[1];
   const user = await getSession(token!);
   return {
-    req: opts.req,
+    req: opts?.req,
     user,
     mongoClient,
     postgresClient,
@@ -15,14 +28,14 @@ export const createContext = async (opts: CreateExpressContextOptions) => {
   };
 };
 
-const getSession = async (token: string | undefined) => {
+export const getSession = async (token: string | undefined) => {
   if (!token) {
     return null;
   }
   try {
     const decoded = jwt.verify(
       token,
-      process.env.SUPABASE_JWT_SECRET!,
+      process.env.SUPABASE_JWT_SECRET!
     ) as jwt.JwtPayload;
     const user = await postgresClient.user.findUnique({
       where: {
@@ -47,6 +60,8 @@ export const trpc = initTRPC.context<Context>().create();
 export const publicProcedure = trpc.procedure;
 
 export const router = trpc.router;
+export const createTRPCRouter = trpc.router;
+export const createCallerFactory = trpc.createCallerFactory;
 
 export const authProcedure = trpc.procedure.use(async ({ ctx, next }) => {
   if (!ctx.user) {
@@ -74,8 +89,7 @@ export const tutorProcedure = trpc.procedure.use(async ({ ctx, next }) => {
 export const subscriptionAuthProcedure = trpc.procedure.use(
   async ({ ctx, next }) => {
     if (!ctx.user) {
-      // Attempt to fetch the user asynchronously before the subscription starts
-      const token = ctx.req.headers.authorization?.split(" ")[1];
+      const token = ctx.req?.headers.authorization?.split(" ")[1];
       ctx.user = await getSession(token);
     }
 
@@ -84,5 +98,5 @@ export const subscriptionAuthProcedure = trpc.procedure.use(
     }
 
     return next({ ctx });
-  },
+  }
 );

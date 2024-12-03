@@ -1,75 +1,39 @@
 "use client";
-
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  BellOff,
   Image as ImageIcon,
   Mic,
   MessageSquare,
   Paperclip,
-  Search,
   Send,
 } from "lucide-react";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { ChatSidebar } from "@/components/ui/app-sidebar";
 
 const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const selectChat = (chat: string) => {
+    setSelectedChat(chat);
+  };
 
   return (
-    <div className="flex flex-row h-screen overflow-hidden">
-      <div className="w-96 bg-primary-light flex flex-col px-4">
-        <div className="w-full flex items-center gap-2 border-secondary-lightGray shadow-black bg-white rounded-md my-4 px-4">
-          <Search />
-          <Input
-            type="text"
-            className="border-0 ring-0 outline-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
-            placeholder="Search Chat"
-          />
-        </div>
-        <ScrollArea className="flex-1">
-          <div className="flex flex-col gap-4">
-            {["MATH 101", "ICS 474", "ICS 344"].map((chat) => (
-              <Card
-                key={chat}
-                className={`bg-white hover:bg-secondary-lightGray cursor-pointer transition-colors ${selectedChat === chat ? "ring-2 ring-blue-500" : ""}`}
-                onClick={() => setSelectedChat(chat)}
-              >
-                <CardContent className="p-4 flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={`https://github.com/shadcn.png`} />
-                    <AvatarFallback className="bg-violet-700 text-white">
-                      JA
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h4 className="text-lg font-semibold">{chat}</h4>
-                    <p className="text-sm text-gray-500">Last message...</p>
-                  </div>
-                  <div className="flex flex-col items-end space-y-1">
-                    <p className="text-xs text-gray-500">14:07</p>
-                    <div className="flex items-center gap-4">
-                      <Badge className="bg-blue-500 text-white">2</Badge>
-                      <BellOff size={16} className="text-red-500" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
+    <SidebarProvider>
+      <ChatSidebar
+        aiChat={["MATH 101", "ICS 104"]}
+        regularChats={["MATH 102", "ICS 108"]}
+        onClick={selectChat}
+        selectedChat={selectedChat ?? ""}
+      />
       <div className="flex-1 flex flex-col">
         {selectedChat ? (
           <>
             <div className="bg-white border-b p-4">
               <h2 className="text-xl font-semibold">{selectedChat}</h2>
             </div>
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="p-4 h-3/4">
               <div className="space-y-4">
                 <div className="flex justify-end">
                   <div className="bg-blue-500 text-white rounded-lg py-2 px-4 max-w-[70%]">
@@ -111,7 +75,7 @@ const ChatPage = () => {
                 <Input
                   type="text"
                   placeholder="Type a message..."
-                  className="flex-1 border-0 focus:ring-0 focus:outline-none bg-transparent"
+                  className="flex-1 border-0 focus:ring-0 focus:outline-0 bg-transparent focus:border-none"
                 />
                 <Button
                   variant="ghost"
@@ -146,27 +110,7 @@ const ChatPage = () => {
           </div>
         )}
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 export default ChatPage;
-
-// <Card className="bg-white hover:bg-secondary-lightGray group">
-//   <CardContent className="w-full py-2 flex flex-row justify-between items-center">
-//     <div className="flex gap-4 items-center my-0 w-full">
-//       <Avatar>
-//         <AvatarImage src="https://github.com/shadcn.png" />
-//         <AvatarFallback className="bg-violet-700 text-white">JA</AvatarFallback>
-//       </Avatar>
-//       <div className="text-md grow flex flex-col justify-center itemsc-center">
-//         <h4 className="text-lg">MATH 101</h4>
-//         <p className="text-muted-foreground">Loading...</p>
-//       </div>
-//       <Badge className="bg-primary-light">2</Badge>
-//       <div className="flex flex-col justify-center items-center">
-//         <p className="text-muted-foreground text-sm">14:07</p>
-//         <BellOff color="red" size={18} />
-//       </div>
-//     </div>
-//   </CardContent>
-// </Card>;

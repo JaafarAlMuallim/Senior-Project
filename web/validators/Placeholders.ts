@@ -1,3 +1,6 @@
+import Course from "@/models/course";
+import Session from "@/models/session";
+
 export const USERS = [
   {
     id: "12345",
@@ -508,3 +511,44 @@ export const INSTRUCTORS = ["Dr. Smith", "Prof. Johnson", "Dr. Williams"];
 export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 export const TIMES = ["08:00", "10:00", "12:00", "14:00", "16:00"];
 export const LOCATIONS = ["Room 101", "Room 102", "Lab A", "Lab B"];
+
+export const SESSIONS = [
+  {
+    id: 1,
+    date: "2024-02-14T14:00:00",
+    course: {
+      code: "SWE326",
+    },
+  },
+  {
+    id: 2,
+    date: "2024-02-14T15:30:00",
+    course: {
+      code: "ICS321",
+    },
+  },
+] as Session[];
+
+export const MOCK_COURSES = [
+  {
+    id: 1,
+    code: "SWE326",
+    name: "Software Testing",
+    days: ["MON", "WED"],
+    time: "10:00",
+  },
+  {
+    id: 2,
+    code: "ICS321",
+    name: "Database Systems",
+    days: ["SUN", "TUE", "THU"],
+    time: "13:00",
+  },
+  {
+    id: 3,
+    code: "MTH201",
+    name: "Calculus III",
+    days: ["SUN", "TUE", "THU"],
+    time: "08:30",
+  },
+] as Course[];

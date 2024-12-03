@@ -8,10 +8,10 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, Clock } from "lucide-react";
-import { TimeSelector } from "./TimeSelector";
+import TimePicker from "@/components/TimePicker";
 import { ControllerRenderProps } from "react-hook-form";
 
-export const DatePicker = ({
+const DatePicker = ({
   field,
 }: {
   field: ControllerRenderProps<any, "date">;
@@ -41,7 +41,7 @@ export const DatePicker = ({
         <div className="flex items-center justify-between">
           <Clock className="h-4 w-4 opacity-50" />
           <div className="flex flex-row gap-2">
-            <TimeSelector
+            <TimePicker
               type="hours"
               getValue={() => field.value.getHours()}
               setValue={(hour) => {
@@ -50,7 +50,7 @@ export const DatePicker = ({
                 field.onChange(newDate);
               }}
             />
-            <TimeSelector
+            <TimePicker
               type="minutes"
               getValue={() => field.value.getMinutes()}
               setValue={(minute) => {
@@ -65,4 +65,4 @@ export const DatePicker = ({
     </PopoverContent>
   </Popover>
 );
-
+export default DatePicker;

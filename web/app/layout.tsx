@@ -7,6 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/app-sidebar";
 import { ThemeProvider } from "@/components/theme-provider"
+import { TRPCProvider } from "@/trpc/client";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ClerkProvider>
+        <TRPCProvider>
         <body className={`${poppins.className} antialiased`}>
          <ThemeProvider
             attribute="class"
@@ -42,6 +44,7 @@ export default function RootLayout({
           <Toaster />
          </ThemeProvider>
         </body>
+        </TRPCProvider>
       </ClerkProvider>
     </html>
   );
