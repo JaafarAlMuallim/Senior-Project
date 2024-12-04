@@ -33,6 +33,12 @@ enum SessionStatus {
     CANCELLED
 }
 
+enum ReportCategory {
+    BUG
+    FEATURE
+    OTHER
+}
+
 model User {
     id           String         @id @default(cuid())
     email        String         @unique
@@ -240,10 +246,12 @@ model Assistant {
 }
 
 model Report {
-    id        String   @id @default(cuid())
+    id        String         @id @default(cuid())
     content   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+    status    Boolean        @default(false)
+    category  ReportCategory
 }
 
 model Tag {
