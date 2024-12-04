@@ -101,44 +101,40 @@ export const adminRouter = router({
   }),
   msgData: publicProcedure.query(async ({ ctx }) => {
     try {
-      const [
-        msgCount,
-        monthMsg,
-        groupMsg,
-        aiMsg,
-        msgGroupByDay,
-        msgCountByGroup,
-      ] = await Promise.all([
-        ctx.mongoClient.message.count(),
-        ctx.mongoClient.message.count({
-          where: {
-            createdAt: {
-              gte: new Date(new Date().setMonth(new Date().getMonth() - 1)), // One month ago
-              lt: new Date(), // Current date
+      const [msgCount, monthMsg, groupMsg, aiMsg, msgGroupByDay, allMsgs] =
+        await Promise.all([
+          ctx.mongoClient.message.count(),
+          ctx.mongoClient.message.count({
+            where: {
+              createdAt: {
+                gte: new Date(new Date().setMonth(new Date().getMonth() - 1)), // One month ago
+                lt: new Date(), // Current date
+              },
             },
-          },
-        }),
-        ctx.mongoClient.message.count({
-          where: {
-            group: {
-              type: "GROUP",
+          }),
+          ctx.mongoClient.message.count({
+            where: {
+              group: {
+                type: "GROUP",
+              },
             },
-          },
-        }),
-        ctx.mongoClient.message.count({
-          where: {
-            group: {
-              type: "AI",
+          }),
+          ctx.mongoClient.message.count({
+            where: {
+              group: {
+                type: "AI",
+              },
             },
-          },
-        }),
-        ctx.mongoClient.message.groupBy({
-          by: ["createdAt"],
-        }),
-        ctx.mongoClient.message.groupBy({
-          by: ["groupId"],
-        }),
-      ]);
+          }),
+          ctx.mongoClient.message.groupBy({
+            by: ["createdAt"],
+          }),
+          ctx.mongoClient.message.findMany({
+            include: {
+              group: true,
+            },
+          }),
+        ]);
       type GroupedMessages = Record<
         string,
         Array<{
@@ -148,7 +144,7 @@ export const adminRouter = router({
 
       const groupByDay = msgGroupByDay.reduce(
         (acc, curr: { createdAt: Date }) => {
-          const date = new Date(curr.createdAt).toDateString(); // Convert createdAt to a readable date string
+          const date = new Date(curr.createdAt).toLocaleDateString(); // Convert createdAt to a readable date string
 
           // Initialize the group if it doesn't exist
           if (!acc[date]) {
@@ -162,28 +158,37 @@ export const adminRouter = router({
         },
         {} as GroupedMessages
       );
-      const groupByDayArr = Object.entries(groupByDay).map(
-        ([date, messages]) => ({
+      const groupByDayArr = Object.entries(groupByDay)
+        .map(([date, messages]) => ({
           date,
-          messages,
-        })
-      );
-
-      type MsgCountByGroup = Record<string, number>;
-      const allCountByGroup = msgCountByGroup.reduce(
-        (acc, curr: { groupId: string }) => {
-          acc[curr.groupId] = curr.groupId.length;
+          count: messages.length,
+        }))
+        .sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA.getTime() - dateB.getTime();
+        });
+      const messageCountByGroup = Object.values(
+        allMsgs.reduce((acc, msg) => {
+          const groupId = msg.group.id;
+          if (!acc[groupId]) {
+            acc[groupId] = {
+              groupName: msg.group.name,
+              type: msg.group.type,
+              messageCount: 0,
+              lastMsgDate: new Date(0), // Start with the earliest possible date
+            };
+          }
+          acc[groupId].messageCount++;
+          acc[groupId].lastMsgDate = new Date(
+            Math.max(
+              acc[groupId].lastMsgDate.getTime(),
+              msg.createdAt.getTime()
+            )
+          );
           return acc;
-        },
-        {} as MsgCountByGroup
+        }, {} as Record<string, { groupName: string; type: string; messageCount: number; lastMsgDate: Date }>)
       );
-      const messageCountByGroup: {
-        groupId: string;
-        count: number;
-      }[] = Object.entries(allCountByGroup).map(([groupId, count]) => ({
-        groupId,
-        count,
-      }));
 
       return {
         msgCount,

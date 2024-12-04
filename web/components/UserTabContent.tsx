@@ -111,7 +111,7 @@ const UserTabContent = ({ data }: { data: UserData }) => {
                   ) : (
                     <TrendingDown color="#BB5653" />
                   )}
-                  {`${formatNumber(monthUsers / userCount)}% from last month`}
+                  {`${((monthUsers / (userCount - monthUsers)) * 100).toFixed(2)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
@@ -135,7 +135,7 @@ const UserTabContent = ({ data }: { data: UserData }) => {
                   ) : (
                     <TrendingDown color="#BB5653" />
                   )}
-                  {`${formatNumber(activeUsers / userCount)}% from last month`}
+                  {`${((activeUsers / (userCount - activeUsers)) * 100).toFixed(2)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
@@ -155,14 +155,14 @@ const UserTabContent = ({ data }: { data: UserData }) => {
                   ) : (
                     <TrendingDown color="#BB5653" />
                   )}
-                  {`${formatNumber(monthUsers / userCount)}% from last month`}
+                  {`${((monthUsers / (userCount - monthUsers)) * 100).toFixed(2)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
           </div>
           <DataTable
             columns={userColumns}
-            data={allUsers}
+            data={allUsers.filter((user) => !user.email.includes("EduLink"))}
             placeholder="Filter emails.."
             tColumn="email"
           />

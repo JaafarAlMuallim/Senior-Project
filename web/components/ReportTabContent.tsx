@@ -75,10 +75,12 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
       fill: `var(--color-${report.value})`,
     };
   });
+  console.log(allByCategoryArr);
 
-  const mostReportedCategory = allByCategoryArr.reduce((a, b) =>
-    a.count > b.count ? a : b,
-  );
+  const mostReportedCategory =
+    allByCategoryArr.length > 0
+      ? allByCategoryArr.reduce((a, b) => (a.count > b.count ? a : b))
+      : { category: "None", count: 0 };
 
   return (
     <TabsContent value="reports" className="p-3">

@@ -32,7 +32,6 @@ export function TRPCProvider(
   }>,
 ) {
   const { session } = useSession();
-  console.log(session);
 
   const queryClient = getQueryClient();
   const [trpcClient] = useState(() =>

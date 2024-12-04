@@ -60,7 +60,10 @@ export const userColumns: ColumnDef<User>[] = [
   },
   {
     header: "Date",
-    accessorKey: "date",
+    cell: ({ row }) => {
+      const user = row.original;
+      return new Date(user.createdAt).toLocaleDateString();
+    },
   },
   {
     id: "actions",

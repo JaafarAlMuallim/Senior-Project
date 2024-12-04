@@ -6,24 +6,14 @@ import ReportTabContent from "@/components/ReportTabContent";
 import { ClipboardList, User, Users } from "lucide-react";
 import { trpc } from "@/trpc/server";
 
-const MainDashboard = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    [key: string]: string;
-  }>;
-}) => {
-  const { tab } = await searchParams;
-  // const [tab, setTab] = useState("users");
-  //
-  // const [isTableView, setIsTableView] = useState(false);
+const MainDashboard = async () => {
   const userData = await trpc.admin.userData();
   const groupData = await trpc.admin.msgData();
   const reportData = await trpc.admin.reportsData();
 
   return (
     <MaxWidthWrapper className="px-24">
-      <Tabs value={tab} className="w-full my-4">
+      <Tabs defaultValue={"users"} className="w-full my-4">
         <MaxWidthWrapper>
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="users" className="flex gap-2">

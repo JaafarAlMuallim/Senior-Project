@@ -32,13 +32,9 @@ const chartConfig = {
   msg: {
     label: "Messages",
   },
-  groups: {
-    label: "Groups",
+  count: {
+    label: "Message Count",
     color: "hsl(var(--chart-1))",
-  },
-  ai: {
-    label: "AI",
-    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 type GroupData = {
@@ -48,17 +44,17 @@ type GroupData = {
   aiMsg: number;
   groupByDayArr: {
     date: string;
-    messages: {
-      createdAt: string;
-    }[];
+    count: number;
   }[];
   messageCountByGroup: {
-    groupId: string;
-    count: number;
+    groupName: string;
+    lastMsgDate: Date;
+    messageCount: number;
+    type: string;
   }[];
 };
 
-const GroupTabContent = async ({ data }: { data: GroupData }) => {
+const GroupTabContent = ({ data }: { data: GroupData }) => {
   const [isTableView, setIsTableView] = useState(false);
   const {
     msgCount,
@@ -68,6 +64,8 @@ const GroupTabContent = async ({ data }: { data: GroupData }) => {
     groupByDayArr,
     messageCountByGroup,
   } = data;
+  console.log(groupByDayArr);
+  console.log(aiMsg);
 
   return (
     <TabsContent value="groups" className="p-3">
@@ -150,8 +148,8 @@ const GroupTabContent = async ({ data }: { data: GroupData }) => {
             <DataTable
               columns={groupColumns}
               data={messageCountByGroup}
-              placeholder="Filter Course Name..."
-              tColumn="name"
+              placeholder="Filter By Group Name..."
+              tColumn="groupName"
             />
           </div>
         </>
@@ -196,10 +194,12 @@ const GroupTabContent = async ({ data }: { data: GroupData }) => {
                       }}
                     />
                     <ChartTooltip
+                      cursor={false}
                       content={
                         <ChartTooltipContent
                           className="w-[150px]"
-                          nameKey="msg"
+                          nameKey="count"
+                          indicator="dashed"
                           labelFormatter={(value) => {
                             return new Date(value).toLocaleDateString("en-US", {
                               month: "short",
@@ -210,18 +210,11 @@ const GroupTabContent = async ({ data }: { data: GroupData }) => {
                         />
                       }
                     />
-                    <div className="flex justify-around gap-4">
-                      <Bar
-                        dataKey={"groups"}
-                        accumulate="sum"
-                        fill={`var(--color-groups)`}
-                      />
-                      <Bar
-                        dataKey={"ai"}
-                        accumulate="sum"
-                        fill={`var(--color-ai)`}
-                      />
-                    </div>
+                    <Bar
+                      dataKey={"count"}
+                      fill={`var(--color-count)`}
+                      radius={4}
+                    />
                   </BarChart>
                 </ChartContainer>
               </CardContent>
