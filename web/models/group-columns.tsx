@@ -15,11 +15,8 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export type Group = {
-  id: string;
-  name: string;
-  courseId: string;
-  date: string;
-  messageCount: number;
+  groupId: string;
+  count: number;
 };
 
 export const groupColumns: ColumnDef<Group>[] = [
@@ -63,7 +60,7 @@ export const groupColumns: ColumnDef<Group>[] = [
     header: "Message Count",
     accessorKey: "messageCount",
     cell: ({ row }) => {
-      return <p className="px-8">{row.original.messageCount}</p>;
+      return <p className="px-8">{row.original.count}</p>;
     },
   },
   {
@@ -87,7 +84,7 @@ export const groupColumns: ColumnDef<Group>[] = [
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(group.id)}
+                  onClick={() => navigator.clipboard.writeText(group.groupId)}
                 >
                   Copy ID
                 </DropdownMenuItem>

@@ -1,4 +1,5 @@
-import { User, userColumns } from "@/models/user-columns";
+"use client";
+import { userColumns } from "@/models/user-columns";
 import { DataTable } from "./DataTable";
 import { TabsContent } from "./ui/tabs";
 import {
@@ -17,7 +18,6 @@ import {
   Users,
 } from "lucide-react";
 import { USER } from "@/validators/option-validators";
-import { useMemo } from "react";
 import { PieChart, Pie, Label } from "recharts";
 import {
   ChartConfig,
@@ -26,35 +26,69 @@ import {
   ChartTooltipContent,
 } from "./ui/chart";
 import { USER_CHART } from "@/validators/chart-options";
+import { formatNumber } from "@/lib/utils";
+import ViewToggle from "./ViewToggle";
+import { useState } from "react";
 const userChartConfig = {
   users: {
     label: "Users",
   },
   ...USER_CHART,
 } satisfies ChartConfig;
-const UserTabContent = ({
-  isTableView,
-  data,
-  typeCounts,
-}: {
-  data: User[];
-  isTableView: boolean;
-  typeCounts: Record<string, number>;
-}) => {
-  const userChart = useMemo(() => {
-    return USER.options.map((user) => {
+
+type UserData = {
+  userCount: number;
+  tutorCount: number;
+  adminCount: number;
+  allUsers: {
+    id: string;
+    email: string;
+    name: string;
+    clerkId: string;
+    password: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    profileId: string | null;
+    groupId: string | null;
+  }[];
+  monthUsers: number;
+  activeUsers: number;
+};
+const UserTabContent = ({ data }: { data: UserData }) => {
+  const [isTableView, setIsTableView] = useState(false);
+  const {
+    userCount,
+    tutorCount,
+    adminCount,
+    allUsers,
+    monthUsers,
+    activeUsers,
+  } = data;
+
+  const userChart = USER.options.map((user) => {
+    if (user.value === "student") {
       return {
         type: user.label,
-        users: typeCounts[user.value as keyof typeof typeCounts] || 0,
+        users: userCount - tutorCount - adminCount,
         fill: `var(--color-${user.value})`,
       };
-    });
-  }, [typeCounts]);
+    }
+    if (user.value === "tutor") {
+      return {
+        type: user.label,
+        users: tutorCount,
+        fill: `var(--color-${user.value})`,
+      };
+    }
+    if (user.value === "admin") {
+      return {
+        type: user.label,
+        users: adminCount,
+        fill: `var(--color-${user.value})`,
+      };
+    }
+  });
 
-  const totalUsers = Object.values(typeCounts).reduce(
-    (acc, curr) => acc + curr,
-    0,
-  );
   return (
     <TabsContent value="users" className="p-3">
       {isTableView ? (
@@ -68,12 +102,16 @@ const UserTabContent = ({
                 <Users className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-semibold ">{data.length}</div>
+                <div className="text-4xl font-semibold ">{userCount}</div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
-                  <TrendingUp color="#5A8156" />
-                  4% from last month
+                  {monthUsers > 0 ? (
+                    <TrendingUp color="#5A8156" />
+                  ) : (
+                    <TrendingDown color="#BB5653" />
+                  )}
+                  {`${formatNumber(monthUsers / userCount)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
@@ -86,12 +124,18 @@ const UserTabContent = ({
                 <UserCheck className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-semibold">1,234</div>
+                <div className="text-4xl font-semibold">
+                  {formatNumber(activeUsers)}
+                </div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
-                  <TrendingDown color="#BB5653" />
-                  12% from last month
+                  {activeUsers > 0 ? (
+                    <TrendingUp color="#5A8156" />
+                  ) : (
+                    <TrendingDown color="#BB5653" />
+                  )}
+                  {`${formatNumber(activeUsers / userCount)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
@@ -102,19 +146,23 @@ const UserTabContent = ({
                 <UserPlus className="h-8 w-8" />
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-semibold">145</div>
+                <div className="text-4xl font-semibold">{monthUsers}</div>
               </CardContent>
               <CardFooter className="flex items-center justify-between">
                 <CardDescription className="flex items-center gap-2">
-                  <TrendingUp color="#5A8156" />
-                  8% from last month
+                  {monthUsers > 0 ? (
+                    <TrendingUp color="#5A8156" />
+                  ) : (
+                    <TrendingDown color="#BB5653" />
+                  )}
+                  {`${formatNumber(monthUsers / userCount)}% from last month`}
                 </CardDescription>
               </CardFooter>
             </Card>
           </div>
           <DataTable
             columns={userColumns}
-            data={data}
+            data={allUsers}
             placeholder="Filter emails.."
             tColumn="email"
           />
@@ -160,7 +208,7 @@ const UserTabContent = ({
                                 y={viewBox.cy}
                                 className="fill-foreground text-3xl font-semibold"
                               >
-                                {totalUsers}
+                                {userCount}
                               </tspan>
                               <tspan
                                 x={viewBox.cx}
@@ -181,6 +229,7 @@ const UserTabContent = ({
           </Card>
         </div>
       )}
+      <ViewToggle isTableView={isTableView} setIsTableView={setIsTableView} />
     </TabsContent>
   );
 };

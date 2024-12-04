@@ -1,5 +1,5 @@
 "use client";
-import { reportColumns, Report } from "@/models/report-columns";
+import { Categories, reportColumns } from "@/models/report-columns";
 import { TabsContent } from "./ui/tabs";
 import { DataTable } from "./DataTable";
 import {
@@ -18,7 +18,6 @@ import {
   ChartTooltipContent,
 } from "./ui/chart";
 import { REPORT_CHART } from "@/validators/chart-options";
-import { useMemo } from "react";
 import { REPORT } from "@/validators/option-validators";
 import {
   TrendingUp,
@@ -27,6 +26,9 @@ import {
   FileStack,
   FileCheck,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils";
+import { useState } from "react";
+import ViewToggle from "./ViewToggle";
 
 const reportChartConfig = {
   reports: {
@@ -35,29 +37,47 @@ const reportChartConfig = {
   ...REPORT_CHART,
 } satisfies ChartConfig;
 
-const ReportTabContent = ({
-  isTableView,
-  data,
-  categoryCounts,
-}: {
-  isTableView: boolean;
-  data: Report[];
-  categoryCounts: Record<string, number>;
-}) => {
-  const reportChart = useMemo(() => {
-    return REPORT.options.map((report) => {
-      return {
-        category: report.label,
-        reports:
-          categoryCounts[report.value as keyof typeof categoryCounts] || 0,
-        fill: `var(--color-${report.value})`,
-      };
-    });
-  }, [categoryCounts]);
+type ReportData = {
+  reportCount: number;
+  monthReports: number;
+  closedReports: number;
+  allReports: {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    status: boolean;
+    category: Categories;
+    title: string;
+    content: string;
+  }[];
+  allByCategory: Record<string, number>;
+  allByCategoryArr: {
+    category: string;
+    count: number;
+  }[];
+};
 
-  const totalReports = Object.values(categoryCounts).reduce(
-    (acc, curr) => acc + curr,
-    0,
+const ReportTabContent = ({ data }: { data: ReportData }) => {
+  const [isTableView, setIsTableView] = useState(false);
+  const {
+    reportCount,
+    monthReports,
+    closedReports,
+    allReports,
+    allByCategory,
+    allByCategoryArr,
+  } = data;
+
+  const reportChart = REPORT.options.map((report) => {
+    return {
+      category: report.label,
+      reports: allByCategory[report.value] || 0,
+      fill: `var(--color-${report.value})`,
+    };
+  });
+
+  const mostReportedCategory = allByCategoryArr.reduce((a, b) =>
+    a.count > b.count ? a : b,
   );
 
   return (
@@ -74,12 +94,18 @@ const ReportTabContent = ({
                   <FileStack className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold ">{data.length}</div>
+                  <div className="text-4xl font-semibold ">
+                    {formatNumber(reportCount)}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingUp color="#5A8156" />
-                    4% from last month
+                    {monthReports > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((monthReports / (reportCount - monthReports)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -92,12 +118,18 @@ const ReportTabContent = ({
                   <FileCheck className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold">234</div>
+                  <div className="text-4xl font-semibold">
+                    {formatNumber(closedReports)}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingDown color="#BB5653" />
-                    12% from last month
+                    {closedReports / (reportCount - closedReports) > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((closedReports / (reportCount - closedReports)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -110,19 +142,25 @@ const ReportTabContent = ({
                   <MessageSquareWarning className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold">Suggestion</div>
+                  <div className="text-4xl font-semibold capitalize">
+                    {mostReportedCategory.category}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingUp color="#5A8156" />
-                    8% from last month
+                    {mostReportedCategory.count > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((mostReportedCategory.count / (reportCount - mostReportedCategory.count)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
             </div>
             <DataTable
               columns={reportColumns}
-              data={data}
+              data={allReports}
               placeholder="Filter category.."
               tColumn="category"
             />
@@ -170,7 +208,7 @@ const ReportTabContent = ({
                                   y={viewBox.cy}
                                   className="fill-foreground text-3xl font-semibold"
                                 >
-                                  {totalReports}
+                                  {reportCount}
                                 </tspan>
                                 <tspan
                                   x={viewBox.cx}
@@ -192,6 +230,7 @@ const ReportTabContent = ({
           </div>
         </>
       )}
+      <ViewToggle isTableView={isTableView} setIsTableView={setIsTableView} />
     </TabsContent>
   );
 };

@@ -8,6 +8,7 @@ import { profileRouter } from "./profile";
 import { scheduleRouter } from "./schedule";
 import { sessionRouter } from "./session";
 import { tutorRouter } from "./tutoring";
+import { adminRouter } from "./admin";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
+  admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;

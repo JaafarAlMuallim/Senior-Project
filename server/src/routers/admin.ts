@@ -10,8 +10,17 @@ import { clerkClient } from "@clerk/express";
 export const adminRouter = router({
   userData: publicProcedure.query(async ({ ctx }) => {
     try {
-      const [userCount, allUsers, monthUsers, activeUsers] = await Promise.all([
+      const [
+        userCount,
+        tutorCount,
+        adminCount,
+        allUsers,
+        monthUsers,
+        activeUsers,
+      ] = await Promise.all([
         ctx.postgresClient.user.count(),
+        ctx.postgresClient.tutor.count(),
+        ctx.postgresClient.admin.count(),
         ctx.postgresClient.user.findMany(),
         ctx.postgresClient.user.count({
           where: {
@@ -26,6 +35,8 @@ export const adminRouter = router({
 
       return {
         userCount,
+        tutorCount,
+        adminCount,
         allUsers,
         monthUsers,
         activeUsers,
@@ -37,7 +48,7 @@ export const adminRouter = router({
   }),
   reportsData: publicProcedure.query(async ({ ctx }) => {
     try {
-      const [reportCount, monthReports, closedReports, mostReportedCategory] =
+      const [reportCount, monthReports, closedReports, allReports, byCategory] =
         await Promise.all([
           ctx.postgresClient.report.count(),
           ctx.postgresClient.report.count({
@@ -53,16 +64,35 @@ export const adminRouter = router({
               status: false,
             },
           }),
+          ctx.postgresClient.report.findMany(),
           ctx.postgresClient.report.groupBy({
             by: ["category"],
           }),
         ]);
 
+      type ReportByCategory = Record<string, number>;
+      const allByCategory = byCategory.reduce(
+        (acc, curr: { category: string }) => {
+          acc[curr.category] = curr.category.length;
+          return acc;
+        },
+        {} as ReportByCategory
+      );
+
+      const allByCategoryArr = Object.entries(allByCategory).map(
+        ([category, count]) => ({
+          category,
+          count,
+        })
+      );
+
       return {
         reportCount,
         monthReports,
         closedReports,
-        mostReportedCategory,
+        allReports,
+        allByCategory,
+        allByCategoryArr,
       };
     } catch (error) {
       console.error(error);
@@ -71,57 +101,97 @@ export const adminRouter = router({
   }),
   msgData: publicProcedure.query(async ({ ctx }) => {
     try {
-      const [msgCount, monthMsg, groupMsg, aiMsg, msgGroupByDay] =
-        await Promise.all([
-          ctx.mongoClient.message.count(),
-          ctx.mongoClient.message.count({
-            where: {
-              createdAt: {
-                gte: new Date(new Date().setMonth(new Date().getMonth() - 1)), // One month ago
-                lt: new Date(), // Current date
-              },
+      const [
+        msgCount,
+        monthMsg,
+        groupMsg,
+        aiMsg,
+        msgGroupByDay,
+        msgCountByGroup,
+      ] = await Promise.all([
+        ctx.mongoClient.message.count(),
+        ctx.mongoClient.message.count({
+          where: {
+            createdAt: {
+              gte: new Date(new Date().setMonth(new Date().getMonth() - 1)), // One month ago
+              lt: new Date(), // Current date
             },
-          }),
-          ctx.mongoClient.message.count({
-            where: {
-              group: {
-                type: "GROUP",
-              },
+          },
+        }),
+        ctx.mongoClient.message.count({
+          where: {
+            group: {
+              type: "GROUP",
             },
-          }),
-          ctx.mongoClient.message.count({
-            where: {
-              group: {
-                type: "AI",
-              },
+          },
+        }),
+        ctx.mongoClient.message.count({
+          where: {
+            group: {
+              type: "AI",
             },
-          }),
-          ctx.mongoClient.message.groupBy({
-            by: ["createdAt"],
-          }),
-        ]);
-      type GroupedMessages = Record<string, typeof msgGroupByDay>;
+          },
+        }),
+        ctx.mongoClient.message.groupBy({
+          by: ["createdAt"],
+        }),
+        ctx.mongoClient.message.groupBy({
+          by: ["groupId"],
+        }),
+      ]);
+      type GroupedMessages = Record<
+        string,
+        Array<{
+          createdAt: string; // Serialize Date to ISO string
+        }>
+      >;
 
-      const groupByDay = msgGroupByDay.reduce((acc, curr) => {
-        const date = new Date(curr.createdAt).toDateString(); // Convert createdAt to a readable date string
+      const groupByDay = msgGroupByDay.reduce(
+        (acc, curr: { createdAt: Date }) => {
+          const date = new Date(curr.createdAt).toDateString(); // Convert createdAt to a readable date string
 
-        // Initialize the group if it doesn't exist
-        if (!acc[date]) {
-          acc[date] = [];
-        }
+          // Initialize the group if it doesn't exist
+          if (!acc[date]) {
+            acc[date] = [];
+          }
 
-        // Add the current message to the group
-        acc[date].push(curr);
+          // Add the current message to the group
+          acc[date].push({ createdAt: curr.createdAt.toISOString() });
 
-        return acc;
-      }, {} as GroupedMessages);
+          return acc;
+        },
+        {} as GroupedMessages
+      );
+      const groupByDayArr = Object.entries(groupByDay).map(
+        ([date, messages]) => ({
+          date,
+          messages,
+        })
+      );
+
+      type MsgCountByGroup = Record<string, number>;
+      const allCountByGroup = msgCountByGroup.reduce(
+        (acc, curr: { groupId: string }) => {
+          acc[curr.groupId] = curr.groupId.length;
+          return acc;
+        },
+        {} as MsgCountByGroup
+      );
+      const messageCountByGroup: {
+        groupId: string;
+        count: number;
+      }[] = Object.entries(allCountByGroup).map(([groupId, count]) => ({
+        groupId,
+        count,
+      }));
 
       return {
         msgCount,
         monthMsg,
         groupMsg,
         aiMsg,
-        groupByDay,
+        groupByDayArr,
+        messageCountByGroup,
       };
     } catch (error) {
       console.error(error);
@@ -177,3 +247,10 @@ export const adminRouter = router({
       }
     }),
 });
+
+export type GroupByDayDTO = Record<
+  string,
+  Array<{
+    createdAt: string; // Serialize Date to ISO string
+  }>
+>;

@@ -37,7 +37,12 @@ const HomePage = async () => {
           <h3 className="text-2xl font-semibold text-primary">My Courses</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {schedule.map((course) => (
-              <CourseCard key={course.id} course={course} />
+              <CourseCard
+                key={course.id}
+                code={course.section.course.code}
+                name={course.section.course.name}
+                id={course.section.course.id}
+              />
             ))}
           </div>
           {tutor && (

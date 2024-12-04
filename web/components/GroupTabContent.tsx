@@ -1,3 +1,4 @@
+"use client";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
   Card,
@@ -15,9 +16,7 @@ import {
 } from "./ui/chart";
 import { TabsContent } from "./ui/tabs";
 import { DataTable } from "./DataTable";
-import { Group, groupColumns } from "@/models/group-columns";
-import { useMemo, useState } from "react";
-import { Message } from "@/models/MessageModel";
+import { groupColumns } from "@/models/group-columns";
 import {
   TrendingUp,
   TrendingDown,
@@ -25,6 +24,9 @@ import {
   MessageSquare,
   MessagesSquare,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils";
+import { useState } from "react";
+import ViewToggle from "./ViewToggle";
 
 const chartConfig = {
   msg: {
@@ -39,28 +41,36 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
+type GroupData = {
+  msgCount: number;
+  monthMsg: number;
+  groupMsg: number;
+  aiMsg: number;
+  groupByDayArr: {
+    date: string;
+    messages: {
+      createdAt: string;
+    }[];
+  }[];
+  messageCountByGroup: {
+    groupId: string;
+    count: number;
+  }[];
+};
 
-const GroupTabContent = ({
-  isTableView,
-  data,
-  messages,
-}: {
-  isTableView: boolean;
-  data: Group[];
-  messages: Message[];
-}) => {
-  const [activeChart, setActiveChart] =
-    useState<keyof typeof chartConfig>("groups");
-  const total = useMemo(
-    () => ({
-      groups: messages.reduce((acc, curr) => acc + curr.groups, 0),
-      ai: messages.reduce((acc, curr) => acc + curr.ai, 0),
-    }),
-    [],
-  );
+const GroupTabContent = async ({ data }: { data: GroupData }) => {
+  const [isTableView, setIsTableView] = useState(false);
+  const {
+    msgCount,
+    monthMsg,
+    groupMsg,
+    aiMsg,
+    groupByDayArr,
+    messageCountByGroup,
+  } = data;
+
   return (
     <TabsContent value="groups" className="p-3">
-      {/* Switch Chart & Table */}
       {isTableView ? (
         <>
           <div className="container mx-auto py-10">
@@ -73,12 +83,18 @@ const GroupTabContent = ({
                   <MessagesSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold ">{data.length}</div>
+                  <div className="text-4xl font-semibold ">
+                    {formatNumber(msgCount)}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingUp color="#5A8156" />
-                    4% from last month
+                    {monthMsg / (msgCount - monthMsg) > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((monthMsg / (msgCount - monthMsg)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -91,12 +107,18 @@ const GroupTabContent = ({
                   <MessageSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold">1,234</div>
+                  <div className="text-4xl font-semibold">
+                    {formatNumber(groupMsg)}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingDown color="#BB5653" />
-                    12% from last month
+                    {groupMsg / (msgCount - groupMsg) > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((groupMsg / (msgCount - groupMsg)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -109,20 +131,26 @@ const GroupTabContent = ({
                   <BotMessageSquare className="h-8 w-8" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-4xl font-semibold">145</div>
+                  <div className="text-4xl font-semibold">
+                    {formatNumber(aiMsg)}
+                  </div>
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    <TrendingUp color="#5A8156" />
-                    8% from last month
+                    {aiMsg / (msgCount - aiMsg) > 0 ? (
+                      <TrendingUp color="#5A8156" />
+                    ) : (
+                      <TrendingDown color="#BB5653" />
+                    )}
+                    {`${((aiMsg / (msgCount - aiMsg)) * 100).toFixed(2)}% from last month`}
                   </CardDescription>
                 </CardFooter>
               </Card>
             </div>
             <DataTable
               columns={groupColumns}
-              data={data}
-              placeholder="Filter course name.."
+              data={messageCountByGroup}
+              placeholder="Filter Course Name..."
               tColumn="name"
             />
           </div>
@@ -138,26 +166,6 @@ const GroupTabContent = ({
                     Showing number of daily messages
                   </CardDescription>
                 </div>
-                <div className="flex">
-                  {["groups", "ai"].map((key) => {
-                    const chart = key as keyof typeof chartConfig;
-                    return (
-                      <button
-                        key={chart}
-                        data-active={activeChart === chart}
-                        className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-zinc-200 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
-                        onClick={() => setActiveChart(chart)}
-                      >
-                        <span className="text-xs">
-                          {chartConfig[chart].label}
-                        </span>
-                        <span className="text-lg font-semibold leading-none sm:text-3xl">
-                          {total[key as keyof typeof total].toLocaleString()}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
               </CardHeader>
               <CardContent className="px-2 sm:p-6">
                 <ChartContainer
@@ -166,7 +174,7 @@ const GroupTabContent = ({
                 >
                   <BarChart
                     accessibilityLayer
-                    data={messages}
+                    data={groupByDayArr}
                     margin={{
                       left: 12,
                       right: 12,
@@ -202,11 +210,18 @@ const GroupTabContent = ({
                         />
                       }
                     />
-                    <Bar
-                      dataKey={activeChart}
-                      accumulate="sum"
-                      fill={`var(--color-${activeChart})`}
-                    />
+                    <div className="flex justify-around gap-4">
+                      <Bar
+                        dataKey={"groups"}
+                        accumulate="sum"
+                        fill={`var(--color-groups)`}
+                      />
+                      <Bar
+                        dataKey={"ai"}
+                        accumulate="sum"
+                        fill={`var(--color-ai)`}
+                      />
+                    </div>
                   </BarChart>
                 </ChartContainer>
               </CardContent>
@@ -214,6 +229,7 @@ const GroupTabContent = ({
           </div>
         </>
       )}
+      <ViewToggle isTableView={isTableView} setIsTableView={setIsTableView} />
     </TabsContent>
   );
 };

@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardDescription,
@@ -16,13 +17,13 @@ const CourseCard = ({ code, name, id }: CourseCardProps) => {
   const router = useRouter();
   return (
     <Card
-      className="w-[350px] hover:bg-primary-light hover:text-white transition-all group"
+      className="w-[350px] hover:bg-primary-light hover:text-white-default transition-all group"
       onClick={() => {
         router.push(`/courses/${id}`);
       }}
     >
       <CardHeader>
-        <CardTitle>{code}</CardTitle>
+        <CardTitle className="uppercase">{code}</CardTitle>
         <CardDescription className="group-hover:text-secondary-lightGray">
           {name}
         </CardDescription>

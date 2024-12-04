@@ -4,12 +4,12 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { ScheduleTable } from "./ScheduleTable";
 import { trpc } from "@/trpc/server";
 import ScheduleVisualization from "./scheduleVisualization";
-
-export default async function SchedulePage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+// {
+//   searchParams,
+// }: {
+//   searchParams: { [key: string]: string | string[] | undefined };
+// }
+export default async function SchedulePage() {
   const scheduleData = await trpc.schedule.getSchedule({ semester: "241" });
 
   return (
@@ -17,7 +17,7 @@ export default async function SchedulePage({
       <Suspense fallback={"Loading..."}>
         <ScheduleVisualization schedule={scheduleData} />
       </Suspense>
-      <ScheduleClient searchParams={searchParams} />
+      <ScheduleClient searchParams={{}} />
       <ScheduleTable />
     </MaxWidthWrapper>
   );
