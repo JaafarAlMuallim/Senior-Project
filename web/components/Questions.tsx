@@ -1,6 +1,4 @@
-"use client";
-
-const Questions = ({ question }) => {
+const Questions = ({ question }: { question: string }) => {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Question</h2>

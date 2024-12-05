@@ -28,20 +28,25 @@ const Quiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
-  const [userAnswers, setUserAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([] as string[]);
 
   const router = useRouter();
 
-  const handleAnswer = (selectedOption) => {
+  const handleAnswer = (selectedOption: string) => {
     setUserAnswers([...userAnswers, selectedOption]);
     if (selectedOption === questions[currentQuestionIndex].answer) {
       setScore(score + 1);
     }
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      setIsQuizCompleted(true);
+  };
+  const handleQuestions = (add: number) => {
+    if (currentQuestionIndex === 0 && add === -1) {
+      return;
     }
+    if (currentQuestionIndex === questions.length - 1 && add === 1) {
+      setIsQuizCompleted(true);
+      return;
+    }
+    setCurrentQuestionIndex(currentQuestionIndex + add);
   };
 
   const restartQuiz = () => {
@@ -49,10 +54,6 @@ const Quiz = () => {
     setScore(0);
     setUserAnswers([]);
     setIsQuizCompleted(false);
-  };
-
-  const goToQuizzesPage = () => {
-    router.push("/AllQuizzes"); // Adjust the path based on your setup.
   };
 
   return (
@@ -113,7 +114,9 @@ const Quiz = () => {
               Re-Take Quiz
             </Button>
             <Button
-              onClick={goToQuizzesPage}
+              onClick={() => {
+                router.push("/material/courses");
+              }}
               className="bg-secondary-light text-secondary-black hover:bg-secondary-dark"
             >
               Return to Quizzes
@@ -126,21 +129,24 @@ const Quiz = () => {
           <Options
             options={questions[currentQuestionIndex].options}
             handleAnswer={handleAnswer}
+            selectedOption={userAnswers[currentQuestionIndex]}
           />
           <div className="flex justify-between">
             <Button
-              onClick={() => setCurrentQuestionIndex(currentQuestionIndex - 1)}
               disabled={currentQuestionIndex === 0}
+              onClick={handleQuestions.bind(null, -1)}
               className="bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white"
             >
               Previous
             </Button>
             <Button
-              onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-              disabled={currentQuestionIndex === questions.length - 1}
+              onClick={handleQuestions.bind(null, 1)}
+              disabled={userAnswers.length < currentQuestionIndex + 1}
               className="bg-primary-light text-primary-white"
             >
-              Next
+              {currentQuestionIndex === questions.length - 1
+                ? "Submit"
+                : "Next"}
             </Button>
           </div>
         </div>
