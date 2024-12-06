@@ -16,7 +16,7 @@ export const ProfileUpdateDialog = () => {
         <Button
           className={buttonVariants({
             variant: "default",
-            className: "w-full bg-primary-light",
+            className: "w-full bg-primary-light text-white-default",
           })}
         >
           Update Profile

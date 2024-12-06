@@ -111,7 +111,6 @@ export const groupRouter = router({
     .subscription(async function* ({ input, signal }) {
       try {
         const { groupId: currGroup } = input;
-        console.log("CURR GROUP", currGroup);
 
         let lastIsTyping = "";
 
@@ -164,7 +163,6 @@ export const groupRouter = router({
         if (!groups) {
           throw new Error("User not found");
         }
-        console.log("GROUPS", groups);
         return groups;
       } catch (error) {
         console.log(error);
@@ -227,7 +225,6 @@ export const groupRouter = router({
     )
     .mutation(async ({ input, ctx }) => {
       const { groupId } = input;
-      console.log("sub", groupId);
       await Promise.all([
         await ctx.redisClient.sadd(
           `group:${groupId}:subscriptions`,

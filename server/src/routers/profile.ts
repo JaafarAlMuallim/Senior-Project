@@ -1,14 +1,16 @@
 import { z } from "zod";
-import { authProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
+  email: z.string(),
   userId: z.string(),
   major: z.string(),
   standing: z.string(),
   university: z.string(),
   phone: z.string(),
   name: z.string(),
+  password: z.string(),
 });
 
 export const profileRouter = router({
@@ -24,7 +26,7 @@ export const profileRouter = router({
       });
 
       if (!profile) {
-        throw new Error("Profile not found");
+        return null;
       }
       return profile;
     } catch (e) {
@@ -62,8 +64,14 @@ export const profileRouter = router({
         throw new Error("Profile not found");
       }
     }),
-  roles: authProcedure.query(async ({ ctx }) => {
+  roles: publicProcedure.query(async ({ ctx }) => {
     try {
+      if (!ctx.user) {
+        return {
+          admin: false,
+          tutor: false,
+        };
+      }
       const allRoles = await ctx.postgresClient.user.findFirst({
         where: {
           id: ctx.user?.id,

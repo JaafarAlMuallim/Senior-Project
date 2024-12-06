@@ -12,7 +12,7 @@ export const sessionRouter = router({
         courseName: z.string(),
         requestedBy: z.string().nullable(),
         status: z.nativeEnum(SessionStatus).optional(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { time, courseId, date, courseName, requestedBy, status } = input;
@@ -49,7 +49,7 @@ export const sessionRouter = router({
       z.object({
         sessionId: z.string(),
         status: z.nativeEnum(SessionStatus),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { sessionId, status } = input;
@@ -68,6 +68,9 @@ export const sessionRouter = router({
     const sessions = await ctx.postgresClient.session.findMany({
       where: {
         tutorId: ctx.user?.Tutor[0].id!,
+        date: {
+          gte: new Date(),
+        },
       },
     });
     return sessions;
@@ -76,7 +79,7 @@ export const sessionRouter = router({
     .input(
       z.object({
         courseId: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { courseId } = input;
