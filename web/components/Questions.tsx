@@ -1,3 +1,5 @@
+"use client";
+
 const Questions = ({ question }: { question: string }) => {
   return (
     <div>
