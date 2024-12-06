@@ -2,6 +2,35 @@ import { Category } from "@prisma/postgres/client";
 import { z } from "zod";
 import { authProcedure, router } from "../trpc";
 
+const preprocess = (rawString: string) => {
+  // Step 1: Remove the markdown-like code block syntax
+  let cleanedString = rawString.replace(/```json|```/g, "").trim();
+
+  // Step 2: Replace invalid escape sequences and unnecessary symbols
+  cleanedString = cleanedString.replace(/\\[^\ntrbfu"'\\]/g, ""); // Remove invalid escape sequences
+  cleanedString = cleanedString.replace(/\\n/g, ""); // Remove literal newlines (\n)
+
+  // Step 3: Parse the cleaned string into JSON
+  try {
+    const parsedQuestions = JSON.parse(cleanedString);
+
+    // Define TypeScript type for validation
+    type Question = {
+      question: string;
+      options: string[];
+      answer: string;
+    };
+
+    // Validate and type-check
+    const typedQuestions: Question[] = parsedQuestions;
+
+    return typedQuestions;
+  } catch (error) {
+    console.error("Failed to parse JSON:", error);
+    return [];
+  }
+};
+
 export const courseRouter = router({
   getCourses: authProcedure.query(async ({ ctx }) => {
     const courses = await ctx.postgresClient.course.findMany();
@@ -78,5 +107,81 @@ export const courseRouter = router({
       } catch (e) {
         console.log(e);
       }
+    }),
+
+  createQuiz: authProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+        material: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { courseId } = input;
+      try {
+        const fetched = await fetch("http://localhost:8000/generate-mcq", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: courseId }),
+        });
+        const raw = (await fetched.json()) as { questions: string };
+
+        const questions = preprocess(raw.questions);
+        const quiz = await ctx.postgresClient.quiz.create({
+          data: {
+            courseId,
+          },
+        });
+        const allQuestions = questions.map((question) => {
+          return {
+            quizId: quiz.id,
+            question: question.question,
+            options: question.options,
+            correctAnswer: question.answer,
+          };
+        });
+        await ctx.postgresClient.question.createMany({
+          data: allQuestions,
+        });
+
+        return quiz;
+      } catch (e) {
+        console.log(e);
+        return {
+          courseId: null,
+          error: "Failed to create quiz",
+        };
+      }
+    }),
+  getQuizzes: authProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { courseId } = input;
+      const quizzes = await ctx.postgresClient.quiz.findMany({
+        where: { courseId },
+      });
+      return quizzes;
+    }),
+  getQuiz: authProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { quizId } = input;
+      const quiz = ctx.postgresClient.quiz.findUnique({
+        where: { id: quizId },
+        include: {
+          Question: true,
+        },
+      });
+      return quiz;
     }),
 });

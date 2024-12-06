@@ -168,6 +168,7 @@ model Quiz {
 
 model Question {
     id            String   @id @default(cuid())
+    question      String
     options       String[]
     correctAnswer String
     createdAt     DateTime @default(now())

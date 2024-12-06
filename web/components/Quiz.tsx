@@ -5,61 +5,69 @@ import Options from "@/components/Options";
 import Questions from "@/components/Questions";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { Card, CardContent } from "./ui/card";
+import MaxWidthWrapper from "./MaxWidthWrapper";
 
-const questions = [
-  {
-    question: "What is the capital of France?",
-    options: ["Paris", "London", "Berlin", "Madrid"],
-    answer: "Paris",
-  },
-  {
-    question: "What is 2 + 2?",
-    options: ["3", "4", "5", "6"],
-    answer: "4",
-  },
-  {
-    question: "Which planet is known as the Red Planet?",
-    options: ["Earth", "Mars", "Jupiter", "Saturn"],
-    answer: "Mars",
-  },
-];
+type Question = {
+  quizId: string | null;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  options: string[];
+  question: string;
+  correctAnswer: string;
+};
 
-const Quiz = () => {
+const Quiz = ({ questions }: { questions: Question[] }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
-  const [userAnswers, setUserAnswers] = useState([] as string[]);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
+    Array(questions.length).fill(null),
+  );
 
   const router = useRouter();
 
   const handleAnswer = (selectedOption: string) => {
-    setUserAnswers([...userAnswers, selectedOption]);
-    if (selectedOption === questions[currentQuestionIndex].answer) {
-      setScore(score + 1);
+    const newUserAnswers = [...userAnswers];
+    const oldAnswer = newUserAnswers[currentQuestionIndex];
+    newUserAnswers[currentQuestionIndex] = selectedOption;
+
+    setUserAnswers(newUserAnswers);
+
+    // Update score
+    if (oldAnswer !== selectedOption) {
+      if (oldAnswer === questions[currentQuestionIndex].correctAnswer) {
+        setScore(score - 1);
+      }
+      if (selectedOption === questions[currentQuestionIndex].correctAnswer) {
+        setScore(score + 1);
+      }
     }
   };
+
   const handleQuestions = (add: number) => {
-    if (currentQuestionIndex === 0 && add === -1) {
-      return;
+    const newIndex = currentQuestionIndex + add;
+    if (newIndex >= 0 && newIndex < questions.length) {
+      setCurrentQuestionIndex(newIndex);
     }
-    if (currentQuestionIndex === questions.length - 1 && add === 1) {
+    if (newIndex === questions.length) {
       setIsQuizCompleted(true);
-      return;
     }
-    setCurrentQuestionIndex(currentQuestionIndex + add);
   };
 
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setScore(0);
-    setUserAnswers([]);
+    setUserAnswers(Array(questions.length).fill(null));
     setIsQuizCompleted(false);
   };
 
   return (
-    <div className="flex flex-col items-center p-6 bg-gray-100 min-h-screen justify-center">
+    <MaxWidthWrapper className="flex flex-col items-center p-6 min-h-screen justify-center w-full">
       {isQuizCompleted ? (
-        <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <div className="bg-white p-6 rounded shadow-md w-full">
           <h2 className="text-2xl font-semibold mb-4">Quiz Completed!</h2>
           <p className="text-lg mb-4">
             Your score: {score} out of {questions.length}
@@ -69,37 +77,23 @@ const Quiz = () => {
             {questions.map((question, index) => (
               <div key={index} className="border-b border-gray-300 pb-4">
                 <p className="font-semibold">{question.question}</p>
-                <ul className="list-disc ml-5">
+                <ul className="ml-5 list-none">
                   {question.options.map((option, optionIndex) => (
                     <li
                       key={optionIndex}
-                      className={`py-1 ${
-                        userAnswers[index] === option
-                          ? userAnswers[index] === question.answer
-                            ? "text-green-600"
-                            : "text-red-600"
-                          : ""
-                      }`}
+                      className={cn(
+                        "py-1",
+                        option === question.correctAnswer
+                          ? "text-green-600"
+                          : "",
+                        userAnswers[index] === option &&
+                          userAnswers[index] !== question.correctAnswer
+                          ? "text-red-600"
+                          : "",
+                      )}
                     >
                       {option}
-                      {userAnswers[index] === option && (
-                        <span
-                          className={`ml-2 font-semibold ${
-                            userAnswers[index] === question.answer
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {userAnswers[index] === question.answer
-                            ? "Correct"
-                            : "Incorrect"}
-                        </span>
-                      )}
-                      {option === question.answer && (
-                        <span className="ml-2 text-green-600 font-semibold">
-                          Correct Answer
-                        </span>
-                      )}
+                      {userAnswers[index] === option && " (Your answer)"}
                     </li>
                   ))}
                 </ul>
@@ -115,43 +109,44 @@ const Quiz = () => {
             </Button>
             <Button
               onClick={() => {
-                router.push("/material/courses");
+                router.push("/home/");
               }}
               className="bg-secondary-light text-secondary-black hover:bg-secondary-dark"
             >
-              Return to Quizzes
+              Return to Home
             </Button>
           </div>
         </div>
       ) : (
-        <div className="bg-white p-6 rounded shadow-md w-full max-w-md">
-          <Questions question={questions[currentQuestionIndex].question} />
-          <Options
-            options={questions[currentQuestionIndex].options}
-            handleAnswer={handleAnswer}
-            selectedOption={userAnswers[currentQuestionIndex]}
-          />
-          <div className="flex justify-between">
-            <Button
-              disabled={currentQuestionIndex === 0}
-              onClick={handleQuestions.bind(null, -1)}
-              className="bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white"
-            >
-              Previous
-            </Button>
-            <Button
-              onClick={handleQuestions.bind(null, 1)}
-              disabled={userAnswers.length < currentQuestionIndex + 1}
-              className="bg-primary-light text-primary-white"
-            >
-              {currentQuestionIndex === questions.length - 1
-                ? "Submit"
-                : "Next"}
-            </Button>
-          </div>
-        </div>
+        <Card className="w-[650px]">
+          <CardContent className="p-4">
+            <Questions question={questions[currentQuestionIndex].question} />
+            <Options
+              options={questions[currentQuestionIndex].options}
+              handleAnswer={handleAnswer}
+              selectedOption={userAnswers[currentQuestionIndex]!}
+            />
+            <div className="flex justify-between mt-4">
+              <Button
+                onClick={() => handleQuestions(-1)}
+                disabled={currentQuestionIndex === 0}
+                className="bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={() => handleQuestions(1)}
+                className="bg-primary-light text-primary-white"
+              >
+                {currentQuestionIndex === questions.length - 1
+                  ? "Submit"
+                  : "Next"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </MaxWidthWrapper>
   );
 };
 

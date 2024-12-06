@@ -13,13 +13,13 @@ const Options = ({
   selectedOption: string;
 }) => {
   return (
-    <div className="flex flex-col space-y-2 mb-4">
+    <div className="flex flex-col space-y-2 mb-4 text-left">
       {options.map((option, index) => (
         <Button
           key={index}
           onClick={() => handleAnswer(option)}
           className={cn(
-            "bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white",
+            "mx-0 flex justify-start items-center bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white text-left",
             selectedOption === option
               ? "bg-primary-light text-primary-white"
               : "",

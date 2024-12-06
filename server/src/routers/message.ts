@@ -5,7 +5,6 @@ import { z } from "zod";
 import { authProcedure, router, subscriptionAuthProcedure } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
-import { model } from "../ai";
 import { Content } from "@google/generative-ai";
 
 export const messageRouter = router({
@@ -128,7 +127,7 @@ export const messageRouter = router({
               }),
           },
           {
-            role: "model",
+            role: "assistant",
             parts: oldMessages
               .filter((msg) => msg.user.email.includes("EduLink"))
               .map((msg) => {
@@ -143,15 +142,20 @@ export const messageRouter = router({
       }
       // get Response
       try {
-        const chat = model.startChat({
-          history: context,
+        // const res = await chat.sendMessage(text);
+        const res = await fetch("http://localhost:8000/ask", {
+          method: "POST",
+          body: JSON.stringify({
+            text,
+            chat_history: context,
+          }),
         });
-        const res = await chat.sendMessage(text);
+        const answer = (await res.json()) as { answer: string };
 
         const response = await ctx.mongoClient.message.create({
           data: {
             userId: ai?.userId!,
-            text: res.response.text(),
+            text: answer.answer,
             groupId,
           },
         });

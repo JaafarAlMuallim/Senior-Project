@@ -6,6 +6,7 @@ import { PrismaClient as MongoClient } from "@prisma/mongo/client";
 
 // https://registrar.kfupm.edu.sa/courses-classes/course-offering1/
 import puppeteer from "puppeteer";
+import preprocess from "../src/lib/preprocessing";
 // Or import puppeteer from 'puppeteer-core';
 
 const postgres = new PostgresClient();
@@ -157,7 +158,31 @@ type SectionData = {
 //   // }
 // };
 
-const main = async () => {};
+const main = async () => {
+  // const data = {
+  //   questions:
+  //     '```json\n[\n  {\n    "question": "Q1. Which of the following is the best definition of energy?",\n    "options": [\n      "A) The capacity to do work or transfer heat.",\n      "B) The energy that results from motion.",\n      "C) Energy associated with the random motion of atoms and molecules.",\n      "D) Potential energy that results from the interaction of charged particles.",\n      "E) Energy stored within the structural units of chemical substances."\n    ],\n    "answer": "A) The capacity to do work or transfer heat."\n  },\n  {\n    "question": "Q2.  A system absorbs 250 J of heat and does 100 J of work on its surroundings. What is the change in internal energy (ΔU) of the system?",\n    "options": [\n      "A) -350 J",\n      "B) 150 J",\n      "C) 350 J",\n      "D) -150 J",\n      "E) 0 J"\n    ],\n    "answer": "B) 150 J"\n  },\n  {\n    "question": "Q3. Which of the following are state functions?",\n    "options": [\n      "A) Heat and work",\n      "B) Internal energy and enthalpy",\n      "C) Heat only",\n      "D) Work only",\n      "E) Enthalpy only"\n    ],\n    "answer": "B) Internal energy and enthalpy"\n  },\n  {\n    "question": "Q4.  The heat exchanged at constant pressure is equal to:",\n    "options": [\n      "A) ΔU",\n      "B) w",\n      "C) q",\n      "D) ΔH",\n      "E)  ΔG"\n    ],\n    "answer": "D) ΔH"\n  },\n  {\n    "question": "Q5.  If you reverse a chemical equation, what happens to the sign of ΔH?",\n    "options": [\n      "A) It stays the same.",\n      "B) It becomes zero.",\n      "C) It changes sign.",\n      "D) It doubles.",\n      "E) It is halved."\n    ],\n    "answer": "C) It changes sign."\n  },\n  {\n    "question": "Q6. A reaction has ΔH = -100 kJ/mol. This means the reaction is:",\n    "options": [\n      "A) Endothermic and absorbs heat.",\n      "B) Exothermic and absorbs heat.",\n      "C) Endothermic and releases heat.",\n      "D) Exothermic and releases heat.",\n      "E) Neither endothermic nor exothermic."\n    ],\n    "answer": "D) Exothermic and releases heat."\n  },\n  {\n    "question": "Q7. The specific heat of a substance is the amount of heat required to:",\n    "options": [\n      "A) Raise the temperature of 1 g of the substance by 1°C.",\n      "B) Raise the temperature of 1 kg of the substance by 1°C.",\n      "C) Raise the temperature of 1 mol of the substance by 1°C.",\n      "D) Raise the temperature of any mass of the substance by 1°C.",\n      "E) Lower the temperature of 1 g of the substance by 1°C."\n    ],\n    "answer": "A) Raise the temperature of 1 g of the substance by 1°C."\n  },\n  {\n    "question": "Q8.  In a constant-pressure calorimeter, the heat absorbed by the calorimeter itself is:",\n    "options": [\n      "A) Always positive.",\n      "B) Always negative.",\n      "C) Usually ignored.",\n      "D) Equal to the heat released by the reaction.",\n      "E) Equal to the heat absorbed by the reaction."\n    ],\n    "answer": "C) Usually ignored."\n  },\n  {\n    "question": "Q9.  Hess\'s Law states that the enthalpy change for a reaction is:",\n    "options": [\n      "A) Independent of the path taken.",\n      "B) Always positive.",\n      "C) Always negative.",\n      "D) Dependent on the number of steps.",\n      "E) Equal to the heat capacity of the calorimeter."\n    ],\n    "answer": "A) Independent of the path taken."\n  },\n  {\n    "question": "Q10. The standard enthalpy of formation (ΔH°f) of an element in its standard state is:",\n    "options": [\n      "A) Always positive.",\n      "B) Always negative.",\n      "C) Zero.",\n      "D) Dependent on the temperature.",\n      "E) Dependent on the pressure."\n    ],\n    "answer": "C) Zero."\n  },\n  {\n    "question": "Q11.  What is the standard enthalpy change for the reaction 2A(g) + B(g) → C(g) given the following standard enthalpies of formation: ΔH°f [A(g)] = 200 kJ/mol, ΔH°f [B(g)] = 300 kJ/mol, ΔH°f [C(g)] = 100 kJ/mol?",\n    "options": [\n      "A) 600 kJ/mol",\n      "B) -600 kJ/mol",\n      "C) -200 kJ/mol",\n      "D) 200 kJ/mol",\n      "E) -100 kJ/mol"\n    ],\n    "answer": "C) -200 kJ/mol"\n  }\n]\n```',
+  // };
+  // const processedData = preprocess(data.questions);
+  // const quiz = await postgres.quiz.create({
+  //   data: {
+  //     courseId: "cm177rnwp0000119qsarlyxia",
+  //   },
+  // });
+  // const questions = processedData.map((question) => {
+  //   return {
+  //     question: question.question,
+  //     options: question.options,
+  //     correctAnswer: question.answer,
+  //     quizId: quiz.id,
+  //   };
+  // });
+  // await postgres.question.createMany({
+  //   data: questions,
+  // });
+  // console.log("Created questions");
+  // console.log("Created quiz");
+};
 main()
   .then(() => {
     console.log("Seeded groups");

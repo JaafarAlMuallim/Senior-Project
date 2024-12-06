@@ -27,7 +27,6 @@ const Navbar = async () => {
               <NavLink href="/home">Home</NavLink>
               <NavLink href="/chat">Chat</NavLink>
               <NavLink href="/schedule">Schedule</NavLink>
-              <NavLink href="/material">Material</NavLink>
 
               {!!currUser && Boolean(userRoles.admin) && (
                 <NavLink href="/admin">Admin</NavLink>
@@ -42,8 +41,10 @@ const Navbar = async () => {
             </SignedOut>
           </div>
           <div className="h-full flex items-center gap-4">
+            <ThemeSwitch />
             {/* @ts-ignore*/}
             <SignedIn>
+              <NavLink href="/profile">Profile</NavLink>
               <SignOutButton>
                 <Button
                   className={buttonVariants({
@@ -71,7 +72,6 @@ const Navbar = async () => {
                 </NavLink>
               </div>
             </SignedOut>
-            <ThemeSwitch />
           </div>
         </div>
       </nav>
@@ -106,13 +106,6 @@ const NavLink = ({
   >
     {children}
   </Link>
-);
-
-const NavbarError = () => (
-  <div className="flex items-center text-red-500">
-    <AlertCircle className="mr-2" />
-    <span>Error loading menu</span>
-  </div>
 );
 
 const ErrorFallback = () => (

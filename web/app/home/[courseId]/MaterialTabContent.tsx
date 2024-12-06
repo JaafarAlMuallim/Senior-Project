@@ -1,6 +1,5 @@
 "use client";
-import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Category } from "../../../server/node_modules/@prisma/postgres/client";
+
 import { useState } from "react";
 import {
   Dialog,
@@ -32,6 +31,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { useParams } from "next/navigation";
@@ -53,40 +53,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES } from "@/validators/Placeholders";
 import Progress from "@/components/CustomProgress";
+import Category from "@/models/Category";
 
-const courseId = "cm177rnwp0000119qsarlyxia";
-const TYPES = [
-  {
-    id: 1,
-    title: "Slides",
-    type: "slides",
-  },
-  {
-    id: 2,
-    title: "Assignments",
-    type: "assignments",
-  },
-  {
-    id: 3,
-    title: "Quizzes",
-    type: "quizzes",
-  },
-  {
-    id: 4,
-    title: "Exams",
-    type: "exams",
-  },
-  {
-    id: 5,
-    title: "Pictures",
-    type: "pictures",
-  },
-  {
-    id: 6,
-    title: "Others",
-    type: "others",
-  },
-];
+// const courseId = "cm177rnwp0000119qsarlyxia";
 
 interface Folder {
   id: number;
@@ -108,7 +77,7 @@ const formSchema = z.object({
   category: z.nativeEnum(Category),
   name: z.string().optional(),
 });
-const CoursePage = () => {
+const MaterialTabContent = () => {
   const params = useParams<{ courseId: string }>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -171,7 +140,7 @@ const CoursePage = () => {
   });
   async function onSubmit(data: z.infer<typeof formSchema>) {
     await addMaterial({
-      courseId: courseId,
+      courseId: params.courseId,
       name: data.name || "",
       url: data.material,
       category: data.category,
@@ -180,7 +149,7 @@ const CoursePage = () => {
   }
 
   return (
-    <MaxWidthWrapper>
+    <TabsContent value="material" className="p-3">
       <div className="flex flex-col gap-8">
         <h1 className="text-2xl font-bold">MATH 101</h1>
         <h2 className="text-xl">Folders</h2>
@@ -191,7 +160,7 @@ const CoursePage = () => {
                 className={buttonVariants({
                   variant: "default",
                   className:
-                    "flex gap-2 bg-primary-light hover:bg-primary-dark",
+                    "flex gap-2 bg-primary-light hover:bg-primary-dark my-5",
                 })}
                 onClick={() => setIsDialogOpen(true)}
               >
@@ -395,14 +364,14 @@ const CoursePage = () => {
         </div>
       </div>
       <div className="flex flex-col item-center gap-4">
-        {TYPES.map((folder) => (
-          <Link href={`/courses/${params.courseId}/${folder.type}`}>
+        {CATEGORIES.options.map((folder) => (
+          <Link href={`/home/${params.courseId}/${folder.type}`}>
             <Folder key={folder.id} folder={folder} />
           </Link>
         ))}
       </div>
-    </MaxWidthWrapper>
+    </TabsContent>
   );
 };
 
-export default CoursePage;
+export default MaterialTabContent;

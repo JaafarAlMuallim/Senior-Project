@@ -244,4 +244,5 @@ const stats = [
   { value: "10+", label: "Supported Courses" },
   { value: "4.8", label: "App Store Rating" },
 ];
+
 export default LandingPage;
