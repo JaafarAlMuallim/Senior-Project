@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TRPCProvider } from "@/trpc/client";
+import StreamClientProvider from "@/components/StreamProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -25,20 +27,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <ClerkProvider>
+    // @ts-ignore
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
         <TRPCProvider>
           <body className={`${poppins.className} antialiased`}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              {/*@ts-ignore*/}
               <Navbar />
               <main className="dark:grainy-dark flex light:grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
-                {children}
+                <StreamClientProvider>{children}</StreamClientProvider>
               </main>
               <Toaster />
             </ThemeProvider>
           </body>
         </TRPCProvider>
-      </ClerkProvider>
-    </html>
+      </html>
+    </ClerkProvider>
   );
 }

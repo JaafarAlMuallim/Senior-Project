@@ -34,8 +34,6 @@ const MAPPER = {
 };
 
 const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
-  console.log("SCHEDULE");
-  console.log(schedule);
   const hours = Array.from(
     { length: 14 },
     (_, i) => `${(i + 7).toString().padStart(2, "0")}:00`,

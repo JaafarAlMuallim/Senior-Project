@@ -2,14 +2,17 @@ import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Image from "next/image";
 import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
-import ThemeSwitch from "@/components/theme-switch"
+import ThemeSwitch from "@/components/theme-switch";
 import { trpc } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
 
 const Navbar = async () => {
+  const currUser = currentUser();
+
   const userRoles = await trpc.profiles.roles();
+
   return (
     <ErrorBoundary fallback={<ErrorFallback />}>
       <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
@@ -19,15 +22,18 @@ const Navbar = async () => {
             EduLink
           </div>
           <div className="h-full flex items-center">
+            {/* @ts-ignore*/}
             <SignedIn>
               <NavLink href="/home">Home</NavLink>
               <NavLink href="/chat">Chat</NavLink>
               <NavLink href="/schedule">Schedule</NavLink>
               <NavLink href="/material">Material</NavLink>
-              {Boolean(userRoles.admin) && (
+
+              {!!currUser && Boolean(userRoles.admin) && (
                 <NavLink href="/admin">Admin</NavLink>
               )}
             </SignedIn>
+            {/* @ts-ignore*/}
             <SignedOut>
               <NavLink href="/">Home</NavLink>
               <NavLink href="#features">Features</NavLink>
@@ -36,6 +42,7 @@ const Navbar = async () => {
             </SignedOut>
           </div>
           <div className="h-full flex items-center gap-4">
+            {/* @ts-ignore*/}
             <SignedIn>
               <SignOutButton>
                 <Button
@@ -49,13 +56,14 @@ const Navbar = async () => {
               </SignOutButton>
             </SignedIn>
 
+            {/* @ts-ignore*/}
             <SignedOut>
               <div className="flex gap-4">
                 <NavLink href="/sign-in" variant="ghost">
                   Login
                 </NavLink>
                 <NavLink
-                  href="sign-up"
+                  href="/sign-up"
                   className="bg-primary-light text-white"
                   variant="default"
                 >
@@ -63,7 +71,7 @@ const Navbar = async () => {
                 </NavLink>
               </div>
             </SignedOut>
-           <ThemeSwitch />
+            <ThemeSwitch />
           </div>
         </div>
       </nav>

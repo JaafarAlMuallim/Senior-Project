@@ -17,6 +17,7 @@ type ContextOptions = {
 
 export const createContext = async (opts?: ContextOptions) => {
   const token = opts?.req.headers.authorization?.split(" ")[1];
+  console.log(opts?.req.headers);
   const user = await getSession(token!);
   return {
     req: opts?.req,
@@ -48,7 +49,8 @@ export const getSession = async (token: string | undefined) => {
     });
     return user;
   } catch (e) {
-    console.log(e);
+    console.log("ERROR");
+    // console.log(e);
     return null;
   }
 };
@@ -67,6 +69,7 @@ export const authProcedure = trpc.procedure.use(async ({ ctx, next }) => {
   if (!ctx.user) {
     throw new Error("Unauthorized");
   }
+  console.log("GOT USER");
   return next({ ctx });
 });
 

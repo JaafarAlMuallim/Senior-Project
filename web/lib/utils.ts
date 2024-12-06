@@ -83,7 +83,6 @@ export const listWithAnd = (list: string[]) => {
     return "";
   }
   if (list.length === 1) {
-    console.log("list[0]: ", list[0]);
     return list[0];
   }
   if (list.length === 2) {
