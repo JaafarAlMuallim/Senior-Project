@@ -17,9 +17,9 @@ const CourseCard = ({ code, name, id }: CourseCardProps) => {
   const router = useRouter();
   return (
     <Card
-      className="w-[350px] hover:bg-primary-light hover:text-white-default transition-all group"
+      className="w-[350px] hover:bg-primary-light hover:text-white-default transition-all group cursor-pointer"
       onClick={() => {
-        router.push(`/courses/${id}`);
+        router.push(`/home/${id}`);
       }}
     >
       <CardHeader>

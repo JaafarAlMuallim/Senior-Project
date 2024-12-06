@@ -1,6 +1,3 @@
-import Course from "@/models/course";
-import Session from "@/models/session";
-
 export const USERS = [
   {
     id: "12345",
@@ -512,43 +509,44 @@ export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 export const TIMES = ["08:00", "10:00", "12:00", "14:00", "16:00"];
 export const LOCATIONS = ["Room 101", "Room 102", "Lab A", "Lab B"];
 
-export const SESSIONS = [
-  {
-    id: 1,
-    date: "2024-02-14T14:00:00",
-    course: {
-      code: "SWE326",
+export const CATEGORIES = {
+  name: "Category",
+  options: [
+    {
+      id: 1,
+      title: "Slides",
+      type: "slide",
+      value: "SLIDE",
     },
-  },
-  {
-    id: 2,
-    date: "2024-02-14T15:30:00",
-    course: {
-      code: "ICS321",
+    {
+      id: 2,
+      title: "Assignments",
+      type: "hw",
+      value: "HW",
     },
-  },
-] as Session[];
-
-export const MOCK_COURSES = [
-  {
-    id: 1,
-    code: "SWE326",
-    name: "Software Testing",
-    days: ["MON", "WED"],
-    time: "10:00",
-  },
-  {
-    id: 2,
-    code: "ICS321",
-    name: "Database Systems",
-    days: ["SUN", "TUE", "THU"],
-    time: "13:00",
-  },
-  {
-    id: 3,
-    code: "MTH201",
-    name: "Calculus III",
-    days: ["SUN", "TUE", "THU"],
-    time: "08:30",
-  },
-] as Course[];
+    {
+      id: 3,
+      title: "Quizzes",
+      type: "quiz",
+      value: "QUIZ",
+    },
+    {
+      id: 4,
+      title: "Exams",
+      type: "exam",
+      value: "EXAM",
+    },
+    {
+      id: 5,
+      title: "Pictures",
+      type: "picture",
+      value: "IMG",
+    },
+    {
+      id: 6,
+      title: "Others",
+      type: "other",
+      value: "OTHER",
+    },
+  ],
+};

@@ -9,7 +9,7 @@ import { AlertCircle } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 
 const Navbar = async () => {
-  const currUser = currentUser();
+  const currUser = await currentUser();
 
   const userRoles = await trpc.profiles.roles();
 

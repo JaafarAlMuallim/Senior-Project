@@ -1,6 +1,5 @@
 "use client";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Category } from "../../../server/node_modules/@prisma/postgres/client";
 import { useState } from "react";
 import {
   Dialog,
@@ -53,40 +52,9 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES } from "@/validators/Placeholders";
 import Progress from "@/components/CustomProgress";
+import Category from "@/models/Category";
 
-const courseId = "cm177rnwp0000119qsarlyxia";
-const TYPES = [
-  {
-    id: 1,
-    title: "Slides",
-    type: "slides",
-  },
-  {
-    id: 2,
-    title: "Assignments",
-    type: "assignments",
-  },
-  {
-    id: 3,
-    title: "Quizzes",
-    type: "quizzes",
-  },
-  {
-    id: 4,
-    title: "Exams",
-    type: "exams",
-  },
-  {
-    id: 5,
-    title: "Pictures",
-    type: "pictures",
-  },
-  {
-    id: 6,
-    title: "Others",
-    type: "others",
-  },
-];
+// const courseId = "cm177rnwp0000119qsarlyxia";
 
 interface Folder {
   id: number;
@@ -96,7 +64,7 @@ interface Folder {
 
 const Folder = ({ folder }: { folder: Folder }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
       <FolderClosed />
       <span className="flex-grow font-semibold text-lg">{folder.title}</span>
     </div>
@@ -171,7 +139,7 @@ const CoursePage = () => {
   });
   async function onSubmit(data: z.infer<typeof formSchema>) {
     await addMaterial({
-      courseId: courseId,
+      courseId: params.courseId,
       name: data.name || "",
       url: data.material,
       category: data.category,
@@ -395,8 +363,8 @@ const CoursePage = () => {
         </div>
       </div>
       <div className="flex flex-col item-center gap-4">
-        {TYPES.map((folder) => (
-          <Link href={`/courses/${params.courseId}/${folder.type}`}>
+        {CATEGORIES.options.map((folder) => (
+          <Link href={`/home/${params.courseId}/${folder.type}`}>
             <Folder key={folder.id} folder={folder} />
           </Link>
         ))}

@@ -186,11 +186,16 @@ const config: Config = {
         "0%": { "animation-timing-function": "ease-in", width: "0%" },
         "100%": { "animation-timing-function": "ease-in", width: "100%" },
       },
+      spin: {
+        from: { transform: "rotate(0deg)" },
+        to: { transform: "rotate(360deg)" },
+      },
     },
     animation: {
       "caret-blink": "caret-blink 1.25s ease-out infinite",
-      spin: "spin 0.7s linear infinite",
       show: "show 0.7s forwards linear",
+      "loop-scroll": "120s linear 0s infinite normal none running loop-scroll",
+      spin: "spin 1s linear infinite",
     },
   },
   plugins: [require("tailwindcss-animate")],

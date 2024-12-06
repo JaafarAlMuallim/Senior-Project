@@ -2,14 +2,8 @@
 
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 const QUIZZES = [
   { id: 1, title: "Chapter 1 Quiz" },
@@ -23,93 +17,20 @@ interface Quiz {
   title: string;
 }
 
-const Quiz: React.FC<{ quiz: Quiz; onDelete: (id: number) => void }> = ({
-  quiz,
-  onDelete,
-}) => {
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-
-  const handleQuizClick = () => {
-    console.log(`Navigating to quiz: ${quiz.title}`);
-  };
-
-  const handleDeleteWithConfirmation = () => {
-    setIsConfirmationOpen(true);
-  };
-
-  const confirmDelete = () => {
-    setIsConfirmationOpen(false);
-    onDelete(quiz.id);
-  };
-
-  const cancelDelete = () => {
-    setIsConfirmationOpen(false);
-  };
+const Quiz = ({ quiz }: { quiz: Quiz }) => {
+  const router = useRouter();
 
   return (
     <div
       className="bg-white-default shadow-md rounded-lg p-6 flex items-center hover:shadow-lg hover:bg-primary-light cursor-pointer"
-      onClick={handleQuizClick}
+      onClick={() => router.push(`/material/courses/quizzes/${quiz.id}`)}
     >
       <span className="quiz-icon mr-2 text-3xl">📚</span>
       <span className="quiz-title flex-grow font-semibold text-lg hover:text-white">
         {quiz.title}
       </span>
       <div className="quiz-options relative mb-4">
-        <button
-          className="cursor-pointer"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOptionsOpen((prev) => !prev);
-          }}
-        >
-          ...
-        </button>
-        {isOptionsOpen && (
-          <ul className="absolute bg-white-default shadow-md rounded-lg p-2">
-            <li>
-              <button
-                className="bg-white-default rounded-md text-black w-20 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light cursor-pointer"
-                onClick={() => {
-                  setIsOptionsOpen(false);
-                  handleDeleteWithConfirmation();
-                }}
-              >
-                Delete
-              </button>
-            </li>
-            <li>
-              <button
-                className="bg-white rounded-md text-black w-20 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light cursor-pointer"
-                onClick={() => setIsOptionsOpen(false)}
-              >
-                Close
-              </button>
-            </li>
-          </ul>
-        )}
-        {isConfirmationOpen && (
-          <Dialog
-            open={isConfirmationOpen}
-            onOpenChange={setIsConfirmationOpen}
-          >
-            <DialogContent>
-              <DialogTitle>Delete Quiz</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this quiz?
-              </DialogDescription>
-              <div className="mt-4 flex justify-end gap-4">
-                <Button onClick={cancelDelete} variant="outline">
-                  Cancel
-                </Button>
-                <Button onClick={confirmDelete} className="bg-primary-light">
-                  Confirm
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        <Link href={`/material/courses/quizzes/${quiz.id}`}></Link>
       </div>
     </div>
   );
@@ -118,7 +39,6 @@ const Quiz: React.FC<{ quiz: Quiz; onDelete: (id: number) => void }> = ({
 const QuizzesPage = () => {
   const [sorted, setSorted] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [quizzes, setQuizzes] = useState(QUIZZES);
 
   const toggleSort = () => {
     setSorted((prev) => !prev);
@@ -128,12 +48,8 @@ const QuizzesPage = () => {
     setSearchTerm(e.target.value);
   };
 
-  const handleDeleteQuiz = (id: number) => {
-    setQuizzes((prev) => prev.filter((quiz) => quiz.id !== id));
-  };
-
-  const filteredQuizzes = quizzes.filter((quiz) =>
-    quiz.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredQuizzes = QUIZZES.filter((quiz) =>
+    quiz.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const sortedQuizzes = sorted
@@ -164,7 +80,7 @@ const QuizzesPage = () => {
         </div>
         <div className="flex flex-col item-center gap-4">
           {sortedQuizzes.map((quiz) => (
-            <Quiz key={quiz.id} quiz={quiz} onDelete={handleDeleteQuiz} />
+            <Quiz key={quiz.id} quiz={quiz} />
           ))}
         </div>
       </div>

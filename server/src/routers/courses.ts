@@ -32,72 +32,24 @@ export const courseRouter = router({
   addMaterial: authProcedure
     .input(
       z.object({
-        file: z.object({
-          url: z.string(),
-          type: z.string(),
-          name: z.string().nullable(),
-          size: z.number().nullable(),
-          category: z.nativeEnum(Category),
-        }),
-      }),
+        courseId: z.string(),
+        name: z.string(),
+        url: z.string(),
+        category: z.nativeEnum(Category),
+      })
     )
     .mutation(async ({ input, ctx }) => {
-      const { file } = input;
-
-      const registrations = await ctx.postgresClient.registration.findMany({
-        where: {
-          userId: ctx.user?.id,
-        },
-        include: {
-          section: {
-            include: {
-              course: true,
-            },
-          },
-        },
-      });
-      const now = new Date();
-      let courseId = null;
-      let name = "Other";
-
-      for (const reg of registrations) {
-        // Get today's date
-        const regTime = new Date();
-        // Set hours/minutes/seconds from the class time
-        regTime.setHours(
-          reg.section.startTime.getHours() - 3,
-          reg.section.startTime.getMinutes(),
-          reg.section.startTime.getSeconds(),
-        );
-
-        const timeDiff = Math.abs(now.getTime() - regTime.getTime());
-        const hourDiff = timeDiff / (1000 * 60 * 60);
-
-        if (hourDiff <= 1) {
-          courseId = reg.section.course.id;
-          name = reg.section.course.name;
-          break;
-        }
-      }
-
-      let category: Category = Category.OTHER;
-      if (!category) {
-        const random = Math.random();
-        category = random < 0.5 ? Category.BOOK : Category.HW;
-      }
-
+      const { courseId, name, url, category } = input;
       try {
         const material = await ctx.postgresClient.material.create({
           data: {
             courseId,
-            name: name ?? "Untitled",
-            size: file.size ?? 0,
-            url: file.url,
-            fileType: file.type,
-            category: courseId ? file.category : category,
+            name,
+            url,
+            category,
           },
         });
-        return material;
+        return material.id;
       } catch (e) {
         console.log(e);
         return {
@@ -106,15 +58,23 @@ export const courseRouter = router({
         };
       }
     }),
+
   getMaterial: authProcedure
-    .input(z.object({ courseId: z.string(), category: z.nativeEnum(Category) }))
+    .input(z.object({ courseId: z.string(), category: z.string() }))
     .query(async ({ input, ctx }) => {
       const { courseId, category } = input;
+      const cat = category.toUpperCase() as Category;
       try {
-        const materials = await ctx.postgresClient.material.findMany({
-          where: { courseId, category },
+        const course = await ctx.postgresClient.course.findUnique({
+          where: { id: courseId },
         });
-        return materials;
+        const materials = await ctx.postgresClient.material.findMany({
+          where: { courseId, category: cat },
+        });
+        return {
+          course,
+          materials,
+        };
       } catch (e) {
         console.log(e);
       }

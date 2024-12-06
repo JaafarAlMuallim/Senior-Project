@@ -48,7 +48,7 @@ export const SingleSelector = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0", className)}>
+      <PopoverContent className={cn("p-0")}>
         <Command>
           <CommandInput placeholder={searchPlaceholder} />
           <CommandEmpty>No {placeholder.toLowerCase()} found.</CommandEmpty>
