@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
@@ -18,7 +17,12 @@ export type User = {
   id: string;
   email: string;
   name: string;
-  date: string;
+  clerkId: string;
+  password: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  profileId: string | null;
+  groupId: string | null;
 };
 
 export const userColumns: ColumnDef<User>[] = [
@@ -56,7 +60,10 @@ export const userColumns: ColumnDef<User>[] = [
   },
   {
     header: "Date",
-    accessorKey: "date",
+    cell: ({ row }) => {
+      const user = row.original;
+      return new Date(user.createdAt).toLocaleDateString();
+    },
   },
   {
     id: "actions",

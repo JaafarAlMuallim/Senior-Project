@@ -8,7 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export const ScheduleTable = ({ department }: { department: string }) => {
+export const ScheduleTable = () => {
+  const department = "CS";
   return (
     <div className="rounded-md border w-full">
       <Table>

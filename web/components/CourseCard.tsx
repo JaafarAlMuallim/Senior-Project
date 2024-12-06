@@ -1,25 +1,34 @@
-import { FolderIcon } from "lucide-react";
-import Link from "next/link";
-import { separateNameNum } from "@/lib/utils";
-import Course from "@/models/course";
+"use client";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
-const CourseCard = ({ course }: { course: Course }) => (
-  <Link href={`/courses/${course.id}`} key={course.id} className="block">
-    <div className="bg-white-default rounded-lg shadow-sm border border-gray-100 p-4 hover:bg-primary-light hover:text-white transition-all group">
-      <div className="flex justify-between items-start">
-        <div className="space-y-2 w-full ">
-          <div className="flex justify-between items-center group-hover:text-white-default">
-            <h4 className="text-lg font-semibold text-primary group-hover:text-white-default uppercase">
-              {separateNameNum(course.section.course.code)}
-            </h4>
-            <FolderIcon className="text-primary h-6 w-6 group-hover:text-white-default" />
-          </div>
-          <p className="text-gray-600 font-medium group-hover:text-secondary-lightGray">
-            {course.section.course.name}
-          </p>
-        </div>
-      </div>
-    </div>
-  </Link>
-);
+type CourseCardProps = {
+  code: string;
+  id: string;
+  name: string;
+};
+
+const CourseCard = ({ code, name, id }: CourseCardProps) => {
+  const router = useRouter();
+  return (
+    <Card
+      className="w-[350px] hover:bg-primary-light hover:text-white-default transition-all group"
+      onClick={() => {
+        router.push(`/courses/${id}`);
+      }}
+    >
+      <CardHeader>
+        <CardTitle className="uppercase">{code}</CardTitle>
+        <CardDescription className="group-hover:text-secondary-lightGray">
+          {name}
+        </CardDescription>
+      </CardHeader>
+    </Card>
+  );
+};
 export default CourseCard;
