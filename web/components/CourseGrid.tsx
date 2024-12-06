@@ -26,7 +26,7 @@ export const CourseGrid = ({ title }: CourseGridProps) => {
 
 const CourseCard = () => {
   return (
-    <Card className="w-[350px] hover:bg-primary-light hover:text-white transition-all group">
+    <Card className="w-[300px] hover:bg-primary-light hover:text-white-default transition-all group">
       <CardHeader>
         <CardTitle>MATH 101</CardTitle>
         <CardDescription className="group-hover:text-secondary-lightGray">
@@ -34,11 +34,8 @@ const CourseCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul className="flex flex-row justify-center items-center flex-wrap gap-4">
-          <li>174 Students</li>
-          <li>4 Tutors</li>
-          <li>74 File Uploads</li>
-          <MoveRight size={24} />
+        <ul className="flex flex-row justify-start items-center flex-wrap gap-4">
+          View Course <MoveRight size={24} />
         </ul>
       </CardContent>
     </Card>

@@ -10,6 +10,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        dark: {
+          1: "#1C1F2E",
+          2: "#161925",
+          3: "#252A41",
+          4: "#1E2757",
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -176,9 +182,15 @@ const config: Config = {
         "0%,70%,100%": { opacity: "1" },
         "20%,50%": { opacity: "0" },
       },
+      show: {
+        "0%": { "animation-timing-function": "ease-in", width: "0%" },
+        "100%": { "animation-timing-function": "ease-in", width: "100%" },
+      },
     },
     animation: {
       "caret-blink": "caret-blink 1.25s ease-out infinite",
+      spin: "spin 0.7s linear infinite",
+      show: "show 0.7s forwards linear",
     },
   },
   plugins: [require("tailwindcss-animate")],

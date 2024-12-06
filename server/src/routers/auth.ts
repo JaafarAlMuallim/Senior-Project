@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
@@ -17,7 +17,7 @@ export const authRouter = router({
         email: z.string(),
         name: z.string(),
         clerkId: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { email, name, clerkId } = input;
@@ -62,4 +62,13 @@ export const authRouter = router({
         throw error;
       }
     }),
+  currentUser: authProcedure.query(async ({ ctx }) => {
+    // omit password, groupId, createdAt, updatedAt, clerkId
+    if (!ctx.user) {
+      throw new Error("User not found");
+    }
+    const { password, groupId, createdAt, updatedAt, clerkId, ...user } =
+      ctx.user;
+    return user;
+  }),
 });

@@ -7,7 +7,7 @@ export const scheduleRouter = router({
       z.object({
         sectionId: z.string(),
         semester: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { semester, sectionId } = input;
@@ -35,7 +35,7 @@ export const scheduleRouter = router({
     .input(
       z.object({
         semester: z.string(),
-      }),
+      })
     )
     .query(async ({ input, ctx }) => {
       const { semester } = input;
@@ -53,8 +53,6 @@ export const scheduleRouter = router({
             },
           },
         });
-        console.log("REGISTRATIONS");
-        console.log(registrations);
         return registrations;
       } catch (error) {
         console.log(error);

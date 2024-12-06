@@ -1,5 +1,5 @@
 "use client";
-
+import { ReportCategory } from "../../server/node_modules/@prisma/postgres/client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -24,12 +24,14 @@ import { Button } from "@/components/ui/button";
 
 export type Report = {
   id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  status: boolean;
+  content: string;
+  category: ReportCategory;
   title: string;
-  category: string;
-  date: string;
-  description: string;
-  status: string;
 };
+export type Categories = ReportCategory;
 
 export const reportColumns: ColumnDef<Report>[] = [
   {
@@ -115,7 +117,7 @@ export const reportColumns: ColumnDef<Report>[] = [
                   <h4 className="text-xl font-semibold">
                     {report.title} - {report.category}
                   </h4>
-                  <p>{report.description}</p>
+                  <p>{report.content}</p>
                 </div>
               </div>
             </DialogContent>
