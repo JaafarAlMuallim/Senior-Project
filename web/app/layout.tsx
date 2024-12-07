@@ -36,7 +36,7 @@ export default function RootLayout({
               {/*@ts-ignore*/}
               <Navbar />
               <main className="dark:grainy-dark flex light:grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
-                <StreamClientProvider>{children}</StreamClientProvider>
+                {children}
               </main>
               <Toaster />
             </ThemeProvider>

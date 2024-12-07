@@ -15,7 +15,8 @@ import {
 import { ChevronDown } from "lucide-react";
 import ChatCard from "./ChatCard";
 import { ChatGroup } from "@/models/chatGroups";
-import { updateMultipleSearchParams } from "@/lib/utils";
+import { separateNameNum, updateMultipleSearchParams } from "@/lib/utils";
+import AIChatCard from "./AIChatCard";
 
 const ChatSidebarContent = ({
   aiChats,
@@ -29,10 +30,14 @@ const ChatSidebarContent = ({
   const selectedChat = searchParams.get("chat") || "";
   const pathname = usePathname();
 
-  const handleChatClick = (groupId: string, type: string) => {
+  const handleChatClick = (
+    groupId: string,
+    type: string,
+    agent: string | null,
+  ) => {
     updateMultipleSearchParams(
-      ["chat", "type"],
-      [groupId, type],
+      ["chat", "type", "agent"],
+      [groupId, type, agent],
       searchParams.toString(),
       pathname,
       router,
@@ -54,9 +59,15 @@ const ChatSidebarContent = ({
               {aiChats.map((chat) => (
                 <SidebarMenuItem
                   key={chat.group.groupId}
-                  onClick={() => handleChatClick(chat.group.groupId, "AI")}
+                  onClick={() =>
+                    handleChatClick(
+                      chat.group.groupId,
+                      "AI",
+                      separateNameNum(chat.group.name).toUpperCase(),
+                    )
+                  }
                 >
-                  <ChatCard chat={chat} selectedChat={selectedChat} />
+                  <AIChatCard chat={chat} selectedChat={selectedChat} />
                 </SidebarMenuItem>
               ))}
             </SidebarGroupContent>
@@ -76,7 +87,9 @@ const ChatSidebarContent = ({
               {regularChats.map((chat) => (
                 <SidebarMenuItem
                   key={chat.group.groupId}
-                  onClick={() => handleChatClick(chat.group.groupId, "Regular")}
+                  onClick={() =>
+                    handleChatClick(chat.group.groupId, "Regular", null)
+                  }
                 >
                   <ChatCard chat={chat} selectedChat={selectedChat} />
                 </SidebarMenuItem>

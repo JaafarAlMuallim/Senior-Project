@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { CloudUpload, Loader2, Pencil, X } from "lucide-react";
+import { CloudUpload, Loader2, Pencil } from "lucide-react";
 
 import { Check, ChevronsUpDown } from "lucide-react";
 
@@ -119,7 +119,7 @@ const MaterialTabContent = () => {
     <TabsContent value="quiz" className="p-3">
       <div className="flex flex-col gap-8">
         <h1 className="text-2xl font-bold uppercase">
-          {separateNameNum(allMaterial?.course?.code!)}
+          {separateNameNum(allMaterial?.course?.code || "")}
         </h1>
         <h2 className="text-xl">Quizzes</h2>
         <div className="flex justify-end w-full">

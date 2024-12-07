@@ -7,6 +7,8 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
 
 const formSchema = z.object({
   name: z.string().min(3).optional(),
@@ -24,7 +26,7 @@ export const ProfileUpdateForm = () => {
     defaultValues: {
       name: user?.fullName!,
       email: user?.emailAddresses[0].emailAddress,
-      phone: user?.phoneNumbers[0].phoneNumber,
+      phone: user?.phoneNumbers[0] ? user?.phoneNumbers[0].phoneNumber : "",
       password: "",
     },
   });
@@ -58,6 +60,58 @@ export const ProfileUpdateForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid gap-4 py-4 w-full"
       >
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="name">Name</FormLabel>
+              <Input {...field} id="name" className="col-span-3" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="email">Email</FormLabel>
+              <Input {...field} id="email" className="col-span-3" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="phone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="email">Phone Number</FormLabel>
+              <Input {...field} id="email" className="col-span-3" />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel htmlFor="password">Password</FormLabel>
+              <Input
+                {...field}
+                id="password"
+                className="col-span-3"
+                placeholder="******"
+                type="password"
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <DialogFooter>
           <Button type="reset" variant={"destructive"}>
             Cancel

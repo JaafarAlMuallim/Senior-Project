@@ -1,36 +1,18 @@
 "use client";
-import {
-  Image as ImageIcon,
-  Mic,
-  MessageSquare,
-  Paperclip,
-  Send,
-} from "lucide-react";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormMessage,
-} from "@/components/ui/form";
 import { cx } from "class-variance-authority";
 import { format, formatDistanceToNow, isToday } from "date-fns";
-import { listWithAnd, pluralize, run } from "@/lib/utils";
-import { useLiveMessages, useThrottledIsTypingMutation } from "@/hooks/useChat";
-import { Button } from "./ui/button";
 import { trpc } from "@/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useRef, useState } from "react";
-import { Textarea } from "./ui/textarea";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import AddMessageForm from "./AddMessageForm";
+import { cn } from "@/lib/utils";
+import AddAIMessageForm from "./AIChatMessageForm";
+import { useSearchParams } from "next/navigation";
 const AIChat = ({ groupId }: { groupId: string }) => {
   const { data: messages } = trpc.messages.getMessages.useQuery({
     groupId,
   });
+  const searchParams = useSearchParams();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const { data: currentUser } = trpc.auth.currentUser.useQuery();
@@ -95,7 +77,12 @@ const AIChat = ({ groupId }: { groupId: string }) => {
                   >
                     <p>{item.text}</p>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div
+                    className={cn(
+                      "text-xs text-gray-500 dark:text-gray-400",
+                      isMe && "text-right",
+                    )}
+                  >
                     {isToday(item.createdAt)
                       ? formatDistanceToNow(item.createdAt) + " ago"
                       : format(item.createdAt, "MMM d, yyyy h:mm a")}
@@ -107,15 +94,20 @@ const AIChat = ({ groupId }: { groupId: string }) => {
         </div>
       </div>
       <div className="sticky bottom-0 border-t bg-white p-2 dark:border-gray-800 dark:bg-gray-900">
-        <AddMessageForm
-          groupId={groupId}
-          onMessagePost={() => {
-            scrollRef.current?.scrollTo({
-              top: scrollRef.current.scrollHeight,
-              behavior: "smooth",
-            });
-          }}
-        />
+        {!!searchParams.get("agent") ? (
+          <AddAIMessageForm
+            agent={searchParams.get("agent")!}
+            groupId={groupId}
+            onMessagePost={() => {
+              scrollRef.current?.scrollTo({
+                top: scrollRef.current.scrollHeight,
+                behavior: "smooth",
+              });
+            }}
+          />
+        ) : (
+          <div>Agent not found</div>
+        )}
       </div>
     </section>
   );

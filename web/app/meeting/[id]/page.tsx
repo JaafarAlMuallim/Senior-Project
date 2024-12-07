@@ -11,6 +11,7 @@ import MeetingSetup from "@/components/MeetingSetup";
 import MeetingRoom from "@/components/MeetingRoom";
 import { trpc } from "@/trpc/client";
 import Loader from "@/components/Loader";
+import StreamClientProvider from "@/components/StreamProvider";
 
 const courseId = "cm177rnwp0000119qsarlyxia";
 const MeetingPage = () => {
@@ -43,15 +44,17 @@ const MeetingPage = () => {
 
   return (
     <main className="h-screen w-full">
-      <StreamCall call={call}>
-        <StreamTheme>
-          {!isSetupComplete ? (
-            <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
-          ) : (
-            <MeetingRoom />
-          )}
-        </StreamTheme>
-      </StreamCall>
+      <StreamClientProvider>
+        <StreamCall call={call}>
+          <StreamTheme>
+            {!isSetupComplete ? (
+              <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+            ) : (
+              <MeetingRoom />
+            )}
+          </StreamTheme>
+        </StreamCall>
+      </StreamClientProvider>
     </main>
   );
 };

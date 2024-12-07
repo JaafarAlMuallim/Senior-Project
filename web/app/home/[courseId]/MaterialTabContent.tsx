@@ -365,7 +365,10 @@ const MaterialTabContent = () => {
       </div>
       <div className="flex flex-col item-center gap-4">
         {CATEGORIES.options.map((folder) => (
-          <Link href={`/home/${params.courseId}/${folder.type}`}>
+          <Link
+            href={`/home/${params.courseId}/${folder.type}`}
+            key={folder.id}
+          >
             <Folder key={folder.id} folder={folder} />
           </Link>
         ))}

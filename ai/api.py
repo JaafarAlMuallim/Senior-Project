@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import google.generativeai
 from typing import List, Optional
+from pydantic import ValidationError
 import os
 from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
@@ -38,9 +39,14 @@ genai_embed = create_genai_instance(GOOGLE_API_KEY)  # For embeddings
 
 
 # Pydantic models for request/response
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+
 class Question(BaseModel):
     text: str
-    chat_history: Optional[List[dict]] = []
+    chat_history: Optional[List[ChatMessage]] = []
 
 
 class Answer(BaseModel):
@@ -172,25 +178,29 @@ async def startup_event():
 
 @app.post("/ask", response_model=Answer)
 async def ask_question(question: Question):
-    if not rag_chain:
-        raise HTTPException(status_code=500, message="RAG system not initialized")
+    try:
+        if not rag_chain:
+            raise HTTPException(status_code=500, detail="RAG system not initialized")
+        # Convert chat history to the expected format
+        formatted_history = []
+        print(question.chat_history)
+        print(question.text)
+        if question.chat_history:
+            for msg in question.chat_history:
+                if msg.role == "user":
+                    formatted_history.append(HumanMessage(content=msg.content))
+                elif msg.role == "assistant":
+                    formatted_history.append(AIMessage(content=msg.content))
 
-    # Convert chat history to the expected format
-    formatted_history = []
-    if question.chat_history:
-        for msg in question.chat_history:
-            if msg.get("role") == "user":
-                formatted_history.append(HumanMessage(content=msg["content"]))
-            elif msg.get("role") == "assistant":
-                formatted_history.append(AIMessage(content=msg["content"]))
-
-    # Process the question
-    result = rag_chain.invoke(
-        {"input": question.text, "chat_history": formatted_history}, config=config
-    )
-    print(result)
-
-    return Answer(answer=result["answer"])
+        # Process the question
+        result = rag_chain.invoke(
+            {"input": question.text, "chat_history": formatted_history}, config=config
+        )
+        print(result)
+        return Answer(answer=result["answer"])
+    except ValidationError as e:
+        print(e)
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 def generate_mcq_questions():

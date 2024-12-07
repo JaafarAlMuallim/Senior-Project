@@ -1,64 +1,106 @@
 "use client";
 import { Image as ImageIcon, Mic, Paperclip, Send } from "lucide-react";
 import { Form, FormControl, FormField } from "@/components/ui/form";
-import { useThrottledIsTypingMutation } from "@/hooks/useChat";
 import { Button } from "./ui/button";
 import { trpc } from "@/trpc/client";
-import { useEffect, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const formSchema = z.object({
   text: z.string(),
 });
 
-const AddMessageForm = ({
+const AddAIMessageForm = ({
   groupId,
   onMessagePost,
+  agent,
 }: {
   onMessagePost: () => void;
   groupId: string;
+  agent: string;
 }) => {
-  const addMsg = trpc.messages.add.useMutation();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const { mutate: addMsg } = trpc.messages.addUserMessage.useMutation({
+    onSuccess: () => {
+      utils.messages.getMessages.invalidate();
+      onMessagePost();
+      form.reset();
+    },
+    onMutate: () => {
+      utils.messages.addUserMessage.getMutationDefaults();
+      onMessagePost();
+      form.reset();
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        duration: 3000,
+      });
+      utils.messages.getMessages.invalidate();
+    },
+  });
+  const { mutate: addAIMsg } = trpc.messages.addAIMessage.useMutation({
+    onSuccess: () => {
+      setIsLoading(false);
+      utils.messages.getMessages.invalidate();
+      onMessagePost();
+      form.reset();
+    },
+    onMutate: () => {
+      setIsLoading(true);
+      utils.messages.addAIMessage.getMutationDefaults();
+      onMessagePost();
+      form.reset();
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      toast({
+        title: "Error",
+        description: error.message,
+        duration: 3000,
+      });
+      utils.messages.getMessages.invalidate();
+    },
+  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       text: "",
     },
   });
-  const [isFocused, setIsFocused] = useState(false);
+  const utils = trpc.useUtils();
 
   function postMessage() {
-    const input = {
+    addMsg({
       text: form.getValues().text,
       groupId,
-    };
-    addMsg.mutate(input, {
-      onSuccess() {
-        onMessagePost();
-        form.reset();
-      },
-      onError(error) {
-        alert(error.message);
-      },
+    });
+    addAIMsg({
+      text: form.getValues().text,
+      groupId,
+      agent,
     });
   }
-
-  const isTypingMutation = useThrottledIsTypingMutation(groupId);
-
-  const msg = form.watch("text");
-  useEffect(() => {
-    isTypingMutation(isFocused && msg.trim().length > 0);
-  }, [isFocused, msg, isTypingMutation]);
 
   const onSubmit = async () => {
     postMessage();
   };
 
   return (
-    <div className="relative">
+    <div className="relative flex flex-col gap-4">
+      {isLoading && (
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="bg-white p-4 rounded-lg">
+            <p className="text-center">{agent} is Typing...</p>
+          </div>
+        </div>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -92,8 +134,6 @@ const AddMessageForm = ({
                       form.handleSubmit(onSubmit)();
                     }
                   }}
-                  onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
                   autoFocus
                 />
               </FormControl>
@@ -113,4 +153,4 @@ const AddMessageForm = ({
     </div>
   );
 };
-export default AddMessageForm;
+export default AddAIMessageForm;

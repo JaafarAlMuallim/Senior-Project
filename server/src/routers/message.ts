@@ -5,7 +5,6 @@ import { z } from "zod";
 import { authProcedure, router, subscriptionAuthProcedure } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
-import { Content } from "@google/generative-ai";
 
 export const messageRouter = router({
   add: authProcedure
@@ -90,7 +89,11 @@ export const messageRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { groupId, agent, text } = input;
       let ai = null;
-      let context: Content[] = [];
+      console.log(agent, groupId);
+      let context: Array<{
+        role: "user" | "assistant";
+        content: string;
+      }> = [];
       try {
         ai = await ctx.mongoClient.user.findFirst({
           where: {
@@ -115,51 +118,50 @@ export const messageRouter = router({
           },
           take: 10,
         });
-        context = [
-          {
-            role: "user",
-            parts: oldMessages
-              .filter((msg) => !msg.user.email.includes("EduLink"))
-              .map((msg) => {
-                return {
-                  text: msg.text,
-                };
-              }),
-          },
-          {
-            role: "assistant",
-            parts: oldMessages
-              .filter((msg) => msg.user.email.includes("EduLink"))
-              .map((msg) => {
-                return {
-                  text: msg.text,
-                };
-              }),
-          },
-        ];
+
+        oldMessages.map((msg) => {
+          context.push({
+            role: msg.user.email.includes("EduLink") ? "assistant" : "user",
+            content: msg.text.replace(/\n/g, " ").replace(/\s+/g, " ").trim(),
+          });
+        });
       } catch (err) {
         console.error(err);
       }
       // get Response
       try {
+        console.log(
+          JSON.stringify({
+            text,
+            chat_history: context,
+          })
+        );
         // const res = await chat.sendMessage(text);
         const res = await fetch("http://localhost:8000/ask", {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             text,
             chat_history: context,
           }),
         });
-        const answer = (await res.json()) as { answer: string };
+        if (res.ok) {
+          const answer = (await res.json()) as { answer: string };
 
-        const response = await ctx.mongoClient.message.create({
-          data: {
-            userId: ai?.userId!,
-            text: answer.answer,
-            groupId,
-          },
-        });
-        return response;
+          const response = await ctx.mongoClient.message.create({
+            data: {
+              userId: ai?.userId!,
+              text: answer.answer || "No Response",
+              groupId,
+            },
+          });
+          return response;
+        } else {
+          console.error("Error getting response");
+          return null;
+        }
       } catch (err) {
         console.error(err);
       }
@@ -298,7 +300,6 @@ export const messageRouter = router({
     )
     .query(async ({ input, ctx }) => {
       const { groupId } = input;
-      console.log(groupId);
       const message = await ctx.mongoClient.message.findFirst({
         where: {
           groupId,
@@ -307,7 +308,6 @@ export const messageRouter = router({
           createdAt: "desc",
         },
       });
-      console.log(message);
       return message;
     }),
 
