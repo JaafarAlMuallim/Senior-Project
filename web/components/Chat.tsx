@@ -9,6 +9,7 @@ import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useRef } from "react";
 import AddMessageForm from "./AddMessageForm";
+import { FileIcon } from "lucide-react";
 
 function SubscriptionStatus(props: {
   subscription: ReturnType<typeof useLiveMessages>["subscription"];
@@ -102,6 +103,40 @@ const Chat = ({ groupId }: { groupId: string }) => {
     scrollToBottom();
   }, [groupId]);
 
+  const renderAttachment = (attachmentUrl: string, type: string | null) => {
+    if (!type) {
+      return null;
+    }
+    if (type.includes("image")) {
+      return (
+        <img
+          src={attachmentUrl}
+          alt="Attached image"
+          className="max-w-xs rounded-lg"
+        />
+      );
+    } else if (type.includes("audio")) {
+      return (
+        <audio controls className="max-w-xs">
+          <source src={attachmentUrl} type={`audio/webm`} />
+          Your browser does not support the audio element.
+        </audio>
+      );
+    } else {
+      return (
+        <a
+          href={attachmentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-blue-500 hover:underline"
+        >
+          <FileIcon className="size-4" />
+          Download attachment
+        </a>
+      );
+    }
+  };
+
   return (
     <section className="flex flex-col h-screen overflow-hidden">
       <div className="relative flex items-center justify-center gap-2 p-4 sm:p-6 lg:p-8">
@@ -142,7 +177,8 @@ const Chat = ({ groupId }: { groupId: string }) => {
                 <Avatar>
                   <AvatarImage src={user?.imageUrl} />
                   <AvatarFallback className="bg-violet-700 text-white text-7xl">
-                    JA
+                    {user?.firstName ? user.firstName[0] : "X"}
+                    {user?.lastName ? user?.lastName[0] : ""}
                   </AvatarFallback>
                 </Avatar>
 
@@ -155,7 +191,12 @@ const Chat = ({ groupId }: { groupId: string }) => {
                         : "bg-gray-200 dark:bg-gray-700",
                     )}
                   >
-                    <p>{item.text}</p>
+                    {!!item.text && <p>{item.text}</p>}
+                    {item.attachment_url &&
+                      renderAttachment(
+                        item.attachment_url,
+                        item.attachment_type,
+                      )}
                   </div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     {isToday(item.createdAt)

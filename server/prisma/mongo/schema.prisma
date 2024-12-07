@@ -37,14 +37,16 @@ model Group {
 }
 
 model Message {
-    id        String   @id @default(auto()) @map("_id") @db.ObjectId
-    text      String
-    groupId   String
-    group     Group    @relation(fields: [groupId], references: [groupId])
-    userId    String
-    user      User     @relation(fields: [userId], references: [userId])
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    id              String   @id @default(auto()) @map("_id") @db.ObjectId
+    text            String
+    groupId         String
+    group           Group    @relation(fields: [groupId], references: [groupId])
+    userId          String
+    attachment_url  String?
+    attachment_type String?
+    user            User     @relation(fields: [userId], references: [userId])
+    createdAt       DateTime @default(now())
+    updatedAt       DateTime @updatedAt
 }
 
 model UserGroups {

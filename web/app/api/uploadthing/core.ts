@@ -4,7 +4,6 @@ import { currentUser } from "@clerk/nextjs/server";
 
 const f = createUploadthing();
 
-// FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   document: f({
     pdf: {
@@ -26,6 +25,12 @@ export const ourFileRouter = {
     "image/jpeg": {
       maxFileSize: "4MB",
       maxFileCount: 1,
+    },
+    image: {
+      maxFileSize: "4MB",
+    },
+    audio: {
+      maxFileSize: "8MB",
     },
   })
     // Set permissions and file types for this FileRoute

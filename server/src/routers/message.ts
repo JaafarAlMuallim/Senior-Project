@@ -11,11 +11,13 @@ export const messageRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-        text: z.string().trim().min(1),
+        text: z.string().trim().min(0),
+        attachment_url: z.any().optional(),
+        attachment_type: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { groupId, text } = input;
+      const { groupId, text, attachment_url, attachment_type } = input;
       const currentSubscriptions = await ctx.redisClient.smembers(
         `group:${groupId}:subscriptions`
       );
@@ -34,6 +36,8 @@ export const messageRouter = router({
           userId: ctx.user?.id!,
           text,
           groupId,
+          attachment_url: attachment_url || null,
+          attachment_type: attachment_type || null,
         },
         include: {
           user: true,
@@ -213,9 +217,6 @@ export const messageRouter = router({
     .input(
       z.object({
         groupId: z.string(),
-        // lastEventId is the last event id that the client has received
-        // On the first call, it will be whatever was passed in the initial setup
-        // If the client reconnects, it will be the last event id that the client received
         lastEventId: z.string().nullish(),
       })
     )
@@ -237,6 +238,13 @@ export const messageRouter = router({
           // });
           lastMessageCursor = itemById?.createdAt ?? null;
         }
+
+        // remove redis unread count
+        await ctx.redisClient.hset(
+          `group:${currGroup}:userId:${ctx.user?.id!}`,
+          "unread",
+          0
+        );
 
         let unsubscribe = () => {
           //
@@ -261,7 +269,7 @@ export const messageRouter = router({
               where: {
                 groupId: currGroup,
                 createdAt: {
-                  gt: lastMessageCursor!,
+                  gt: lastMessageCursor || new Date(0),
                 },
               },
               include: {

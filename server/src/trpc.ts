@@ -50,7 +50,7 @@ export const getSession = async (token: string | undefined) => {
     return user;
   } catch (e) {
     console.log("ERROR");
-    // console.log(e);
+    console.log(e);
     return null;
   }
 };

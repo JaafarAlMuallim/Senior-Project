@@ -106,18 +106,6 @@ const AddAIMessageForm = ({
           onSubmit={form.handleSubmit(onSubmit)}
           className="flex items-center"
         >
-          <Button type="button" variant="ghost" size="icon" className="mr-2">
-            <ImageIcon className="size-5" />
-            <span className="sr-only">Attach image</span>
-          </Button>
-          <Button type="button" variant="ghost" size="icon" className="mr-2">
-            <Paperclip className="size-5" />
-            <span className="sr-only">Attach file</span>
-          </Button>
-          <Button type="button" variant="ghost" size="icon" className="mr-2">
-            <Mic className="size-5" />
-            <span className="sr-only">Record voice</span>
-          </Button>
           <FormField
             control={form.control}
             name="text"
