@@ -7,7 +7,7 @@ export const tutorRouter = router({
       z.object({
         courseId: z.string(),
         grade: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
       const { courseId, grade } = input;
@@ -76,6 +76,9 @@ export const tutorRouter = router({
     return tutor;
   }),
   getTutorsCourseById: authProcedure.query(async ({ ctx }) => {
+    if (ctx.user?.Tutor.length === 0) {
+      return [];
+    }
     const tutorCourses = await ctx.postgresClient.courseTutor.findMany({
       where: {
         tutorId: ctx.user?.Tutor[0].id!,

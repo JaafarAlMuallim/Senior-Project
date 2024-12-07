@@ -9,31 +9,49 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(3).optional(),
   email: z.string().email().optional(),
-  phone: z.string().min(10).max(10).optional(),
-  password: z.string().min(8).optional(),
+  password: z.string().min(0).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const ProfileUpdateForm = () => {
+export const ProfileUpdateForm = ({ onClose }: { onClose: () => void }) => {
   const { user } = useUser();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: user?.fullName!,
       email: user?.emailAddresses[0].emailAddress,
-      phone: user?.phoneNumbers[0] ? user?.phoneNumbers[0].phoneNumber : "",
       password: "",
     },
   });
+  const { toast } = useToast();
+  const utils = trpc.useUtils();
 
-  const { mutate } = trpc.profiles.update.useMutation();
+  const { mutateAsync: updateProfile } = trpc.profiles.update.useMutation({
+    onSuccess: () => {
+      utils.profiles.get.invalidate();
+      toast({
+        title: "Profile updated successfully",
+        description: "Your profile has been updated successfully",
+        className: "bg-success-600 text-white-default",
+      });
+      onClose();
+    },
+    onError: (error) => {
+      toast({
+        title: "Profile update failed",
+        description: error.message,
+        className: "bg-danger-600 text-white-default",
+      });
+    },
+  });
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     if (!user) return;
     user?.update({
       firstName: values.name!.split(" ")[0],
@@ -45,11 +63,10 @@ export const ProfileUpdateForm = () => {
       });
     }
 
-    mutate({
+    await updateProfile({
       data: {
         name: values.name,
         email: values.email,
-        phone: values.phone,
       },
     });
   };
@@ -85,18 +102,6 @@ export const ProfileUpdateForm = () => {
 
         <FormField
           control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="email">Phone Number</FormLabel>
-              <Input {...field} id="email" className="col-span-3" />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
@@ -122,8 +127,9 @@ export const ProfileUpdateForm = () => {
               variant: "default",
               className: "bg-primary-light",
             })}
+            disabled={form.formState.isSubmitting}
           >
-            Save changes
+            {form.formState.isSubmitting ? "Saving changes..." : "Save changes"}
           </Button>
         </DialogFooter>
       </form>

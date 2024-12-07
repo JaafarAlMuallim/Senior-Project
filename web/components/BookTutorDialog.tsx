@@ -31,9 +31,16 @@ const formSchema = z.object({
 
 import { AVAILABLE_TIMES } from "@/validators/Placeholders";
 import { getUniqueDates } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
+import { useMemo } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@clerk/nextjs";
+import Loader from "./Loader";
 
 const BookTutorDialog = () => {
+  const { toast } = useToast();
   const uniqueDatesArray = getUniqueDates(AVAILABLE_TIMES);
+  const { user } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,11 +49,62 @@ const BookTutorDialog = () => {
       date: new Date(),
     },
   });
+  const { data: courseTutor, isLoading: isLoading } =
+    trpc.tutors.getTutorsCourse.useQuery();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("submitted");
-    console.log(values);
+  const coursesData = useMemo(() => {
+    const uniqueCourses = new Map<string, any>();
+    courseTutor?.forEach((courseTutor) => {
+      uniqueCourses.set(courseTutor.course.id, courseTutor);
+    });
+
+    return Array.from(uniqueCourses.values()).map((courseTutor) => ({
+      label: courseTutor.course.name,
+      value: courseTutor.course.id,
+    }));
+  }, [courseTutor])!;
+  const { mutateAsync: addSession } = trpc.sessions.createSession.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Session booked successfully",
+        description: "Your session has been booked successfully",
+        className: "bg-success-600 text-white-default",
+      });
+    },
+    onError: (e: any) => {
+      toast({
+        title: "Session booking failed",
+        description: e.message,
+        className: "bg-danger-600 text-white-default",
+      });
+    },
+  });
+
+  const tutorsData = useMemo(() => {
+    return courseTutor
+      ?.filter(
+        (courseTutor) => courseTutor.course.id === form.getValues("course"),
+      )
+      ?.map((courseTutor) => ({
+        label: courseTutor.tutor.user.name,
+        value: courseTutor.tutorId,
+      }));
+  }, [courseTutor, form.getValues("course")])!;
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    addSession({
+      courseId: values.course,
+      date: values.date!,
+      requestedBy: user?.id!,
+      time: AVAILABLE_TIMES.find((time) => time.date === values.date)?.time!,
+      courseName: courseTutor!.find((ct) => ct.course.id === values.course)
+        ?.course.name!,
+    });
   };
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <Dialog>
@@ -78,7 +136,11 @@ const BookTutorDialog = () => {
                 <FormItem className="flex flex-col gap-2 w-full">
                   <FormLabel htmlFor="course">Course</FormLabel>
                   <FormControl>
-                    <CourseSelect field={field} className="w-full" />
+                    <CourseSelect
+                      field={field}
+                      data={coursesData}
+                      className="w-full"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -91,7 +153,11 @@ const BookTutorDialog = () => {
                 <FormItem className="w-full flex flex-col gap-2">
                   <FormLabel htmlFor="tutor">Tutor</FormLabel>
                   <FormControl>
-                    <TutorSelect field={field} className="w-full" />
+                    <TutorSelect
+                      field={field}
+                      className="w-full"
+                      data={tutorsData}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

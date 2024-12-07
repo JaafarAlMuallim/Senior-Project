@@ -123,7 +123,7 @@ export const messageRouter = router({
           take: 10,
         });
 
-        oldMessages.map((msg) => {
+        oldMessages.reverse().map((msg) => {
           context.push({
             role: msg.user.email.includes("EduLink") ? "assistant" : "user",
             content: msg.text.replace(/\n/g, " ").replace(/\s+/g, " ").trim(),

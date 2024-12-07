@@ -6,11 +6,9 @@ export const profileSchema = z.object({
   email: z.string(),
   userId: z.string(),
   major: z.string(),
-  standing: z.string(),
   university: z.string(),
-  phone: z.string(),
   name: z.string(),
-  password: z.string(),
+  password: z.string().optional(),
 });
 
 export const profileRouter = router({
@@ -48,9 +46,7 @@ export const profileRouter = router({
           },
           data: {
             major: data.major,
-            standing: data.standing,
             university: data.university,
-            phone: data.phone,
             user: {
               update: {
                 name: data.name,

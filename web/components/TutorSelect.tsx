@@ -19,9 +19,11 @@ import { ControllerRenderProps } from "react-hook-form";
 export default function TutorSelect({
   field,
   className,
+  data,
 }: {
   field: ControllerRenderProps<any, "tutor">;
   className?: string;
+  data: any[];
 }) {
   return (
     <Popover>
@@ -47,7 +49,7 @@ export default function TutorSelect({
           <CommandList>
             <CommandEmpty>No Tutors Available</CommandEmpty>
             <CommandGroup>
-              {GRADES.options.map((grade) => (
+              {data.map((grade) => (
                 <CommandItem
                   key={grade}
                   value={grade}

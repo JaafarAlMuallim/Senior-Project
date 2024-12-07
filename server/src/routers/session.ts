@@ -105,6 +105,9 @@ export const sessionRouter = router({
     }
   }),
   getPendingSessionTutor: tutorProcedure.query(async ({ ctx }) => {
+    if (ctx.user?.Tutor.length === 0) {
+      return [];
+    }
     const sessions = await ctx.postgresClient.session.findMany({
       where: {
         tutorId: ctx.user?.Tutor[0].id!,
@@ -118,6 +121,9 @@ export const sessionRouter = router({
     return sessions;
   }),
   getAcceptedSessionTutor: authProcedure.query(async ({ ctx }) => {
+    if (ctx.user?.Tutor.length === 0) {
+      return [];
+    }
     const sessions = await ctx.postgresClient.session.findMany({
       where: {
         tutorId: ctx.user?.Tutor[0].id!,

@@ -11,10 +11,19 @@ const onBoardingPage = async () => {
     return <RedirectToSignUp />;
   }
 
-  const profile = trpc.profiles.get();
+  try {
+    await trpc.auth.signUp({
+      email: user.emailAddresses[0].emailAddress,
+      name: user.fullName! || user.firstName!,
+      clerkId: user.id,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+  const profile = await trpc.profiles.get();
 
-  if (!!profile) {
-    redirect("/dashboard");
+  if (profile?.university) {
+    redirect("/home");
   }
 
   return (

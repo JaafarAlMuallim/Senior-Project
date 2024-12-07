@@ -20,9 +20,11 @@ import { ControllerRenderProps } from "react-hook-form";
 export default function CourseSelect({
   field,
   className,
+  data,
 }: {
   field: ControllerRenderProps<any, "course">;
   className?: string;
+  data: any[];
 }) {
   return (
     <Popover>
@@ -39,7 +41,7 @@ export default function CourseSelect({
           <div className="flex gap-2 items-center">
             <Book className="h-4 w-4" />
             {field.value
-              ? COURSES.find((c) => c.value === field.value)?.label
+              ? data.find((c) => c.value === field.value)?.label
               : "Select Course"}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -51,7 +53,7 @@ export default function CourseSelect({
           <CommandList>
             <CommandEmpty>No Courses Available</CommandEmpty>
             <CommandGroup>
-              {COURSES.map((course) => (
+              {data.map((course) => (
                 <CommandItem
                   key={course.value}
                   value={course.value}

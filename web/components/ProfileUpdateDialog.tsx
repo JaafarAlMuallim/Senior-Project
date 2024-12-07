@@ -1,3 +1,4 @@
+"use client";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,16 +9,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ProfileUpdateForm } from "./ProfileUpdateForm";
+import { useState } from "react";
 
 export const ProfileUpdateDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={isOpen}>
       <DialogTrigger asChild>
         <Button
           className={buttonVariants({
             variant: "default",
             className: "w-full bg-primary-light text-white-default",
           })}
+          onClick={() => setIsOpen(true)}
         >
           Update Profile
         </Button>
@@ -29,7 +33,11 @@ export const ProfileUpdateDialog = () => {
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <ProfileUpdateForm />
+        <ProfileUpdateForm
+          onClose={() => {
+            setIsOpen(false);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

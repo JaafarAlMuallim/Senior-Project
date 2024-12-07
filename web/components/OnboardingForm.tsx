@@ -23,7 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { MAJORS, UNIVERSITIES } from "@/validators/Placeholders";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -33,14 +33,16 @@ import {
   CommandList,
 } from "./ui/command";
 import { useState } from "react";
-import { SignedOut, useUser, RedirectToSignUp } from "@clerk/nextjs";
+import { useUser, RedirectToSignUp } from "@clerk/nextjs";
 import Loader from "./Loader";
+import { trpc } from "@/trpc/client";
+import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   university: z.string().min(3),
-  phone: z.string().email(),
-  major: z.string().min(3),
+  phone: z.string(),
+  major: z.string().min(2),
 });
 const OnBoarding = () => {
   const [openUni, setOpenUni] = useState(false);
@@ -54,17 +56,35 @@ const OnBoarding = () => {
     },
   });
   const router = useRouter();
+  const { toast } = useToast();
+  const { mutateAsync: updateProfile } = trpc.profiles.update.useMutation({
+    onSuccess: () => {
+      router.push("/home");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const { user, isLoaded } = useUser();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await updateProfile({
+      data: {
+        university: values.university,
+        phone: values.phone,
+        major: values.major,
+      },
+    });
   };
 
   if (!isLoaded) return <Loader />;
 
   if (!user) return;
-  // @ts-ignore
   <RedirectToSignUp />;
 
   return (
@@ -87,7 +107,7 @@ const OnBoarding = () => {
               control={form.control}
               name="phone"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full flex flex-col gap-2">
                   <FormLabel htmlFor="email">Phone Number</FormLabel>
                   <Input {...field} id="email" className="col-span-3" />
                   <FormMessage />
@@ -99,7 +119,7 @@ const OnBoarding = () => {
               control={form.control}
               name="university"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full flex flex-col gap-2">
                   <FormLabel htmlFor="university">University</FormLabel>
                   <Popover open={openUni} onOpenChange={setOpenUni}>
                     <PopoverTrigger asChild id="university">
@@ -108,15 +128,17 @@ const OnBoarding = () => {
                         role="combobox"
                         aria-expanded={openUni}
                         className={cn(
-                          "w-[200px] relative justify-center items-center text-center",
+                          "relative justify-start items-center",
                           !field.value && "text-muted-foreground",
                         )}
                       >
-                        {field.value ? <>{field.value}</> : "Select Company"}
+                        {field.value
+                          ? `${UNIVERSITIES.find((uni) => uni.value === field.value)?.label}`
+                          : "Select University"}
                         <ChevronsUpDown className="absolute right-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className="p-0">
                       <Command>
                         <CommandInput placeholder="Search Companies" />
                         <CommandList>
@@ -172,7 +194,7 @@ const OnBoarding = () => {
               control={form.control}
               name="major"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full flex flex-col gap-2">
                   <FormLabel htmlFor="Major">Major</FormLabel>
                   <Popover open={openMajor} onOpenChange={setOpenMajor}>
                     <PopoverTrigger asChild id="Major">
@@ -181,15 +203,17 @@ const OnBoarding = () => {
                         role="combobox"
                         aria-expanded={openMajor}
                         className={cn(
-                          "w-[200px] relative justify-center items-center text-center",
+                          "relative justify-start items-center",
                           !field.value && "text-muted-foreground",
                         )}
                       >
-                        {field.value ? <>{field.value}</> : "Select Company"}
+                        {field.value
+                          ? `${MAJORS.find((major) => major.value === field.value)?.label}`
+                          : "Select Major"}
                         <ChevronsUpDown className="absolute right-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
+                    <PopoverContent className="p-0">
                       <Command>
                         <CommandInput placeholder="Search Companies" />
                         <CommandList>
@@ -246,8 +270,13 @@ const OnBoarding = () => {
                 variant: "default",
                 className: "bg-primary-light",
               })}
+              disabled={form.formState.isSubmitting}
             >
-              Submit
+              {form.formState.isSubmitting ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                "Start Learning"
+              )}
             </Button>
           </form>
         </Form>
