@@ -48,7 +48,7 @@ import { Badge } from "@/components/ui/badge";
 
 const QuizCard = ({ index }: { index: number }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer">
       <Pencil />
       <span className="flex-grow font-semibold text-lg">Quiz {index}</span>
     </div>
@@ -84,7 +84,7 @@ const MaterialTabContent = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
       if (quiz.courseId !== null) {
@@ -238,12 +238,12 @@ const MaterialTabContent = () => {
                       className={buttonVariants({
                         variant: "default",
                         className:
-                          "w-full bg-primary-light hover:bg-primary-dark text-white-default",
+                          "w-full bg-primary-light hover:bg-primary-dark text-primary-white",
                       })}
                       disabled={form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                        <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                       ) : (
                         "Create Quiz"
                       )}

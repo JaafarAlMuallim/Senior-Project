@@ -81,7 +81,7 @@ export default function SignInPage() {
   //                     <SignIn.Action submit asChild>
   //                       <Button
   //                         disabled={isGlobalLoading}
-  //                         className="bg-primary-light text-white-default"
+  //                         className="bg-primary-light text-primary-white"
   //                       >
   //                         <Clerk.Loading>
   //                           {(isLoading) => {

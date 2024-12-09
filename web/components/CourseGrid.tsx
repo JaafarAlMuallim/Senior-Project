@@ -26,7 +26,7 @@ export const CourseGrid = ({ title }: CourseGridProps) => {
 
 const CourseCard = () => {
   return (
-    <Card className="w-[300px] hover:bg-primary-light hover:text-white-default transition-all group">
+    <Card className="w-[300px] hover:bg-primary-light hover:text-primary-white transition-all group">
       <CardHeader>
         <CardTitle>MATH 101</CardTitle>
         <CardDescription className="group-hover:text-secondary-lightGray">

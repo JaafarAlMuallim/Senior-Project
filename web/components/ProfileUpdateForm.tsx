@@ -38,7 +38,7 @@ export const ProfileUpdateForm = ({ onClose }: { onClose: () => void }) => {
       toast({
         title: "Profile updated successfully",
         description: "Your profile has been updated successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       onClose();
     },
@@ -46,7 +46,7 @@ export const ProfileUpdateForm = ({ onClose }: { onClose: () => void }) => {
       toast({
         title: "Profile update failed",
         description: error.message,
-        className: "bg-danger-600 text-white-default",
+        className: "bg-danger-600 text-primary-white",
       });
     },
   });

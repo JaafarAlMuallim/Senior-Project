@@ -184,4 +184,20 @@ export const courseRouter = router({
       });
       return quiz;
     }),
+  getAllSections: authProcedure.query(async ({ ctx }) => {
+    try {
+      const sections = await ctx.postgresClient.section.findMany({
+        include: {
+          course: true,
+        },
+        orderBy: {
+          title: "asc",
+        },
+      });
+      return sections;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Error");
+    }
+  }),
 });

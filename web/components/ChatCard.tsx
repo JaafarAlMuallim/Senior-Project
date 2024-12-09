@@ -50,7 +50,7 @@ const ChatCard = ({
           <p className="text-xs text-gray-500">14:07</p>
           <div className="flex items-center gap-4">
             {!!notificationCount && selectedChat !== chat.group.groupId && (
-              <Badge className="bg-primary-light text-white-default">
+              <Badge className="bg-primary-light text-primary-white">
                 {notificationCount}
               </Badge>
             )}

@@ -65,7 +65,7 @@ interface Folder {
 
 const Folder = ({ folder }: { folder: Folder }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer">
       <FolderClosed />
       <span className="flex-grow font-semibold text-lg">{folder.title}</span>
     </div>
@@ -125,7 +125,7 @@ const MaterialTabContent = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
     },
@@ -346,12 +346,12 @@ const MaterialTabContent = () => {
                       className={buttonVariants({
                         variant: "default",
                         className:
-                          "w-full bg-primary-light hover:bg-primary-dark text-white-default",
+                          "w-full bg-primary-light hover:bg-primary-dark text-primary-white",
                       })}
                       disabled={isUploading || form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                        <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                       ) : (
                         "Upload"
                       )}

@@ -44,7 +44,7 @@ export function PDFViewerDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl w-full h-[80vh] flex flex-col bg-secondary-gray text-white-default">
+      <DialogContent className="max-w-4xl w-full h-[80vh] flex flex-col bg-secondary-gray text-primary-white">
         <DialogHeader className="my-2">
           <DialogTitle className="flex justify-between items-center">
             <span>{file?.name || "Unnamed File"}</span>

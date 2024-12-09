@@ -26,7 +26,7 @@ const PendingSessions = ({ session }: { session: Session }) => {
         toast({
           title: "Session Status Changed",
           description: "The session status has been changed",
-          className: "bg-success-600 text-white-default",
+          className: "bg-success-600 text-primary-white",
         });
         utils.sessions.getPendingSessionTutor.invalidate();
       },
@@ -34,7 +34,7 @@ const PendingSessions = ({ session }: { session: Session }) => {
         toast({
           title: "Error",
           description: error.message,
-          className: "bg-danger-600 text-white-default",
+          className: "bg-danger-600 text-primary-white",
         });
       },
     });

@@ -51,7 +51,7 @@ const TutorSession = ({ session }: { session: Session }) => {
       toast({
         title: "Meeting created",
         description: "Your tutoring session has been created",
-        className: "bg-primary-light text-white-default",
+        className: "bg-primary-light text-primary-white",
       });
 
       router.push(`/meeting/${id}`);
@@ -74,10 +74,10 @@ const TutorSession = ({ session }: { session: Session }) => {
       <div className="flex justify-between items-start">
         <div className="space-y-2 w-full">
           <div className="flex justify-between items-center">
-            <h4 className="text-lg font-semibold text-primary group-hover:text-white-default uppercase">
+            <h4 className="text-lg font-semibold text-primary group-hover:text-primary-white uppercase">
               {separateNameNum(session.course.code)}
             </h4>
-            <UserCircle className="text-primary h-6 w-6 group-hover:text-white-default" />
+            <UserCircle className="text-primary h-6 w-6 group-hover:text-primary-white" />
           </div>
           <p className="text-gray-600 font-medium group-hover:text-white-alt">
             {time} - {endTime}
