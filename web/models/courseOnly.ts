@@ -1,8 +1,8 @@
 type CourseOnly = {
   id: string;
   name: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   groupId: string | null;
   code: string;
 };

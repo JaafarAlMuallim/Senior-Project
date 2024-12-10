@@ -1,6 +1,5 @@
 "use client";
 import { Button, buttonVariants } from "@/components/ui/button";
-
 import {
   Card,
   CardContent,
@@ -8,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import {
   Form,
   FormField,
@@ -76,7 +74,6 @@ const OnBoarding = () => {
     await updateProfile({
       data: {
         university: values.university,
-        phone: values.phone,
         major: values.major,
       },
     });
@@ -114,7 +111,6 @@ const OnBoarding = () => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="university"
@@ -163,8 +159,8 @@ const OnBoarding = () => {
 
                             {UNIVERSITIES.map((uni) => (
                               <CommandItem
-                                value={uni.value}
-                                key={uni.value}
+                                value={uni.label}
+                                key={uni.label}
                                 onSelect={() => {
                                   field.onChange(uni.value);
                                   setOpenUni(false);
@@ -173,7 +169,9 @@ const OnBoarding = () => {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    !!field.value ? "opacity-100" : "opacity-0",
+                                    field.value === uni.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
                                   )}
                                 />
 
@@ -189,7 +187,6 @@ const OnBoarding = () => {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="major"
@@ -238,8 +235,8 @@ const OnBoarding = () => {
 
                             {MAJORS.map((major) => (
                               <CommandItem
-                                value={major.value}
-                                key={major.value}
+                                value={major.label}
+                                key={major.label}
                                 onSelect={() => {
                                   field.onChange(major.value);
                                   setOpenMajor(false);
@@ -248,7 +245,9 @@ const OnBoarding = () => {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    !!field.value ? "opacity-100" : "opacity-0",
+                                    field.value === major.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
                                   )}
                                 />
 

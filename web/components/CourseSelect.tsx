@@ -1,11 +1,6 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { COURSES } from "@/validators/Placeholders";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@radix-ui/react-popover";
 import {
   Command,
   CommandEmpty,
@@ -16,6 +11,8 @@ import {
 } from "@/components/ui/command";
 import { Book, Check, ChevronsUpDown } from "lucide-react";
 import { ControllerRenderProps } from "react-hook-form";
+import CourseOnly from "@/models/courseOnly";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function CourseSelect({
   field,
@@ -24,8 +21,12 @@ export default function CourseSelect({
 }: {
   field: ControllerRenderProps<any, "course">;
   className?: string;
-  data: any[];
+  data: CourseOnly[];
 }) {
+  const courses = data.map((course) => ({
+    label: course.name,
+    value: course.id,
+  }));
   return (
     <Popover>
       <PopoverTrigger asChild id="course">
@@ -41,23 +42,23 @@ export default function CourseSelect({
           <div className="flex gap-2 items-center">
             <Book className="h-4 w-4" />
             {field.value
-              ? data.find((c) => c.value === field.value)?.label
+              ? courses.find((c) => c.value === field.value)?.label
               : "Select Course"}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0 z-10", className)}>
+      <PopoverContent className={cn("p-0 z-50 w-[240px] shadow-lg", className)}>
         <Command>
           <CommandInput placeholder="Search Courses..." />
           <CommandList>
             <CommandEmpty>No Courses Available</CommandEmpty>
             <CommandGroup>
-              {data.map((course) => (
+              {courses.map((course) => (
                 <CommandItem
-                  key={course.value}
-                  value={course.value}
-                  onSelect={field.onChange}
+                  key={course.label}
+                  value={course.label}
+                  onSelect={() => field.onChange(course.value)}
                 >
                   <Check
                     className={cn(

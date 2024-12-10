@@ -6,17 +6,17 @@ import Image from "next/image";
 const LandingContent = () => {
   return (
     <div className="min-h-screen bg-background">
-      <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4">
+      <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4 flex-col-reverse md:flex-row">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
           className="max-w-xl"
         >
-          <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight text-transparent sm:text-7xl">
+          <h1 className="text-center mb-6 bg-gradient-to-r from-primary-light to-primary-white text-transparent bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight sm:text-7xl md:text-left">
             EduLink
           </h1>
-          <p className="mb-8 text-xl text-muted-foreground">
+          <p className="text-center mb-8 text-xl text-muted-foreground md:text-left">
             Your all-in-one platform for learning, collaborating, and sharing
             resources with your classmates and tutors.
           </p>
@@ -180,7 +180,7 @@ const LandingContent = () => {
 
       <footer className="border-t bg-background py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid grid-cols-4 gap-8 sm:grid-cols-4">
             <div>
               <h3 className="mb-4 text-lg font-semibold">EduLink</h3>
             </div>
@@ -206,7 +206,7 @@ const LandingContent = () => {
             </div>
           </div>
           <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} EduLink. All rights reserved.
+            Â© {new Date().getFullYear()} EduLink. All rights reserved.
           </div>
         </div>
       </footer>

@@ -27,19 +27,43 @@ const formSchema = z.object({
   tutor: z.string(),
   course: z.string(),
   date: z.coerce.date(),
+  time: z.string(),
 });
 
-import { AVAILABLE_TIMES } from "@/validators/Placeholders";
-import { getUniqueDates } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@clerk/nextjs";
 import Loader from "./Loader";
+import { TimeSelect } from "./TimeSelect";
+
+const TIMES = [
+  "15:00",
+  "15:30",
+  "16:00",
+  "16:30",
+  "17:00",
+  "17:30",
+  "18:00",
+  "18:30",
+  "19:00",
+  "19:30",
+  "20:00",
+  "20:30",
+];
 
 const BookTutorDialog = () => {
+  const dateArr: Date[] = [];
+  const [open, setOpen] = useState(false);
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() + i);
+    const day = currentDate.getDay();
+    if (day !== 0 && day !== 6) {
+      dateArr.push(currentDate);
+    }
+  }
   const { toast } = useToast();
-  const uniqueDatesArray = getUniqueDates(AVAILABLE_TIMES);
   const { user } = useUser();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,27 +73,34 @@ const BookTutorDialog = () => {
       date: new Date(),
     },
   });
+  const utils = trpc.useUtils();
   const { data: courseTutor, isLoading: isLoading } =
     trpc.tutors.getTutorsCourse.useQuery();
 
   const coursesData = useMemo(() => {
-    const uniqueCourses = new Map<string, any>();
-    courseTutor?.forEach((courseTutor) => {
-      uniqueCourses.set(courseTutor.course.id, courseTutor);
-    });
-
-    return Array.from(uniqueCourses.values()).map((courseTutor) => ({
-      label: courseTutor.course.name,
-      value: courseTutor.course.id,
-    }));
+    return (
+      courseTutor?.map((c) => {
+        return {
+          id: c.course.id,
+          name: c.course.name,
+          createdAt: c.course.createdAt,
+          updatedAt: c.course.updatedAt,
+          groupId: c.course.groupId,
+          code: c.course.code,
+        };
+      }) ?? []
+    );
   }, [courseTutor])!;
   const { mutateAsync: addSession } = trpc.sessions.createSession.useMutation({
     onSuccess: () => {
       toast({
         title: "Session booked successfully",
-        description: "Your session has been booked successfully",
+        description:
+          "Your request has been sent successfully, when the tutor accepts your request you will be notified",
         className: "bg-success-600 text-primary-white",
       });
+      utils.sessions.getUserSessions.invalidate();
+      setOpen(false);
     },
     onError: (e: any) => {
       toast({
@@ -89,14 +120,18 @@ const BookTutorDialog = () => {
         label: courseTutor.tutor.user.name,
         value: courseTutor.tutorId,
       }));
-  }, [courseTutor, form.getValues("course")])!;
+  }, [courseTutor, form.watch("course")])!;
+
+  useEffect(() => {
+    form.setValue("tutor", "");
+  }, [form.watch("course")]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     addSession({
       courseId: values.course,
       date: values.date!,
       requestedBy: user?.id!,
-      time: AVAILABLE_TIMES.find((time) => time.date === values.date)?.time!,
+      time: values.time!,
       courseName: courseTutor!.find((ct) => ct.course.id === values.course)
         ?.course.name!,
     });
@@ -107,7 +142,7 @@ const BookTutorDialog = () => {
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild id="university" className="cursor-pointer">
         <Button
           className={buttonVariants({
@@ -115,11 +150,12 @@ const BookTutorDialog = () => {
             className:
               "bg-primary-light hover:bg-primary-dark hover:text-white",
           })}
+          onClick={() => setOpen(true)}
         >
           Book Tutor
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col w-[480px]">
+      <DialogContent className="flex flex-col w-full md:w-[480px] lg:w-[480px]">
         <DialogTitle>Book Tutor</DialogTitle>
         <DialogDescription>
           Start a tutoring session with a tutor in the desired course
@@ -170,13 +206,29 @@ const BookTutorDialog = () => {
                 <FormItem className="w-full flex flex-col gap-2">
                   <FormLabel htmlFor="date">Date</FormLabel>
                   <FormControl>
-                    <DateSelect field={field} dates={uniqueDatesArray} />
+                    <DateSelect field={field} dates={dateArr} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <SubmitButton isSubmitting={form.formState.isSubmitting} />
+            <FormField
+              control={form.control}
+              name="time"
+              render={({ field }) => (
+                <FormItem className="w-full flex flex-col gap-2">
+                  <FormLabel htmlFor="date">Time</FormLabel>
+                  <FormControl>
+                    <TimeSelect field={field} times={TIMES} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <SubmitButton
+              isSubmitting={form.formState.isSubmitting}
+              text="Book Tutor"
+            />
           </form>
         </Form>
       </DialogContent>

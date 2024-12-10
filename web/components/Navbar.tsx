@@ -46,11 +46,6 @@ const ITEMS_AUTH = [
     href: "/profile",
     icon: UserPen,
   },
-  {
-    title: "Logout",
-    href: "/logout",
-    icon: LogOut,
-  },
 ];
 
 const ITEMS_UNAUTH = [
@@ -120,9 +115,12 @@ const Navbar = async () => {
                         return null;
                       }
                     }
+                    if (item.title === "Logout" || item.title === "Profile") {
+                      return null;
+                    }
 
                     return (
-                      <NavLink href={item.href}>
+                      <NavLink href={item.href} key={item.href}>
                         <item.icon />
                         {item.title}
                       </NavLink>
@@ -131,12 +129,18 @@ const Navbar = async () => {
                 </SignedIn>
                 {/* @ts-ignore*/}
                 <SignedOut>
-                  {ITEMS_UNAUTH.map((item) => (
-                    <NavLink href={item.href}>
-                      <item.icon />
-                      {item.title}
-                    </NavLink>
-                  ))}
+                  {ITEMS_UNAUTH.map((item) => {
+                    if (item.title === "Login" || item.title === "Sign Up") {
+                      return null;
+                    }
+
+                    return (
+                      <NavLink href={item.href} key={item.href}>
+                        <item.icon />
+                        {item.title}
+                      </NavLink>
+                    );
+                  })}
                 </SignedOut>
               </div>
               <div className="h-full flex items-center gap-4">
@@ -160,6 +164,7 @@ const Navbar = async () => {
                 <SignedOut>
                   <div className="flex gap-4">
                     <NavLink href="/sign-in" variant="ghost">
+                      <LogIn />
                       Login
                     </NavLink>
                     <NavLink
@@ -167,6 +172,7 @@ const Navbar = async () => {
                       className="bg-primary-light text-white"
                       variant="default"
                     >
+                      <UserPlus />
                       Sign Up
                     </NavLink>
                   </div>
