@@ -84,7 +84,7 @@ const MaterialTabContent = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
       if (quiz.courseId !== null) {
@@ -243,7 +243,7 @@ const MaterialTabContent = () => {
                       disabled={form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                        <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                       ) : (
                         "Create Quiz"
                       )}

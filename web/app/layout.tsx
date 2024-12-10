@@ -7,7 +7,6 @@ import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TRPCProvider } from "@/trpc/client";
-import StreamClientProvider from "@/components/StreamProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -34,8 +33,7 @@ export default function RootLayout({
           <body className={`${poppins.className} antialiased`}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {/*@ts-ignore*/}
-              <Navbar />
-              <main className="dark:grainy-dark flex light:grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
+              <main className="dark:grainy-dark flex light:grainy-light flex-col min-h-[calc(100vh)]">
                 {children}
               </main>
               <Toaster />

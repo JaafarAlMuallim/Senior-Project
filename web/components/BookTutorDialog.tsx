@@ -68,14 +68,14 @@ const BookTutorDialog = () => {
       toast({
         title: "Session booked successfully",
         description: "Your session has been booked successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
     },
     onError: (e: any) => {
       toast({
         title: "Session booking failed",
         description: e.message,
-        className: "bg-danger-600 text-white-default",
+        className: "bg-danger-600 text-primary-white",
       });
     },
   });

@@ -31,6 +31,34 @@ export const scheduleRouter = router({
         },
       });
     }),
+
+  removeSchedule: authProcedure
+    .input(
+      z.object({
+        sectionId: z.string(),
+        semester: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { semester, sectionId } = input;
+      const registration = await ctx.postgresClient.registration.findFirst({
+        where: {
+          userId: ctx.user?.id,
+          semester,
+          sectionId,
+        },
+      });
+
+      if (!registration) {
+        throw new Error("Registration does not exist");
+      }
+
+      return await ctx.postgresClient.registration.delete({
+        where: {
+          id: registration.id,
+        },
+      });
+    }),
   getSchedule: authProcedure
     .input(
       z.object({

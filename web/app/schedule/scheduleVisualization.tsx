@@ -1,27 +1,21 @@
+"use client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { sub } from "date-fns";
+import { trpc } from "@/trpc/client";
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React from "react";
-
-const COURSES = [
-  {
-    course: "CSE 110",
-    title: "Software Engineering",
-    days: ["MON", "WED"],
-    time: "10:00 - 10:50",
-  },
-  {
-    course: "CSE 120",
-    title: "Computer Architecture",
-    days: ["TUE", "THU"],
-    time: "14:00 - 15:30",
-  },
-  {
-    course: "MATH 180",
-    title: "Linear Algebra",
-    days: ["MON", "WED", "FRI"],
-    time: "13:00 - 13:50",
-  },
-];
 
 const MAPPER = {
   U: "SUN",
@@ -34,16 +28,41 @@ const MAPPER = {
 };
 
 const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
+  const { toast } = useToast();
+  const utils = trpc.useUtils();
   const hours = Array.from(
     { length: 14 },
     (_, i) => `${(i + 7).toString().padStart(2, "0")}:00`,
   );
+  const router = useRouter();
   const days = ["U", "M", "T", "W", "R"];
+  const { mutate: removeRegistration } =
+    trpc.schedule.removeSchedule.useMutation({
+      onSuccess: () => {
+        toast({
+          title: "Removed Class",
+          description: "The class has been removed from your schedule",
+          className: "bg-success-600 text-primary-white",
+        });
+        utils.schedule.getSchedule.invalidate({
+          semester: "241",
+        });
+        router.refresh();
+      },
+      onError: (error) => {
+        console.log(error);
+        toast({
+          title: "Error",
+          description: "An error occurred while removing the section",
+          variant: "destructive",
+        });
+      },
+    });
 
   const getTimeSlot = (time: string) => {
     const [start, end] = time.split(" - ");
-    const startHour = parseInt(start.split(":")[0]);
-    const endHour = parseInt(end.split(":")[0]);
+    const startHour = parseInt(start.split(":")[0]) + 3;
+    const endHour = parseInt(end.split(":")[0]) + 3;
     const startMinute = parseInt(start.split(":")[1]);
     const endMinute = parseInt(end.split(":")[1]);
     return {
@@ -94,15 +113,48 @@ const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
                         <div
                           key={courseIdx}
                           className={cn(
-                            "absolute w-full text-white-default text-xs overflow-hidden bg-primary-light rounded-lg px-2 flex flex-col justify-around z-20",
+                            "absolute w-full text-primary-white text-xs overflow-hidden bg-primary-light rounded-lg px-2 flex flex-col justify-around z-10",
                           )}
                           style={{
                             top: `${(start % 1) * 100}%`,
                             height: `${duration * 100}%`,
                           }}
                         >
-                          <div className="font-semibold uppercase">
-                            {section.course.code}
+                          <div className="flex justify-between">
+                            <div className="font-semibold uppercase">
+                              {section.course.code}
+                            </div>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <X size={16} color={"white"} />
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    This action will delete the course of your
+                                    courses list
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action will delete the course from your
+                                    courses list. You can add it if there is no
+                                    conflict with your current schedule.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => {
+                                      removeRegistration({
+                                        sectionId: section.id,
+                                        semester: "241",
+                                      });
+                                    }}
+                                  >
+                                    Remove
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                           <div className="text-xs capitalize">
                             {section.course.name}
