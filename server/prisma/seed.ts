@@ -42,8 +42,8 @@ const main = async () => {
   });
   const codes = deptCodes.filter((code) => code !== "select");
   // NEXT ITERATION 12 - 18
-  const i = 17;
-  if (i === 17) {
+  const i = 7;
+  if (i === 7) {
     console.log(`Starting index = ${i} Code = ${codes[i]}`);
     await page.select("#dept_code", codes[i]);
     await page.waitForSelector("div > #data-table");
