@@ -6,7 +6,7 @@ const CourseGridTutoring = async () => {
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-semibold">Tutor</h2>
-      <div className="grow grid grid-cols-2 grid-rows-2 gap-8">
+      <div className="grow grid grid-cols-1 sm:grid-cols-2 gap-8">
         {tutorCourses.map((item) => (
           <CourseCard
             key={item.course.id}

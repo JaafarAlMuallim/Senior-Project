@@ -9,13 +9,13 @@ export const ProfileSection = async () => {
   const user = await currentUser();
   return (
     <div className="flex flex-col gap-4 justify-start items-center">
-      <Avatar className="h-64 w-64">
+      <Avatar className="h-32 w-32 sm:h-48 sm:w-48 md:h-64 md:w-64">
         <AvatarImage src={user?.imageUrl} />
         <AvatarFallback className="bg-violet-700 text-white text-7xl">
           {getInitials(profile?.user.name ?? "XX")}
         </AvatarFallback>
       </Avatar>
-      <h2 className="text-2xl font-semibold">{profile?.user.name}</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold">{profile?.user.name}</h2>
       <ProfileUpdateDialog />
     </div>
   );
