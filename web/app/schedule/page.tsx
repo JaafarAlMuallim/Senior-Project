@@ -21,17 +21,20 @@ export default async function SchedulePage() {
   });
 
   return (
-    <MaxWidthWrapper className="my-8 px-12 flex flex-col gap-8">
-      <Suspense fallback={<Loader />}>
-        <ScheduleVisualization schedule={scheduleData} />
-      </Suspense>
-      <ScheduleClient
-        courses={uniqueCourseMap}
-        instructors={uniqueInstructorMap}
-      />
-      <Suspense fallback={<Loader />}>
-        <ScheduleTable sections={sections} currSections={scheduleData} />
-      </Suspense>
-    </MaxWidthWrapper>
+    <>
+      <Navbar />
+      <MaxWidthWrapper className="my-8 px-12 flex flex-col gap-8">
+        <Suspense fallback={<Loader />}>
+          <ScheduleVisualization schedule={scheduleData} />
+        </Suspense>
+        <ScheduleClient
+          courses={uniqueCourseMap}
+          instructors={uniqueInstructorMap}
+        />
+        <Suspense fallback={<Loader />}>
+          <ScheduleTable sections={sections} currSections={scheduleData} />
+        </Suspense>
+      </MaxWidthWrapper>
+    </>
   );
 }

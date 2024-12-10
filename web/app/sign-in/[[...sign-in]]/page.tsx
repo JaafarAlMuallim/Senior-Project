@@ -1,4 +1,5 @@
 "use client";
+import Navbar from "@/components/Navbar";
 // import * as Clerk from "@clerk/elements/common";
 // import * as SignIn from "@clerk/elements/sign-in";
 // import { Button } from "@/components/ui/button";
@@ -18,9 +19,12 @@ import { SignIn } from "@clerk/nextjs";
 
 export default function SignInPage() {
   return (
-    <div className="grid w-full grow items-center px-4 sm:justify-center">
-      <SignIn />
-    </div>
+    <>
+      <Navbar />
+      <div className="grid w-full grow items-center px-4 sm:justify-center">
+        <SignIn />
+      </div>
+    </>
   );
   // return (
   //   <div className="grid w-full grow items-center px-4 sm:justify-center">
