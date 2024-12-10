@@ -6,7 +6,7 @@ import Image from "next/image";
 const LandingContent = () => {
   return (
     <div className="min-h-screen bg-background">
-      <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4">
+      <div className="container relative mx-auto flex min-h-[90vh] items-center justify-between px-4 flex-col-reverse md:flex-row">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -180,7 +180,7 @@ const LandingContent = () => {
 
       <footer className="border-t bg-background py-12">
         <div className="container mx-auto px-4">
-          <div className="grid gap-8 md:grid-cols-4">
+          <div className="grid grid-cols-4 gap-8 sm:grid-cols-4">
             <div>
               <h3 className="mb-4 text-lg font-semibold">EduLink</h3>
             </div>
