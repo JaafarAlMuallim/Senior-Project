@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/components/Navbar";
+import { Button, buttonVariants } from "@/components/ui/button";
 // import * as Clerk from "@clerk/elements/common";
 // import * as SignUp from "@clerk/elements/sign-up";
 // import { Button } from "@/components/ui/button";
@@ -16,13 +16,24 @@ import Navbar from "@/components/Navbar";
 // import { Icons } from "@/components/ui/icons";
 // import { cn } from "@/lib/utils";
 import { SignUp } from "@clerk/nextjs";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
+  const router = useRouter();
   return (
     <>
-      <Navbar />
-      <div className="grid w-full grow items-center px-4 sm:justify-center">
+      <div className="flex flex-col gap-2 w-full grow items-center px-4 sm:justify-center">
         <SignUp />
+        <Button
+          className={buttonVariants({
+            variant: "default",
+            className:
+              "bg-primary-light text-primary-white hover:bg-primary-dark w-[400px]",
+          })}
+        >
+          Back to Home
+        </Button>
       </div>
     </>
   );

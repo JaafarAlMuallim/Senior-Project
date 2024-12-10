@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/components/Navbar";
+import { Button, buttonVariants } from "@/components/ui/button";
 // import * as Clerk from "@clerk/elements/common";
 // import * as SignIn from "@clerk/elements/sign-in";
 // import { Button } from "@/components/ui/button";
@@ -20,9 +20,17 @@ import { SignIn } from "@clerk/nextjs";
 export default function SignInPage() {
   return (
     <>
-      <Navbar />
       <div className="grid w-full grow items-center px-4 sm:justify-center">
         <SignIn />
+        <Button
+          className={buttonVariants({
+            variant: "default",
+            className:
+              "bg-primary-light text-primary-white hover:bg-primary-dark w-[400px]",
+          })}
+        >
+          Back to Home
+        </Button>
       </div>
     </>
   );

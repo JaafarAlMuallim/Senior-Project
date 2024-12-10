@@ -8,6 +8,8 @@ import { trpc } from "@/trpc/server";
 import PendingSessions from "@/components/PendingSessions";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Navbar from "@/components/Navbar";
+import { DAYS } from "@/validators/Placeholders";
+import { redirect } from "next/navigation";
 
 const HomePage = async () => {
   const schedule = await trpc.schedule.getSchedule({
@@ -15,21 +17,25 @@ const HomePage = async () => {
   });
   const roles = await trpc.profiles.roles();
   const sessions = await trpc.sessions.getAcceptedSessionTutor();
+  const helpSessions = await trpc.sessions.getUserSessions();
   const requests = await trpc.sessions.getPendingSessionTutor();
-  const tutor = !!roles.tutor;
 
   const today = new Date();
-  const todayDay = today
-    .toLocaleDateString("en-US", { weekday: "long" })
-    .toUpperCase();
+  const todayDay = today.toLocaleDateString("en-US", { weekday: "long" });
+
+  const todayRec = DAYS.options.find((day) => day.label === todayDay);
 
   const todaysCourses = schedule.filter((course) =>
-    course.section.recurrence?.includes(todayDay),
+    course.section.recurrence?.includes(todayRec?.value!),
   );
 
   const sortedCourses = [...todaysCourses].sort(
     (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime(),
   );
+
+  if (schedule.length === 0) {
+    redirect("/schedule");
+  }
 
   return (
     <>
@@ -51,23 +57,36 @@ const HomePage = async () => {
                   />
                 ))}
               </div>
-              {tutor && (
+              {roles.tutor && sessions.length > 0 && (
                 <>
                   <h3 className="text-2xl font-semibold text-primary">
                     Tutoring Sessions
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
-                    {!!sessions.length ? (
-                      sessions?.map((session) => (
+                    {sessions?.map((session) => (
+                      <TutorSession key={session.id} session={session} />
+                    ))}
+                  </div>
+                </>
+              )}
+              {helpSessions.length > 0 && (
+                <>
+                  <h3 className="text-2xl font-semibold text-primary">
+                    Help Sessions
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
+                    {helpSessions.length > 0 ? (
+                      helpSessions?.map((session) => (
                         <TutorSession key={session.id} session={session} />
                       ))
                     ) : (
-                      <p>No Schedule Sessions</p>
+                      <p className="text-lg">No Scheduled Sessions</p>
                     )}
                   </div>
                 </>
               )}
-              {tutor && (
+
+              {roles.tutor && requests.length > 0 && (
                 <>
                   <h3 className="text-2xl font-semibold text-primary">
                     Pending Requests
@@ -94,8 +113,8 @@ const HomePage = async () => {
                   year: "numeric",
                 })}
               </div>
-              <div className="flex space-y-6 justify-center items-center">
-                {!!sortedCourses.length ? (
+              <div className="flex flex-col space-y-6 justify-center items-center">
+                {sortedCourses.length !== 0 ? (
                   sortedCourses?.map((course, index) => (
                     <ScheduleItem
                       key={course.id}
@@ -109,7 +128,7 @@ const HomePage = async () => {
               </div>
               <BookTutorDialog />
               <HelpSessionForm />
-              {!tutor && <ApplyTutorForm />}
+              {!roles.tutor && <ApplyTutorForm />}
             </div>
           </div>
         </div>

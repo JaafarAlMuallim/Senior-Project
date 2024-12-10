@@ -34,7 +34,7 @@ import {
 import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Dropzone, { FileRejection } from "react-dropzone";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,8 +54,7 @@ import { Input } from "@/components/ui/input";
 import { CATEGORIES } from "@/validators/Placeholders";
 import Progress from "@/components/CustomProgress";
 import Category from "@/models/Category";
-
-// const courseId = "cm177rnwp0000119qsarlyxia";
+import Loader from "@/components/Loader";
 
 interface Folder {
   id: number;
@@ -86,6 +85,10 @@ const MaterialTabContent = () => {
       category: Category.OTHER,
       name: "Untitled",
     },
+  });
+
+  const { data: course, isLoading } = trpc.courses.getCourse.useQuery({
+    id: params.courseId,
   });
 
   const { toast } = useToast();
@@ -148,10 +151,17 @@ const MaterialTabContent = () => {
     setIsDialogOpen(false);
   }
 
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (!course) {
+    notFound();
+  }
+
   return (
     <TabsContent value="material" className="p-3">
       <div className="flex flex-col gap-8">
-        <h1 className="text-2xl font-bold">MATH 101</h1>
+        <h1 className="text-2xl font-bold capitalize">{course?.name}</h1>
         <h2 className="text-xl">Folders</h2>
         <div className="flex justify-end w-full">
           <Dialog open={isDialogOpen}>

@@ -77,7 +77,7 @@ const ScheduleClient = ({
               : "",
           )}
         >
-          Addable Only
+          Addable
         </Toggle>
         <MultiSelector
           title="Select Days"
@@ -85,7 +85,7 @@ const ScheduleClient = ({
           selected={searchParams.get("days")?.split(",") || []}
           setSelected={(value) => updateSearchParams("days", value)}
           searchPlaceholder="Search days..."
-          className="w-[193px]"
+          className="w-full md:w-[193px]"
         />
         <SingleSelector
           items={courseAsLabelValue}
@@ -94,7 +94,7 @@ const ScheduleClient = ({
           placeholder="Select Course"
           searchPlaceholder="Search course..."
           field="course"
-          className="w-[380px]"
+          className="w-full md:w-[380px]"
         />
         <MultiSelector
           title="Select Instructors"
@@ -102,7 +102,7 @@ const ScheduleClient = ({
           selected={searchParams.get("instructors")?.split(",") || []}
           setSelected={(value) => updateSearchParams("instructors", value)}
           searchPlaceholder="Search instructors..."
-          className="w-[380px]"
+          className="w-full md:w-[380px]"
         />
       </div>
     </div>

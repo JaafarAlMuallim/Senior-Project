@@ -5,8 +5,6 @@ import MaterialTabContent from "./MaterialTabContent";
 import QuizTabContent from "./QuizTabContent";
 import Navbar from "@/components/Navbar";
 
-// const courseId = "cm177rnwp0000119qsarlyxia";
-
 const CoursePage = async () => {
   return (
     <>

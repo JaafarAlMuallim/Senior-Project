@@ -12,34 +12,42 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import Section from "@/models/section";
 import { trpc } from "@/trpc/client";
+import { Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-const timeIntersection = (a: [Date, Date], b: [Date, Date]) => {
+const timeIntersection = (
+  a: [Date, Date],
+  b: [Date, Date],
+  days1: string,
+  days2: string,
+) => {
   const [start1, end1] = a;
   const [start2, end2] = b;
-  if (
-    start1.getTime() === start2.getTime() ||
-    end1 === end2 ||
-    start1 === end2 ||
-    end1 === start2
-  ) {
-    return true;
+  if (days1.split("").some((day) => days2.includes(day))) {
+    if (
+      start1.getTime() === start2.getTime() ||
+      end1 === end2 ||
+      start1 === end2 ||
+      end1 === start2
+    ) {
+      return true;
+    }
+    console.log({
+      start1: start1.getTime(),
+      end1: end1.getTime(),
+      start2: start2.getTime(),
+      end2: end2.getTime(),
+    });
+    if (start1 < start2) {
+      console.log("END1 START2");
+      console.log(end1, start2);
+      return end1 > start2 || end1 === start2;
+    }
+    console.log("END2 START1");
+    console.log(end2, start1);
+    return end2 > start1 || end2 === start1;
   }
-  console.log({
-    start1: start1.getTime(),
-    end1: end1.getTime(),
-    start2: start2.getTime(),
-    end2: end2.getTime(),
-  });
-  if (start1 < start2) {
-    console.log("END1 START2");
-    console.log(end1, start2);
-    return end1 > start2 || end1 === start2;
-  }
-  console.log("END2 START1");
-  console.log(end2, start1);
-  return end2 > start1 || end2 === start1;
 };
 
 export const ScheduleTable = ({
@@ -49,9 +57,11 @@ export const ScheduleTable = ({
   sections: Section[];
   currSections: Schedule[];
 }) => {
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const utils = trpc.useUtils();
+  const [selected, setSelected] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const { mutate: registerSection } = trpc.schedule.createSchedule.useMutation({
     onSuccess: () => {
@@ -63,9 +73,16 @@ export const ScheduleTable = ({
       utils.schedule.getSchedule.invalidate({
         semester: "241",
       });
+      setLoading(false);
+      setSelected(null);
       router.refresh();
     },
+    onMutate: () => {
+      setLoading(true);
+    },
     onError: (error) => {
+      setLoading(false);
+      setSelected(null);
       console.log(error);
       toast({
         title: "Error",
@@ -97,6 +114,8 @@ export const ScheduleTable = ({
               !timeIntersection(
                 [section.startTime, section.endTime],
                 [curr.section.startTime, curr.section.endTime],
+                section.recurrence ?? "",
+                curr.section.recurrence ?? "",
               ),
           );
         if (!isAddable) return false;
@@ -131,6 +150,8 @@ export const ScheduleTable = ({
       timeIntersection(
         [section.startTime, section.endTime],
         [curr.section.startTime, curr.section.endTime],
+        section.recurrence ?? "",
+        curr.section.recurrence ?? "",
       ),
     );
 
@@ -193,9 +214,16 @@ export const ScheduleTable = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => addSection(section)}
+                    onClick={() => {
+                      addSection(section);
+                      setSelected(section.id);
+                    }}
                   >
-                    Add
+                    {section.id === selected && loading ? (
+                      <Loader2 className="animate-spin h-4 w-4" />
+                    ) : (
+                      "Add"
+                    )}
                   </Button>
                 </TableCell>
               </TableRow>
