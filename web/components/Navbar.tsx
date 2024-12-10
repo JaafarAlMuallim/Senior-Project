@@ -5,8 +5,86 @@ import { SignedIn, SignedOut, SignOutButton } from "@clerk/nextjs";
 import ThemeSwitch from "@/components/theme-switch";
 import { trpc } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
-import { AlertCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Calendar,
+  HomeIcon,
+  LogIn,
+  LogOut,
+  UserCog,
+  UserPen,
+  UserPlus,
+} from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
+import { ChatBubbleIcon } from "@radix-ui/react-icons";
+import { AppSidebar } from "./ui/app-sidebar";
+import { SidebarProvider, SidebarTrigger } from "./ui/sidebar";
+
+const ITEMS_AUTH = [
+  {
+    title: "Home",
+    href: "/home",
+    icon: HomeIcon,
+  },
+  {
+    title: "Chat",
+    href: "/chat",
+    icon: ChatBubbleIcon,
+  },
+  {
+    title: "Schedule",
+    href: "/schedule",
+    icon: Calendar,
+  },
+  {
+    title: "Admin",
+    href: "/admin",
+    icon: UserCog,
+  },
+  {
+    title: "Profile",
+    href: "/profile",
+    icon: UserPen,
+  },
+  {
+    title: "Logout",
+    href: "/logout",
+    icon: LogOut,
+  },
+];
+
+const ITEMS_UNAUTH = [
+  {
+    title: "Home",
+    href: "/",
+    icon: HomeIcon,
+  },
+  {
+    title: "Features",
+    href: "#features",
+    icon: ChatBubbleIcon,
+  },
+  {
+    title: "Statistics",
+    href: "#stats",
+    icon: Calendar,
+  },
+  {
+    title: "Start Learning",
+    href: "#start",
+    icon: UserCog,
+  },
+  {
+    title: "Login",
+    href: "/sign-in",
+    icon: LogIn,
+  },
+  {
+    title: "Sign Up",
+    href: "/sign-up",
+    icon: UserPlus,
+  },
+];
 
 const Navbar = async () => {
   const currUser = await currentUser();
@@ -14,68 +92,118 @@ const Navbar = async () => {
   const userRoles = await trpc.profiles.roles();
 
   return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
-      <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
-        <div className="flex h-16 items-center justify-between flex-row w-full px-8">
-          <div className="flex flex-row gap-4 text-primary-light justify-center items-center font-bold text-2xl">
-            <Image src={"/logo.png"} alt={"Logo"} width={64} height={64} />
-            EduLink
-          </div>
-          <div className="h-full flex items-center">
-            {/* @ts-ignore*/}
-            <SignedIn>
-              <NavLink href="/home">Home</NavLink>
-              <NavLink href="/chat">Chat</NavLink>
-              <NavLink href="/schedule">Schedule</NavLink>
-
-              {!!currUser && Boolean(userRoles.admin) && (
-                <NavLink href="/admin">Admin</NavLink>
-              )}
-            </SignedIn>
-            {/* @ts-ignore*/}
-            <SignedOut>
-              <NavLink href="/">Home</NavLink>
-              <NavLink href="#features">Features</NavLink>
-              <NavLink href="#stats">Statistics</NavLink>
-              <NavLink href="#start">Start Learning</NavLink>
-            </SignedOut>
-          </div>
-          <div className="h-full flex items-center gap-4">
-            <ThemeSwitch />
-            {/* @ts-ignore*/}
-            <SignedIn>
-              <NavLink href="/profile">Profile</NavLink>
-              <SignOutButton>
-                <Button
-                  className={buttonVariants({
-                    className: "font-semibold",
-                    variant: "ghost",
-                  })}
+    <>
+      <div className="hidden lg:block">
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
+            <div className="flex h-16 items-center justify-between flex-row w-full px-8">
+              <div className="flex flex-row gap-4 text-primary-light justify-center items-center font-bold text-2xl">
+                <Link
+                  href={`${currUser ? "/home" : "/"}`}
+                  className="flex gap-2 items-center justify-center"
                 >
-                  Logout
-                </Button>
-              </SignOutButton>
-            </SignedIn>
-
-            {/* @ts-ignore*/}
-            <SignedOut>
-              <div className="flex gap-4">
-                <NavLink href="/sign-in" variant="ghost">
-                  Login
-                </NavLink>
-                <NavLink
-                  href="/sign-up"
-                  className="bg-primary-light text-white"
-                  variant="default"
-                >
-                  Sign Up
-                </NavLink>
+                  <Image
+                    src={"/logo.png"}
+                    alt={"Logo"}
+                    width={80}
+                    height={80}
+                  />
+                  EduLink
+                </Link>
               </div>
-            </SignedOut>
-          </div>
-        </div>
-      </nav>
-    </ErrorBoundary>
+              <div className="h-full flex items-center">
+                {/* @ts-ignore*/}
+                <SignedIn>
+                  {ITEMS_AUTH.map((item) => {
+                    if (item.title === "Admin") {
+                      if (!Boolean(userRoles.admin)) {
+                        return null;
+                      }
+                    }
+
+                    return (
+                      <NavLink href={item.href}>
+                        <item.icon />
+                        {item.title}
+                      </NavLink>
+                    );
+                  })}
+                </SignedIn>
+                {/* @ts-ignore*/}
+                <SignedOut>
+                  {ITEMS_UNAUTH.map((item) => (
+                    <NavLink href={item.href}>
+                      <item.icon />
+                      {item.title}
+                    </NavLink>
+                  ))}
+                </SignedOut>
+              </div>
+              <div className="h-full flex items-center gap-4">
+                <ThemeSwitch />
+                {/* @ts-ignore*/}
+                <SignedIn>
+                  <NavLink href="/profile">Profile</NavLink>
+                  <SignOutButton>
+                    <Button
+                      className={buttonVariants({
+                        className: "font-semibold",
+                        variant: "ghost",
+                      })}
+                    >
+                      Logout
+                    </Button>
+                  </SignOutButton>
+                </SignedIn>
+
+                {/* @ts-ignore*/}
+                <SignedOut>
+                  <div className="flex gap-4">
+                    <NavLink href="/sign-in" variant="ghost">
+                      Login
+                    </NavLink>
+                    <NavLink
+                      href="/sign-up"
+                      className="bg-primary-light text-white"
+                      variant="default"
+                    >
+                      Sign Up
+                    </NavLink>
+                  </div>
+                </SignedOut>
+              </div>
+            </div>
+          </nav>
+        </ErrorBoundary>
+      </div>
+      <div className="block md:hidden lg:hidden">
+        <SidebarProvider>
+          <nav className="sticky z-20 h-16 inset-x-0 top-0 w-full backdrop-blur-lg transition-all">
+            <div className="flex flex-row-reverse justify-between items-start border-b pr-8">
+              <div className="flex flex-row gap-4 text-primary-light justify-center items-center font-bold text-lg">
+                <Link
+                  href={`${currUser ? "/home" : "/"}`}
+                  className="flex gap-2 items-center justify-center"
+                >
+                  <Image
+                    src={"/logo.png"}
+                    alt={"Logo"}
+                    width={44}
+                    height={44}
+                  />
+                  EduLink
+                </Link>
+              </div>
+              <SidebarTrigger />
+            </div>
+            <AppSidebar
+              items={!!currUser ? ITEMS_AUTH : ITEMS_UNAUTH}
+              roles={userRoles}
+            />
+          </nav>
+        </SidebarProvider>
+      </div>
+    </>
   );
 };
 

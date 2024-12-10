@@ -1,4 +1,5 @@
 "use client";
+import Navbar from "@/components/Navbar";
 // import * as Clerk from "@clerk/elements/common";
 // import * as SignUp from "@clerk/elements/sign-up";
 // import { Button } from "@/components/ui/button";
@@ -18,9 +19,12 @@ import { SignUp } from "@clerk/nextjs";
 
 export default function SignUpPage() {
   return (
-    <div className="grid w-full grow items-center px-4 sm:justify-center">
-      <SignUp />
-    </div>
+    <>
+      <Navbar />
+      <div className="grid w-full grow items-center px-4 sm:justify-center">
+        <SignUp />
+      </div>
+    </>
   );
   // return (
   //   <div className="grid w-full grow items-center px-4 sm:justify-center">
