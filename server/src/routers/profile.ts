@@ -1,64 +1,52 @@
 import { z } from "zod";
-import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, publicProcedure, router } from "../trpc";
 
 export const profileSchema = z.object({
   id: z.string(),
+  email: z.string(),
   userId: z.string(),
   major: z.string(),
-  standing: z.string(),
   university: z.string(),
-  phone: z.string(),
   name: z.string(),
+  password: z.string().optional(),
 });
 
 export const profileRouter = router({
-  get: publicProcedure
-    .input(
-      z.object({
-        clerkId: z.string(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      console.log("GET PROFILE");
-      const { clerkId } = input;
-      try {
-        const profile = await postgresClient.profile.findFirst({
-          where: {
-            userId: clerkId,
-          },
-          include: {
-            user: true,
-          },
-        });
+  get: authProcedure.query(async ({ ctx }) => {
+    try {
+      const profile = await ctx.postgresClient.profile.findFirst({
+        where: {
+          userId: ctx.user?.id,
+        },
+        include: {
+          user: true,
+        },
+      });
 
-        if (!profile) {
-          throw new Error("Profile not found");
-        }
-        return profile;
-      } catch (e) {
-        console.log(e);
+      if (!profile) {
+        return null;
       }
-    }),
-  update: publicProcedure
+      return profile;
+    } catch (e) {
+      console.log(e);
+    }
+  }),
+  update: authProcedure
     .input(
       z.object({
-        clerkId: z.string(),
         data: profileSchema.partial(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
-      const { clerkId, data } = input;
+      const { data } = input;
       try {
-        const profile = await postgresClient.profile.update({
+        const profile = await ctx.postgresClient.profile.update({
           where: {
-            userId: clerkId,
+            userId: ctx.user?.id,
           },
           data: {
             major: data.major,
-            standing: data.standing,
             university: data.university,
-            phone: data.phone,
             user: {
               update: {
                 name: data.name,
@@ -72,4 +60,32 @@ export const profileRouter = router({
         throw new Error("Profile not found");
       }
     }),
+  roles: publicProcedure.query(async ({ ctx }) => {
+    try {
+      if (!ctx.user) {
+        return {
+          admin: false,
+          tutor: false,
+        };
+      }
+      const allRoles = await ctx.postgresClient.user.findFirst({
+        where: {
+          id: ctx.user?.id,
+        },
+        include: {
+          Admin: true,
+          Tutor: true,
+        },
+      });
+      const roles = {
+        admin: !!allRoles?.Admin,
+        tutor: !!allRoles?.Tutor,
+      };
+
+      return roles;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Roles not found");
+    }
+  }),
 });

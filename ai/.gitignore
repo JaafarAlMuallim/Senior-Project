@@ -1,0 +1,7 @@
+venv/
+.pytest_cache
+__pycache__
+.deepeval_telemtry.txt
+.deepeval-cache.json
+myenv
+desktop.ini

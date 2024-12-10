@@ -1,86 +1,203 @@
-import { z } from "zod";
-import { postgresClient } from "../db";
-import { publicProcedure, router } from "../trpc";
 import { Category } from "@prisma/postgres/client";
+import { z } from "zod";
+import { authProcedure, router } from "../trpc";
+
+const preprocess = (rawString: string) => {
+  // Step 1: Remove the markdown-like code block syntax
+  let cleanedString = rawString.replace(/```json|```/g, "").trim();
+
+  // Step 2: Replace invalid escape sequences and unnecessary symbols
+  cleanedString = cleanedString.replace(/\\[^\ntrbfu"'\\]/g, ""); // Remove invalid escape sequences
+  cleanedString = cleanedString.replace(/\\n/g, ""); // Remove literal newlines (\n)
+
+  // Step 3: Parse the cleaned string into JSON
+  try {
+    const parsedQuestions = JSON.parse(cleanedString);
+
+    // Define TypeScript type for validation
+    type Question = {
+      question: string;
+      options: string[];
+      answer: string;
+    };
+
+    // Validate and type-check
+    const typedQuestions: Question[] = parsedQuestions;
+
+    return typedQuestions;
+  } catch (error) {
+    console.error("Failed to parse JSON:", error);
+    return [];
+  }
+};
 
 export const courseRouter = router({
-  getCourses: publicProcedure.query(async () => {
-    const courses = await postgresClient.course.findMany();
+  getCourses: authProcedure.query(async ({ ctx }) => {
+    const courses = await ctx.postgresClient.course.findMany();
     return courses;
   }),
 
-  getCourse: publicProcedure
+  getCourse: authProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input: { id } }) => {
-      const course = await postgresClient.course.findUnique({ where: { id } });
+    .query(async ({ input: { id }, ctx }) => {
+      const course = await ctx.postgresClient.course.findUnique({
+        where: { id },
+      });
       return course;
     }),
 
-  getUserCourses: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input: { id }, ctx }) => {
-      console.log(id);
-      console.log(ctx);
-      try {
-        const enrolled = await postgresClient.registration.findMany({
-          where: { userId: id },
-          include: { section: { include: { course: true } } },
-        });
-        return enrolled;
-      } catch (e) {
-        console.log(e);
-        throw new Error("Error");
-      }
-    }),
-  addMaterial: publicProcedure
+  getUserCourses: authProcedure.query(async ({ ctx }) => {
+    try {
+      const enrolled = await ctx.postgresClient.registration.findMany({
+        where: { userId: ctx.user?.id },
+        include: { section: { include: { course: true } } },
+      });
+      return enrolled;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Error");
+    }
+  }),
+  addMaterial: authProcedure
     .input(
       z.object({
         courseId: z.string(),
-        file: z.object({
-          url: z.string(),
-          type: z.string(),
-          name: z.string(),
-          size: z.number(),
-        }),
-      }),
+        name: z.string(),
+        url: z.string(),
+        category: z.nativeEnum(Category),
+      })
     )
-    .mutation(async ({ input }) => {
-      const { courseId, file } = input;
-      const random = Math.random();
-      const category =
-        file.size > 1024
-          ? Category.BOOK
-          : random > 0.5
-            ? Category.SLIDE
-            : Category.HW;
+    .mutation(async ({ input, ctx }) => {
+      const { courseId, name, url, category } = input;
       try {
-        const material = await postgresClient.material.create({
+        const material = await ctx.postgresClient.material.create({
           data: {
             courseId,
-            name: file.name,
-            size: file.size,
-            url: file.url,
-            fileType: file.type,
+            name,
+            url,
             category,
           },
         });
-        return material;
+        return material.id;
       } catch (e) {
         console.log(e);
+        return {
+          courseId: null,
+          error: "Failed to create material",
+        };
       }
     }),
-  getMaterial: publicProcedure
-    .input(z.object({ courseId: z.string(), category: z.nativeEnum(Category) }))
-    .query(async ({ input }) => {
+
+  getMaterial: authProcedure
+    .input(z.object({ courseId: z.string(), category: z.string() }))
+    .query(async ({ input, ctx }) => {
       const { courseId, category } = input;
+      const cat = category.toUpperCase() as Category;
       try {
-        const materials = await postgresClient.material.findMany({
-          where: { courseId, category },
+        const course = await ctx.postgresClient.course.findUnique({
+          where: { id: courseId },
         });
-        console.log(materials);
-        return materials;
+        const materials = await ctx.postgresClient.material.findMany({
+          where: { courseId, category: cat },
+        });
+        return {
+          course,
+          materials,
+        };
       } catch (e) {
         console.log(e);
       }
     }),
+
+  createQuiz: authProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+        material: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { courseId } = input;
+      try {
+        const fetched = await fetch("http://localhost:8000/generate-mcq", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: courseId }),
+        });
+        const raw = (await fetched.json()) as { questions: string };
+
+        const questions = preprocess(raw.questions);
+        const quiz = await ctx.postgresClient.quiz.create({
+          data: {
+            courseId,
+          },
+        });
+        const allQuestions = questions.map((question) => {
+          return {
+            quizId: quiz.id,
+            question: question.question,
+            options: question.options,
+            correctAnswer: question.answer,
+          };
+        });
+        await ctx.postgresClient.question.createMany({
+          data: allQuestions,
+        });
+
+        return quiz;
+      } catch (e) {
+        console.log(e);
+        return {
+          courseId: null,
+          error: "Failed to create quiz",
+        };
+      }
+    }),
+  getQuizzes: authProcedure
+    .input(
+      z.object({
+        courseId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { courseId } = input;
+      const quizzes = await ctx.postgresClient.quiz.findMany({
+        where: { courseId },
+      });
+      return quizzes;
+    }),
+  getQuiz: authProcedure
+    .input(
+      z.object({
+        quizId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { quizId } = input;
+      const quiz = ctx.postgresClient.quiz.findUnique({
+        where: { id: quizId },
+        include: {
+          Question: true,
+        },
+      });
+      return quiz;
+    }),
+  getAllSections: authProcedure.query(async ({ ctx }) => {
+    try {
+      const sections = await ctx.postgresClient.section.findMany({
+        include: {
+          course: true,
+        },
+        orderBy: {
+          title: "asc",
+        },
+      });
+      return sections;
+    } catch (e) {
+      console.log(e);
+      throw new Error("Error");
+    }
+  }),
 });

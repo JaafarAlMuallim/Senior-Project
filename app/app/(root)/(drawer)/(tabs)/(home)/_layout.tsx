@@ -1,9 +1,6 @@
 import { Redirect, Stack } from "expo-router";
 import { useAuth } from "@clerk/clerk-expo";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { ArrowDownNarrowWide } from "lucide-react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Layout = () => {
   const { isSignedIn } = useAuth();

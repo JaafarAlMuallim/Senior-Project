@@ -2,8 +2,8 @@ import CustomText from "@/components/CustomText";
 import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
-import { useUserStore } from "@/store/store";
 import { trpc } from "@/lib/trpc";
+import { useOfflineStore } from "@/store/offlineStorage";
 import { useUser } from "@clerk/clerk-expo";
 import { router } from "expo-router";
 import {
@@ -23,7 +23,7 @@ import {
 } from "react-native";
 
 const EditProfile = () => {
-  const { user, setUser } = useUserStore();
+  const { user, setUser } = useOfflineStore();
   const { user: clerkUser } = useUser();
 
   const [name, setName] = useState(user?.user.name || "");
@@ -56,7 +56,6 @@ const EditProfile = () => {
     data: any, // update types
   ) =>
     mutate({
-      clerkId: clerkUser?.id!,
       data,
     });
   const onUpdatePassword = async () => {

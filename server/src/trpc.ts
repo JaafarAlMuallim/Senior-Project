@@ -1,9 +1,59 @@
-import type { User } from "@prisma/postgres/client";
 import { initTRPC } from "@trpc/server";
-import * as trpcExpress from "@trpc/server/adapters/express";
+import { mongoClient, postgresClient, redisClient } from "./db";
+import jwt from "jsonwebtoken";
 
-export const createContext =
-  ({}: trpcExpress.CreateExpressContextOptions) => ({});
+type ContextRequest = {
+  headers: {
+    authorization?: string;
+    [key: string]: string | string[] | undefined;
+  };
+  [key: string]: any;
+};
+
+// Updated context options type
+type ContextOptions = {
+  req: ContextRequest;
+};
+
+export const createContext = async (opts?: ContextOptions) => {
+  const token = opts?.req.headers.authorization?.split(" ")[1];
+  console.log(opts?.req.headers);
+  const user = await getSession(token!);
+  return {
+    req: opts?.req,
+    user,
+    mongoClient,
+    postgresClient,
+    redisClient,
+  };
+};
+
+export const getSession = async (token: string | undefined) => {
+  if (!token || !process.env.SUPABASE_JWT_SECRET) {
+    return null;
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.SUPABASE_JWT_SECRET!
+    ) as jwt.JwtPayload;
+    const user = await postgresClient.user.findUnique({
+      where: {
+        clerkId: decoded.userId,
+      },
+      include: {
+        Admin: true,
+        Tutor: true,
+      },
+    });
+    return user;
+  } catch (e) {
+    console.log("ERROR");
+    console.log(e);
+    return null;
+  }
+};
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
 
@@ -12,13 +62,42 @@ export const trpc = initTRPC.context<Context>().create();
 export const publicProcedure = trpc.procedure;
 
 export const router = trpc.router;
+export const createTRPCRouter = trpc.router;
+export const createCallerFactory = trpc.createCallerFactory;
 
-export const authProcedure = trpc.procedure.use(({ ctx, next }) => {
-  // if (!(ctx as any).user) {
-  //   throw new Error("Unauthorized");
-  // }
-  // TODO: Uncomment the above code and replace the below code with the actual implementation
-  // const user = db.user.findFirst({ id: ctx.req.userId });
-  const user = {} as User;
-  return next({ ctx: { ...ctx, user } });
+export const authProcedure = trpc.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.user) {
+    throw new Error("Unauthorized");
+  }
+  console.log("GOT USER");
+  return next({ ctx });
 });
+
+export const adminProcedure = trpc.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.user || !ctx.user.Admin) {
+    throw new Error("Unauthorized");
+  }
+  return next({ ctx });
+});
+
+export const tutorProcedure = trpc.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.user || !ctx.user.Tutor) {
+    throw new Error("Unauthorized");
+  }
+  return next({ ctx });
+});
+
+export const subscriptionAuthProcedure = trpc.procedure.use(
+  async ({ ctx, next }) => {
+    if (!ctx.user) {
+      const token = ctx.req?.headers.authorization?.split(" ")[1];
+      ctx.user = await getSession(token);
+    }
+
+    if (!ctx.user) {
+      throw new Error("Unauthorized");
+    }
+
+    return next({ ctx });
+  }
+);

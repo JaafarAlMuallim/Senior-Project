@@ -1,6 +1,7 @@
 import CustomText from "@/components/CustomText";
 import Input from "@/components/Input";
 import { trpc } from "@/lib/trpc";
+import { useTokenStore } from "@/store/tokenStore";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { LockKeyhole, Mail, ShieldCheck, UserRound } from "lucide-react-native";
@@ -16,6 +17,7 @@ const SignUp = () => {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const { setToken } = useTokenStore();
 
   const { mutate } = trpc.auth.signUp.useMutation();
   const addUser = (clerkId: string) => mutate({ email, name, clerkId });
@@ -47,6 +49,7 @@ const SignUp = () => {
       if (completeSignUp?.status === "complete") {
         await setActive!({ session: completeSignUp?.createdSessionId });
         addUser(signUp.createdUserId!);
+        setToken({ token: signUp.createdUserId! });
         router.replace("/");
       } else {
         console.error(JSON.stringify(completeSignUp, null, 2));

@@ -1,6 +1,5 @@
 import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
-import Pdf from "react-native-pdf";
-import { TouchableOpacity, Dimensions, StyleSheet, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 const Page = () => {
@@ -34,7 +33,7 @@ const Page = () => {
         }}
       />
       <View className="flex-1 flex flex-col justify-start items-center my-8">
-        {/*<Pdf
+        {/*TODO DO IN BUILD <Pdf
           source={source}
           onLoadComplete={(numberOfPages, filePath) => {
             console.log(`Number of pages: ${numberOfPages}`);

@@ -1,16 +1,6 @@
 import CustomText from "@/components/CustomText";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
-import * as DocumentPicker from "expo-document-picker";
-import {
-  Image,
-  TouchableOpacity,
-  View,
-  Animated,
-  Easing,
-  FlatList,
-  Alert,
-} from "react-native";
+import { TouchableOpacity, View, FlatList } from "react-native";
 import {
   ArrowDownNarrowWide,
   EllipsisVertical,
@@ -59,17 +49,6 @@ const Page = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { registrations } = useCoursesStore();
 
-  const pickFiles = async () => {
-    try {
-      const res = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-        copyToCacheDirectory: false,
-      });
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "An error occurred while picking files.");
-    }
-  };
   if (!id) {
     return <Redirect href="/(root)/(drawer)/(tabs)/(home)/home" />;
   }

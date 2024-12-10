@@ -4,18 +4,15 @@
   "description": "## Table of Contents",
   "main": ".eslintrc.js",
   "private": true,
-  "workspaces": [
-    "app",
-    "server"
-  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "senior-project": "file:",
     "expo": "~51.0.28",
     "react": "18.2.0",
     "react-native": "0.74.5"

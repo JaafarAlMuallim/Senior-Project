@@ -1,71 +1,193 @@
-import { useEffect, useState } from "react";
-import { View, Animated, Easing } from "react-native";
+import { Suspense, useEffect, useState } from "react";
+import { View } from "react-native";
+import { useNetInfo } from "@react-native-community/netinfo";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Swipeable } from "react-native-gesture-handler";
+import { Link } from "expo-router";
 import { Root, List, Trigger, Content } from "@rn-primitives/tabs";
 import Chat from "@/components/Chat";
 import AiChat from "@/components/AiChat";
 import CustomText from "@/components/CustomText";
+import { toast } from "@/components/ui/toast";
 import { cn, separateNameNum } from "@/lib/utils";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { trpc } from "@/lib/trpc";
-import { useUserStore } from "@/store/store";
-import { Link, Redirect } from "expo-router";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
-import { Loader2 } from "lucide-react-native";
+import { Group, useOfflineStore } from "@/store/offlineStorage";
+import MuteAction from "@/components/MuteAction";
 
-const Chats = () => {
+type ChatType = "AI" | "GROUP";
+
+const NoGroupsMessage = () => (
+  <View className="flex h-full grow items-center py-24 flex-wrap px-8">
+    <CustomText styles="text-2xl text-wrap text-center">
+      Register Your{" "}
+      <Link
+        href="/(root)/(drawer)/(tabs)/(schedule)/schedule"
+        className="underline text-primary-light font-bold"
+      >
+        Schedule
+      </Link>{" "}
+      To Be Added To Groups
+    </CustomText>
+  </View>
+);
+
+const LoadingMessage = () => (
+  <View className="flex h-full grow items-center py-24">
+    <CustomText styles="text-xl">Loading...</CustomText>
+  </View>
+);
+
+const ChatItem = ({
+  group,
+  type,
+  onMute,
+}: {
+  group: Group;
+  type: ChatType;
+  onMute?: (groupId: string, currentStatus: boolean) => void;
+}) => {
+  const content =
+    type === "AI" ? (
+      <AiChat
+        key={group.id}
+        groupId={group.group.groupId}
+        chatName={separateNameNum(group.group?.name || "")}
+        routeTo={`/ai/${group.group.groupId}?name=${encodeURIComponent(group.group?.name || "")}`}
+      />
+    ) : (
+      <Swipeable
+        key={group.id}
+        renderRightActions={(progress, dragX) => (
+          <MuteAction
+            progressAnimatedValue={progress}
+            dragAnimatedValue={dragX}
+            isMuted={group.isMuted}
+            onMute={() => onMute?.(group.id, group.isMuted)}
+          />
+        )}
+      >
+        <Chat
+          imageUri="https://cdn-icons-png.flaticon.com/512/2815/2815428.png"
+          groupId={group.group.groupId}
+          groupName={separateNameNum(group.group?.name || "")}
+          routeTo={`/${group.group.groupId}?name=${encodeURIComponent(group.group?.name || "")}`}
+          isMuted={group.isMuted}
+        />
+      </Swipeable>
+    );
+
+  return content;
+};
+
+export default function Chats() {
   const [value, setValue] = useState("AI");
+  const { groups: offlineGroups, setGroups } = useOfflineStore();
+  const utils = trpc.useUtils();
+  const netInfo = useNetInfo();
 
-  const { user } = useUserStore();
-
-  const spinValue = new Animated.Value(0);
-  const rotate = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
-  const { data: groups, isLoading } = trpc.groups.getUserGroups.useQuery(
-    {
-      userId: user.user.id,
-    },
+  const { data: onlineGroups, isLoading } = trpc.groups.getUserGroups.useQuery(
+    undefined,
     {
       refetchInterval: 5000,
+      enabled: !!netInfo.isConnected,
     },
   );
 
-  useEffect(() => {
-    if (isLoading) {
-      Animated.loop(
-        Animated.timing(spinValue, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }),
-      ).start();
-    } else {
-      spinValue.setValue(0);
-    }
-  }, [isLoading]);
+  const { mutate: changeMuteStatus } = trpc.groups.changeMute.useMutation({
+    onMutate: async ({ groupId, status }) => {
+      await utils.groups.getUserGroups.cancel();
+      const previousGroups = utils.groups.getUserGroups.getData();
 
-  if (isLoading) {
+      const updateGroups = (groups?: Group[]) =>
+        groups?.map((group) =>
+          group.id === groupId ? { ...group, isMuted: status } : group,
+        );
+
+      utils.groups.getUserGroups.setData(undefined, (old) =>
+        old?.map((group) =>
+          group.id === groupId ? { ...group, isMuted: status } : group,
+        ),
+      );
+
+      const updatedOfflineGroups = updateGroups(offlineGroups);
+      if (updatedOfflineGroups) {
+        setGroups(updatedOfflineGroups);
+      }
+
+      return { previousGroups };
+    },
+    onError: (_, __, context) => {
+      utils.groups.getUserGroups.setData(undefined, context?.previousGroups);
+      if (context?.previousGroups) {
+        setGroups(context.previousGroups);
+      }
+
+      toast({
+        title: "Error",
+        description: "Failed to update mute status. Please try again.",
+        ms: 3000,
+        variant: "error",
+      });
+    },
+    onSettled: () => {
+      utils.groups.getUserGroups.invalidate();
+    },
+    onSuccess: (_, variables) => {
+      const groups = onlineGroups || offlineGroups;
+      const groupName =
+        groups?.find((g) => g.id === variables.groupId)?.group.name || "Group";
+
+      toast({
+        title: variables.status ? "Muted Group" : "Unmuted Group",
+        description: `You have ${variables.status ? "muted" : "unmuted"} ${groupName}`,
+        ms: 3000,
+        variant: "info",
+      });
+    },
+  });
+
+  useEffect(() => {
+    if (onlineGroups) {
+      setGroups(onlineGroups);
+    }
+  }, [onlineGroups, setGroups]);
+
+  const handleMuteAction = (groupId: string, currentStatus: boolean) => {
+    if (netInfo.isConnected) {
+      changeMuteStatus({ groupId, status: !currentStatus });
+    } else {
+      const updatedGroups = offlineGroups?.map((group) =>
+        group.id === groupId ? { ...group, isMuted: !currentStatus } : group,
+      );
+      if (updatedGroups) {
+        setGroups(updatedGroups);
+      }
+    }
+  };
+
+  const renderContent = (type: ChatType) => {
+    console.log("IS LOADING: ", isLoading);
     return (
-      <View className="h-full flex flex-col p-8 bg-white-default">
-        <SignedIn>
-          <Animated.View
-            style={{
-              transform: [{ rotate }],
-            }}
-            className="flex-1 items-center justify-center"
-          >
-            <Loader2 className="h-48 w-48" size={96} />
-          </Animated.View>
-        </SignedIn>
-        <SignedOut>
-          <Redirect href={"/(auth)/welcome"} />
-        </SignedOut>
+      <View>
+        {isLoading ? (
+          <LoadingMessage />
+        ) : (
+          <View>
+            {(netInfo.isConnected ? onlineGroups : offlineGroups)
+              ?.filter((group) => group.group.type === type)
+              .map((group) => (
+                <ChatItem
+                  key={group.id}
+                  group={group}
+                  type={type}
+                  onMute={handleMuteAction}
+                />
+              )) || <NoGroupsMessage />}
+          </View>
+        )}
       </View>
     );
-  }
+  };
 
   return (
     <SafeAreaView>
@@ -108,72 +230,11 @@ const Chats = () => {
                 </Trigger>
               </View>
             </List>
-            <Content value="AI">
-              {!groups ||
-                (!groups.length && (
-                  <View className="flex h-full grow items-center py-24 flex-wrap px-8">
-                    <CustomText styles="text-2xl text-wrap text-center">
-                      Register Your{" "}
-                      <Link
-                        href={"/(root)/(drawer)/(tabs)/(schedule)/schedule"}
-                        className="underline text-primary-light font-bold"
-                      >
-                        Schedule
-                      </Link>{" "}
-                      To Be Added To AI Assistants
-                    </CustomText>
-                  </View>
-                ))}
-              {groups &&
-                groups
-                  .filter((group) => group.type === "AI")
-                  .map((group) => (
-                    <AiChat
-                      groupId={group.groupId}
-                      chatName={separateNameNum(group.name)}
-                      key={group.id}
-                      routeTo={`/ai/${group.groupId}?name=${group.name}`}
-                    />
-                  ))}
-            </Content>
-            <Content value="messages">
-              <View className="flex flex-column justify-between">
-                {!groups ||
-                  (!groups.length && (
-                    <View className="flex h-full grow items-center py-24 flex-wrap px-8">
-                      <CustomText styles="text-2xl text-wrap text-center">
-                        Register Your{" "}
-                        <Link
-                          href={"/(root)/(drawer)/(tabs)/(schedule)/schedule"}
-                          className="underline text-primary-light font-bold"
-                        >
-                          Schedule
-                        </Link>{" "}
-                        To Be Added To Groups
-                      </CustomText>
-                    </View>
-                  ))}
-                {groups &&
-                  groups
-                    .filter((group) => group.type === "GROUP")
-                    .map((group) => (
-                      <Chat
-                        imageUri={
-                          "https://cdn-icons-png.flaticon.com/512/2815/2815428.png"
-                        }
-                        key={group.id}
-                        groupId={group.groupId}
-                        groupName={separateNameNum(group.name)}
-                        routeTo={`/${group.groupId}?name=${group.name}`}
-                      />
-                    ))}
-              </View>
-            </Content>
+            <Content value="AI">{renderContent("AI")}</Content>
+            <Content value="messages">{renderContent("GROUP")}</Content>
           </Root>
         </View>
       </View>
     </SafeAreaView>
   );
-};
-
-export default Chats;
+}

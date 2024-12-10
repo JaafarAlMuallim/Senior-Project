@@ -2,29 +2,27 @@ import { tracked } from "@trpc/server";
 import { streamToAsyncIterable } from "../lib/streamToAsync";
 import { Message, User } from "@prisma/mongo/client";
 import { z } from "zod";
-import { mongoClient, postgresClient, redisClient } from "../db";
-import { publicProcedure, router } from "../trpc";
+import { authProcedure, router, subscriptionAuthProcedure } from "../trpc";
 import type { MyEvents } from "./groups";
 import { currentlyTyping, ee } from "./groups";
-import { model } from "../ai";
-import { Content, Part } from "@google/generative-ai";
 
 export const messageRouter = router({
-  add: publicProcedure
+  add: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-        userId: z.string(),
-        text: z.string().trim().min(1),
-      }),
+        text: z.string().trim().min(0),
+        attachment_url: z.any().optional(),
+        attachment_type: z.string().optional(),
+      })
     )
     .mutation(async ({ input, ctx }) => {
-      const { groupId, text, userId } = input;
-      const currentSubscriptions = await redisClient.smembers(
-        `group:${groupId}:subscriptions`,
+      const { groupId, text, attachment_url, attachment_type } = input;
+      const currentSubscriptions = await ctx.redisClient.smembers(
+        `group:${groupId}:subscriptions`
       );
 
-      const notSubscribed = await postgresClient.user.findMany({
+      const notSubscribed = await ctx.postgresClient.user.findMany({
         where: {
           id: {
             notIn: currentSubscriptions,
@@ -32,12 +30,14 @@ export const messageRouter = router({
         },
       });
 
-      const message = await mongoClient.message.create({
+      const message = await ctx.mongoClient.message.create({
         data: {
           // name: opts.ctx.user.name,
-          userId,
+          userId: ctx.user?.id!,
           text,
           groupId,
+          attachment_url: attachment_url || null,
+          attachment_type: attachment_type || null,
         },
         include: {
           user: true,
@@ -55,33 +55,51 @@ export const messageRouter = router({
       // increment their unread count
       Promise.all(
         notSubscribed.map(async (user) => {
-          await redisClient.hincrby(
+          await ctx.redisClient.hincrby(
             `group:${groupId}:userId:${user.id}`,
             "unread",
-            1,
+            1
           );
-        }),
+        })
       );
 
       return message;
     }),
-  addAIMessage: publicProcedure
+  addUserMessage: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-        userId: z.string(),
         text: z.string().trim().min(1),
-        agent: z.string(),
-      }),
+      })
     )
     .mutation(async ({ input, ctx }) => {
-      const { groupId, agent, text, userId } = input;
-      console.log("addAIMessage", groupId, agent, text, userId);
+      const { groupId, text } = input;
+      await ctx.mongoClient.message.create({
+        data: {
+          userId: ctx.user?.id!,
+          text,
+          groupId,
+        },
+      });
+    }),
+  addAIMessage: authProcedure
+    .input(
+      z.object({
+        groupId: z.string(),
+        text: z.string().trim().min(1),
+        agent: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { groupId, agent, text } = input;
       let ai = null;
-      let context: Content[] = [];
+      console.log(agent, groupId);
+      let context: Array<{
+        role: "user" | "assistant";
+        content: string;
+      }> = [];
       try {
-        console.log("get Agent");
-        ai = await mongoClient.user.findFirst({
+        ai = await ctx.mongoClient.user.findFirst({
           where: {
             name: agent,
           },
@@ -92,7 +110,7 @@ export const messageRouter = router({
       }
 
       try {
-        const oldMessages = await mongoClient.message.findMany({
+        const oldMessages = await ctx.mongoClient.message.findMany({
           where: {
             groupId,
           },
@@ -104,83 +122,69 @@ export const messageRouter = router({
           },
           take: 10,
         });
-        context = [
-          {
-            role: "user",
-            parts: oldMessages
-              .filter((msg) => !msg.user.email.includes("EduLink"))
-              .map((msg) => {
-                return {
-                  text: msg.text,
-                };
-              }),
-          },
-          {
-            role: "model",
-            parts: oldMessages
-              .filter((msg) => msg.user.email.includes("EduLink"))
-              .map((msg) => {
-                return {
-                  text: msg.text,
-                };
-              }),
-          },
-        ];
-        console.log("Creating message");
-        await mongoClient.message.create({
-          data: {
-            // name: opts.ctx.user.name,
-            userId,
-            text,
-            groupId,
-          },
+
+        oldMessages.reverse().map((msg) => {
+          context.push({
+            role: msg.user.email.includes("EduLink") ? "assistant" : "user",
+            content: msg.text.replace(/\n/g, " ").replace(/\s+/g, " ").trim(),
+          });
         });
       } catch (err) {
-        console.error("Error creating message");
         console.error(err);
       }
-
       // get Response
       try {
-        console.log("Creating response");
-        const chat = model.startChat({
-          history: context,
-        });
-        const res = await chat.sendMessage(text);
-
-        const response = await mongoClient.message.create({
-          data: {
-            // name: opts.ctx.user.name,
-            userId: ai?.userId!,
-            text: res.response.text(),
-            groupId,
+        console.log(
+          JSON.stringify({
+            text,
+            chat_history: context,
+          })
+        );
+        // const res = await chat.sendMessage(text);
+        const res = await fetch("http://localhost:8000/ask", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify({
+            text,
+            chat_history: context,
+          }),
         });
-        return response;
+        if (res.ok) {
+          const answer = (await res.json()) as { answer: string };
+
+          const response = await ctx.mongoClient.message.create({
+            data: {
+              userId: ai?.userId!,
+              text: answer.answer || "No Response",
+              groupId,
+            },
+          });
+          return response;
+        } else {
+          console.error("Error getting response");
+          return null;
+        }
       } catch (err) {
-        console.error("Error creating response");
         console.error(err);
       }
     }),
-  infinite: publicProcedure
+  infinite: authProcedure
     .input(
       z.object({
         groupId: z.string(),
         cursor: z.date().nullish(),
         take: z.number().min(1).max(50).nullish(),
-      }),
+      })
     )
-    .query(async ({ input }) => {
-      // add user to subscription list if they are not already
-      // opts.ctx.user.id,
+    .query(async ({ input, ctx }) => {
       const { cursor, groupId } = input;
       let { take } = input;
       if (!take) {
         take = 20;
       }
-      console.log("infinite", groupId, cursor, take);
-
-      const page = await mongoClient.message.findMany({
+      const page = await ctx.mongoClient.message.findMany({
         where: {
           groupId,
           createdAt: {
@@ -191,7 +195,7 @@ export const messageRouter = router({
           user: true,
         },
         orderBy: {
-          createdAt: "desc",
+          createdAt: "asc",
         },
         take: take + 1,
       });
@@ -209,94 +213,102 @@ export const messageRouter = router({
       };
     }),
 
-  onAdd: publicProcedure
+  onAdd: subscriptionAuthProcedure
     .input(
       z.object({
         groupId: z.string(),
-        // lastEventId is the last event id that the client has received
-        // On the first call, it will be whatever was passed in the initial setup
-        // If the client reconnects, it will be the last event id that the client received
         lastEventId: z.string().nullish(),
-      }),
+      })
     )
-    .subscription(async function* ({ input, signal }) {
-      let lastMessageCursor: Date | null = null;
-      const { lastEventId: eventId, groupId: currGroup } = input;
-      console.log("onAdd", eventId, currGroup);
-      if (eventId) {
-        const itemById = await mongoClient.message.findFirst({
-          where: {
-            id: eventId,
-          },
-          include: {
-            user: true,
-          },
-        });
-        // const itemById = await db.query.Message.findFirst({
-        //   where: (fields, ops) => ops.eq(fields.id, eventId),
-        // });
-        lastMessageCursor = itemById?.createdAt ?? null;
-      }
-
-      let unsubscribe = () => {
-        //
-      };
-
-      // We use a readable stream here to prevent the client from missing events
-      // created between the fetching & yield'ing of `newItemsSinceCursor` and the
-      // subscription to the ee
-      const stream = new ReadableStream<Message & { user: User }>({
-        async start(controller) {
-          const onAdd: MyEvents["add"] = (groupId, data) => {
-            if (groupId === currGroup) {
-              controller.enqueue(data);
-            }
-          };
-          ee.on("add", onAdd);
-          unsubscribe = () => {
-            ee.off("add", onAdd);
-          };
-
-          const newItemsSinceCursor = await mongoClient.message.findMany({
+    .subscription(async function* ({ input, signal, ctx }) {
+      try {
+        let lastMessageCursor: Date | null = null;
+        const { lastEventId: eventId, groupId: currGroup } = input;
+        if (eventId) {
+          const itemById = await ctx.mongoClient.message.findFirst({
             where: {
-              groupId: currGroup,
-              createdAt: {
-                gt: lastMessageCursor!,
-              },
+              id: eventId,
             },
             include: {
               user: true,
             },
-            orderBy: {
-              createdAt: "asc",
-            },
           });
+          // const itemById = await db.query.Message.findFirst({
+          //   where: (fields, ops) => ops.eq(fields.id, eventId),
+          // });
+          lastMessageCursor = itemById?.createdAt ?? null;
+        }
 
-          for (const item of newItemsSinceCursor) {
-            controller.enqueue(item);
-          }
-        },
-        cancel() {
-          unsubscribe();
-        },
-      });
+        // remove redis unread count
+        await ctx.redisClient.hset(
+          `group:${currGroup}:userId:${ctx.user?.id!}`,
+          "unread",
+          0
+        );
 
-      for await (const message of streamToAsyncIterable(stream, {
-        signal: signal,
-      })) {
-        // tracking the message id ensures the client can reconnect at any time and get the latest events this id
-        yield tracked(message.id, message);
+        let unsubscribe = () => {
+          //
+        };
+
+        // We use a readable stream here to prevent the client from missing events
+        // created between the fetching & yield'ing of `newItemsSinceCursor` and the
+        // subscription to the ee
+        const stream = new ReadableStream<Message & { user: User }>({
+          async start(controller) {
+            const onAdd: MyEvents["add"] = (groupId, data) => {
+              if (groupId === currGroup) {
+                controller.enqueue(data);
+              }
+            };
+            ee.on("add", onAdd);
+            unsubscribe = () => {
+              ee.off("add", onAdd);
+            };
+
+            const newItemsSinceCursor = await ctx.mongoClient.message.findMany({
+              where: {
+                groupId: currGroup,
+                createdAt: {
+                  gt: lastMessageCursor || new Date(0),
+                },
+              },
+              include: {
+                user: true,
+              },
+              orderBy: {
+                createdAt: "asc",
+              },
+            });
+
+            for (const item of newItemsSinceCursor) {
+              controller.enqueue(item);
+            }
+          },
+          cancel() {
+            unsubscribe();
+          },
+        });
+
+        for await (const message of streamToAsyncIterable(stream, {
+          signal: signal,
+        })) {
+          // tracking the message id ensures the client can reconnect at any time and get the latest events this id
+          yield tracked(message.id, message);
+        }
+      } catch (error) {
+        console.log(error);
+        throw new Error("Error getting messages");
       }
     }),
-  getLastMessage: publicProcedure
+  getLastMessage: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { groupId } = input;
-      const message = await mongoClient.message.findFirst({
+      const message = await ctx.mongoClient.message.findFirst({
         where: {
           groupId,
         },
@@ -307,32 +319,30 @@ export const messageRouter = router({
       return message;
     }),
 
-  getUnreadCount: publicProcedure
+  getUnreadCount: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-        userId: z.string(),
-      }),
+      })
     )
-    .query(async ({ input }) => {
-      const { groupId, userId } = input;
-      const count = await redisClient.hget(
-        `group:${groupId}:userId:${userId}`,
-        "unread",
+    .query(async ({ input, ctx }) => {
+      const { groupId } = input;
+      const count = await ctx.redisClient.hget(
+        `group:${groupId}:userId:${ctx.user?.id!}`,
+        "unread"
       );
       return parseInt(count ?? "0");
     }),
-  getMessages: publicProcedure
+  getMessages: authProcedure
     .input(
       z.object({
         groupId: z.string(),
-      }),
+      })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const { groupId } = input;
-      console.log("get messages", groupId);
       try {
-        const messages = await mongoClient.message.findMany({
+        const messages = await ctx.mongoClient.message.findMany({
           where: {
             groupId,
           },

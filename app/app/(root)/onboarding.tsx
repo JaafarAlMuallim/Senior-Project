@@ -3,8 +3,9 @@ import Dropdown from "@/components/Dropdown";
 import Input from "@/components/Input";
 import { MAJORS, STANDINGS, UNIVERSITIES } from "@/constants/data";
 import { trpc } from "@/lib/trpc";
-import { useUserStore } from "@/store/store";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { useOfflineStore } from "@/store/offlineStorage"; // Import the store
+import { useTokenStore } from "@/store/tokenStore";
+import { SignedIn, SignedOut, useSession, useUser } from "@clerk/clerk-expo";
 import { Redirect, router } from "expo-router";
 import {
   Bolt,
@@ -18,8 +19,10 @@ import { Alert, Animated, Easing, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const OnBoarding = () => {
+  const { setUser } = useOfflineStore();
   const { user } = useUser();
-  const { setUser } = useUserStore();
+  const { session } = useSession();
+  const { token, setToken } = useTokenStore();
   const [phone, setPhone] = useState("");
   const [university, setUniversity] = useState("");
   const [major, setMajor] = useState("");
@@ -31,15 +34,23 @@ const OnBoarding = () => {
     outputRange: ["0deg", "360deg"],
   });
 
-  const { data, isLoading } = trpc.profiles.get.useQuery({
-    clerkId: user?.id!,
-  });
+  useEffect(() => {
+    const findToken = async () => {
+      const t = await session?.getToken({
+        template: "supabase",
+      });
+      console.log("Token: ", t);
+      if (t) setToken({ token: t });
+    };
+    findToken();
+  }, [session]);
+
+  const { data, isLoading } = trpc.profiles.get.useQuery();
 
   useEffect(() => {
-    if (!isLoading && data?.university) {
+    if (!isLoading && data?.university && token.token) {
       setUser(data);
-
-      router.replace("/(root)/(drawer)/(tabs)/home");
+      router.push("/(root)/(drawer)/(tabs)/(home)/home");
     }
     if (isLoading) {
       Animated.loop(
@@ -69,7 +80,6 @@ const OnBoarding = () => {
     standing: string;
   }) =>
     mutate({
-      clerkId: data.clerkId,
       data: data,
     });
 

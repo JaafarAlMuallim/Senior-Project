@@ -5,6 +5,7 @@ import CustomText from "./CustomText";
 import { images } from "@/constants/images";
 import React from "react";
 import { trpc } from "@/lib/trpc";
+import { router } from "expo-router";
 
 const GoogleAuth = () => {
   const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
@@ -22,13 +23,11 @@ const GoogleAuth = () => {
         name: result.data?.name!,
         clerkId: result.data?.clerkId!,
       });
+      router.push("/(root)/onboarding");
     }
 
     if (result.code === "session_exists") {
       Alert.alert("Success", "Session exists. Redirecting to home screen.");
-    }
-    if (result.code === "") {
-      Alert.alert(result.success ? "Success" : "Error", result.message);
     }
   };
 

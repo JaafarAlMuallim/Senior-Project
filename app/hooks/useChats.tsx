@@ -1,19 +1,22 @@
 import { trpc } from "@/lib/trpc";
-import { useUserStore } from "@/store/store";
+import { useTokenStore } from "@/store/tokenStore";
 import { skipToken } from "@tanstack/react-query";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Platform } from "react-native";
 
 export function useWhoIsTyping(groupId: string) {
   const [currentlyTyping, setCurrentlyTyping] = useState<string[]>([]);
+  const { token } = useTokenStore();
   trpc.groups.whoIsTyping.useSubscription(
     { groupId },
     {
+      enabled: !!groupId && !!token,
+
       onData(list) {
         setCurrentlyTyping(list);
       },
       onError(err) {
-        console.error("ERROR: ", err);
+        console.error("ERROR: ", err.data);
+        console.error("ERROR: ", err.message);
       },
       onStarted() {
         console.log("Subscription started");
@@ -70,7 +73,7 @@ export function useThrottledIsTypingMutation(groupId: string, userId: string) {
       }
 
       isTyping.mutate(
-        { typing: state, groupId, userId },
+        { typing: state, groupId },
         {
           onSuccess: () => {},
           onError: (error) => {
@@ -97,7 +100,7 @@ export function useThrottledIsTypingMutation(groupId: string, userId: string) {
 }
 
 export function useLiveMessages(groupId: string) {
-  const [data, query] = trpc.messages.infinite.useSuspenseInfiniteQuery(
+  const [_, query] = trpc.messages.infinite.useSuspenseInfiniteQuery(
     { groupId },
     {
       getNextPageParam: (d) => (d.nextCursor ? new Date(d.nextCursor) : null),

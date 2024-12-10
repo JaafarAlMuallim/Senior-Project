@@ -1,6 +1,6 @@
 import type { UploadRouter } from "@/app/api/uploadthing+api";
 import { generateReactNativeHelpers } from "@uploadthing/expo";
-export const { useImageUploader, useDocumentUploader } =
+export const { useImageUploader, useDocumentUploader, useUploadThing } =
   generateReactNativeHelpers<UploadRouter>({
     /**
      * Your server url.

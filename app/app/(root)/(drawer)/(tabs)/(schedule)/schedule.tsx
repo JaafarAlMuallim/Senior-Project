@@ -2,28 +2,28 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   TouchableOpacity,
-  Modal,
   ScrollView,
   Animated,
   Easing,
+  Modal,
 } from "react-native";
 import {
   WeekCalendar,
-  CalendarProvider,
   LocaleConfig,
+  CalendarProvider,
 } from "react-native-calendars";
 import { format, parseISO } from "date-fns";
 import CustomText from "@/components/CustomText";
 import { DAYS_OF_WEEK } from "@/constants/data";
 import DayColumn from "@/components/DayColumn";
-import TimeSlot from "@/components/TimeSlot";
 import DaySchedule from "@/components/DaySchedule";
-import { SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { trpc } from "@/lib/trpc";
 import { Loader2 } from "lucide-react-native";
-import { Redirect } from "expo-router";
-import { useUserStore } from "@/store/store";
 import { cn } from "@/lib/utils";
+import { Class } from "@/models/class";
+import { SignedIn, SignedOut } from "@clerk/clerk-expo";
+import { Redirect } from "expo-router";
+import TimeSlot from "@/components/TimeSlot";
 
 LocaleConfig.locales["en"] = {
   monthNames: [
@@ -85,7 +85,6 @@ const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString());
   const dateObject = parseISO(selectedDate);
 
-  const { user } = useUserStore();
   const spinValue = new Animated.Value(0);
 
   const rotate = spinValue.interpolate({
@@ -94,14 +93,11 @@ const Schedule = () => {
   });
 
   const { data: semesters, isLoading: semestersLoading } =
-    trpc.schedule.getSemesters.useQuery({
-      userId: user?.id!,
-    });
+    trpc.schedule.getSemesters.useQuery();
 
   const [semester, setTerm] = useState(semesters?.[0] || "241");
 
   const { data, isLoading } = trpc.schedule.getSchedule.useQuery({
-    userId: user?.user.id!,
     semester: semester,
   });
 
@@ -146,15 +142,18 @@ const Schedule = () => {
 
       return {
         day: mappedDay,
-        classes: classes.map((entry) => ({
-          id: entry.id,
-          title: entry.section.course.name,
-          section: entry.section.title,
-          start: format(new Date(entry.section.startTime), "HH:mm"),
-          end: format(new Date(entry.section.endTime), "HH:mm"),
-          location: entry.section.location,
-          instructor: entry.section.instructor,
-        })),
+        classes: classes.map((entry) => {
+          const c: Class = {
+            id: entry.id,
+            title: entry.section.course.name,
+            section: entry.section.title,
+            start: format(new Date(entry.section.startTime), "HH:mm"),
+            end: format(new Date(entry.section.endTime), "HH:mm"),
+            location: entry.section.location ?? "N/A",
+            instructor: entry.section.instructor ?? "N/A",
+          };
+          return c;
+        }),
       };
     });
   }, [data]);

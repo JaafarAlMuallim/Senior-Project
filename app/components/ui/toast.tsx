@@ -90,7 +90,6 @@ function Toast({
         return "text-toast-error";
     }
   };
-  console.log(actions);
 
   return (
     <Portal name="toast">
@@ -104,7 +103,7 @@ function Toast({
             /* Do nothing */
           }}
           className={`w-full opacity-95 border-border flex-row justify-between items-center p-4 rounded-xl ${getVariantClass(
-            variant
+            variant,
           )}`}
         >
           <View className="flex flex-col w-full">
@@ -112,7 +111,7 @@ function Toast({
               <ToastPrimitive.Title
                 className={cn(
                   "text-foreground text-2xl font-poppinsBold",
-                  textColor(variant)
+                  textColor(variant),
                 )}
               >
                 {title}
@@ -124,7 +123,7 @@ function Toast({
             <ToastPrimitive.Description
               className={cn(
                 "text-lg font-poppins items-center justify-center",
-                textColor(variant)
+                textColor(variant),
               )}
             >
               {icon(variant)}
@@ -136,7 +135,7 @@ function Toast({
                     key={index}
                     className={cn(
                       "text-black-80 text-lg font-poppins",
-                      action.className
+                      action.className,
                     )}
                     onPress={action.onPress}
                   >

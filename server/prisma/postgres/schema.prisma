@@ -1,6 +1,7 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = "../../node_modules/@prisma/postgres/client"
+    provider        = "prisma-client-js"
+    output          = "../../node_modules/@prisma/postgres/client"
+    previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -32,6 +33,12 @@ enum SessionStatus {
     CANCELLED
 }
 
+enum ReportCategory {
+    BUG
+    FEATURE
+    OTHER
+}
+
 model User {
     id           String         @id @default(cuid())
     email        String         @unique
@@ -42,7 +49,7 @@ model User {
     updatedAt    DateTime       @updatedAt
     profileId    String?
     groupId      String?
-    Admin        Admin[]
+    Admin        Admin?
     Feedback     Feedback[]
     Message      Message[]
     Notification Notification[]
@@ -70,7 +77,7 @@ model Course {
     name        String
     createdAt   DateTime      @default(now())
     updatedAt   DateTime      @updatedAt
-    code        String
+    code        String        @unique
     Assistant   Assistant?
     CourseTutor CourseTutor[]
     Group       Group?        @relation(fields: [groupId], references: [id])
@@ -119,7 +126,7 @@ model Student {
 
 model Admin {
     id        String   @id @default(cuid())
-    userId    String
+    userId    String   @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     user      User     @relation(fields: [userId], references: [id])
@@ -134,21 +141,19 @@ model Profile {
     standing   String?
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
-    user       User     @relation(fields: [userId], references: [clerkId])
+    user       User     @relation(fields: [userId], references: [id])
 }
 
 model Material {
     id        String   @id @default(cuid())
     url       String
-    size      Float
-    courseId  String
+    courseId  String?
     name      String
     category  Category
-    fileType  String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     tagId     String?
-    course    Course   @relation(fields: [courseId], references: [id])
+    course    Course?  @relation(fields: [courseId], references: [id])
     Tag       Tag?     @relation(fields: [tagId], references: [id])
 }
 
@@ -163,6 +168,7 @@ model Quiz {
 
 model Question {
     id            String   @id @default(cuid())
+    question      String
     options       String[]
     correctAnswer String
     createdAt     DateTime @default(now())
@@ -239,10 +245,13 @@ model Assistant {
 }
 
 model Report {
-    id        String   @id @default(cuid())
+    id        String         @id @default(cuid())
     content   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+    status    Boolean        @default(false)
+    title     String
+    category  ReportCategory
 }
 
 model Tag {

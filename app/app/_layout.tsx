@@ -11,7 +11,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "reflect-metadata";
 import "../global.css";
@@ -20,8 +20,9 @@ import {
   splitLink,
   unstable_httpSubscriptionLink,
 } from "@trpc/client";
-import { ActivityIndicator, LogBox, Platform, View } from "react-native";
-// import { initializeDB } from "@/lib/db";
+import { EventSourcePolyfill } from "event-source-polyfill";
+import { LogBox, Platform, StatusBar } from "react-native";
+import { useTokenStore } from "@/store/tokenStore";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,14 +74,14 @@ export default function RootLayout() {
     PoppinsRegular: require("../assets/fonts/PoppinsRegular.ttf"),
     PoppinsSemiBold: require("../assets/fonts/PoppinsSemiBold.ttf"),
   });
-  // const [isInitialized, setIsInitialized] = useState(false);
+  const { token } = useTokenStore();
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await initializeDB();
-  //     setIsInitialized(true);
-  //   })();
-  // }, []);
+  // const url = Platform.select({
+  //   web: "http://192.168.147.27:3000/trpc",
+  //   ios: "http://192.168.147.27:3000/trpc",
+  //   android: "http://192.168.147.27:3000/trpc",
+  //   default: "http://192.168.147.27:3000/trpc",
+  // });
 
   const url = Platform.select({
     web: "http://localhost:3000/trpc",
@@ -96,10 +97,25 @@ export default function RootLayout() {
         splitLink({
           condition: (op) => op.type === "subscription",
           true: unstable_httpSubscriptionLink({
-            url: url,
+            url: `${url}`,
+            EventSource: EventSourcePolyfill,
+            eventSourceOptions: () => {
+              console.log("WS");
+              console.log(token.token);
+              return {
+                headers: {
+                  Authorization: `Bearer ${token.token}`,
+                },
+              };
+            },
           }),
           false: httpBatchLink({
             url: url,
+            headers: () => {
+              return {
+                Authorization: `Bearer ${token.token}`,
+              };
+            },
           }),
         }),
       ],
@@ -127,6 +143,7 @@ export default function RootLayout() {
         <trpc.Provider client={trpcClient} queryClient={queryClient}>
           <QueryClientProvider client={queryClient}>
             <ClerkLoaded>
+              <StatusBar />
               <Stack
                 initialRouteName="index"
                 screenOptions={{ headerShown: false }}
