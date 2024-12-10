@@ -13,10 +13,10 @@ const LandingContent = () => {
           transition={{ duration: 0.8 }}
           className="max-w-xl"
         >
-          <h1 className="mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight text-transparent sm:text-7xl">
+          <h1 className="text-center mb-6 bg-gradient-to-r from-primary-light to-primary-white text-transparent from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight sm:text-7xl md:text-left">
             EduLink
           </h1>
-          <p className="mb-8 text-xl text-muted-foreground">
+          <p className="text-center mb-8 text-xl text-muted-foreground md:text-left">
             Your all-in-one platform for learning, collaborating, and sharing
             resources with your classmates and tutors.
           </p>
