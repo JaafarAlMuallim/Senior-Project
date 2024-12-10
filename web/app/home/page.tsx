@@ -23,11 +23,11 @@ const HomePage = async () => {
     .toUpperCase();
 
   const todaysCourses = schedule.filter((course) =>
-    course.section.recurrence?.includes(todayDay),
+    course.section.recurrence?.includes(todayDay)
   );
 
   const sortedCourses = [...todaysCourses].sort(
-    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime(),
+    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime()
   );
 
   return (
@@ -36,7 +36,7 @@ const HomePage = async () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 w-full">
           <div className="lg:col-span-3 flex flex-col gap-4">
             <h3 className="text-2xl font-semibold text-primary">My Courses</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-3 gap-4">
               {schedule.map((course) => (
                 <CourseCard
                   key={course.id}
