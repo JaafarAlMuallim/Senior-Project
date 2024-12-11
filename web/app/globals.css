@@ -202,48 +202,50 @@ body {
     --warning-default: #fdf4e2;
   }
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 210 20% 98%;
-    --primary-foreground: 220.9 39.3% 11%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 216 12.2% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --background: 224 71.4% 9.1%;
+    --foreground: 210 20% 90%;
+    --card: 224 71.4% 9.1%;
+    --card-foreground: 210 20% 90%;
+    --popover: 224 71.4% 9.1%;
+    --popover-foreground: 210 20% 90%;
+    --primary: 210 20% 90%;
+    --primary-foreground: 220.9 39.3% 10%;
+    --secondary: 215 27.9% 13.9%;
+    --secondary-foreground: 210 20% 90%;
+    --muted: 215 27.9% 13.9%;
+    --muted-foreground: 217.9 10.6% 54.9%;
+    --accent: 215 27.9% 13.9%;
+    --accent-foreground: 210 20% 90%;
+    --destructive: 0 62.8% 22.6%;
+    --destructive-foreground: 210 20% 90%;
+    --border: 215 27.9% 13.9%;
+    --input: 215 27.9% 13.9%;
+    --ring: 216 12.2% 75.9%;
+    --chart-1: 220 70% 40%;
+    --chart-2: 160 60% 35%;
+    --chart-3: 30 80% 45%;
+    --chart-4: 280 65% 50%;
+    --chart-5: 340 75% 45%;
+    --sidebar-background: 240 5.9% 15%;
+    --sidebar-foreground: 240 4.8% 90%;
+    --sidebar-primary: 224.3 76.3% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 240 3.7% 10%;
+    --sidebar-accent-foreground: 240 4.8% 90%;
+    --sidebar-border: 240 3.7% 10%;
+    --sidebar-ring: 217.2 91.2% 50%;
+
     /* Primary */
-    --primary-dark: #3044ff;
-    --primary-light: #4561ff;
-    --primary-white: #000;
-    --primary-black: #fff;
+    --primary-dark: #3044ff; /* Dark primary color */
+    --primary-light: #4561ff; /* Lighter primary color */
+    --primary-white: #000; /* White background remains white */
+    --primary-black: #fff; /* Black remains black */
+    
 
     /* Secondary */
-    --secondary-main: #9e86ff;
-    --secondary-gray: #3f3d3d;
-    --secondary-lightGray: #d9d9d9;
+    --secondary-main: #9e86ff; /* Lighter purple still works well in dark mode */
+    --secondary-gray: #5a5959; /* Darkened gray */
+    --secondary-lightGray: #9e9e9e; /* Lighter gray for contrast */
 
     /* Black Opacity */
     --black-40: rgba(0, 0, 0, 0.4);
@@ -251,59 +253,59 @@ body {
     --black-80: rgba(0, 0, 0, 0.8);
 
     /* Gray */
-    --gray-light: rgba(60, 60, 67, 0.6);
+    --gray-light: rgba(60, 60, 67, 0.6); /* Light gray with reduced opacity */
     --gray-medium: rgba(63, 61, 61, 0.5);
-    --gray-dark: #3f3d3d;
+    --gray-dark: #5a5a5a; /* Darkened gray */
 
     /* Blue */
-    --blue-default: #304ffe;
+    --blue-default: #304ffe; /* Default blue */
     --blue-def50: rgba(69, 97, 255, 0.05);
     --blue-def100: rgba(69, 97, 255, 0.7);
     --blue-def200: rgba(69, 97, 255, 0.75);
     --blue-def300: rgba(69, 97, 255, 0.8);
     --blue-def400: rgba(69, 97, 255, 0.9);
-    --blue-def500: #4561ff;
-    --blue-def600: #3865e0;
+    --blue-def500: #4561ff; /* Blue for accents and highlights */
+    --blue-def600: #3865e0; /* Darker blue for hover and focus */
 
     /* Violet */
-    --violet-default: #9e86ff;
+    --violet-default: #9e86ff; /* Violet remains the same */
 
     /* Red */
-    --red-default: #c21d1a;
+    --red-default: #c21d1a; /* Red remains unchanged */
 
     /* Orange */
-    --orange-default: #f89402;
+    --orange-default: #f89402; /* Bright orange stays for contrast */
 
     /* Green */
-    --green-default: #1d8c1d;
+    --green-default: #1d8c1d; /* Green for success alerts */
 
     /* White */
-    --white-default: #000;
-    --white-light: #d9d9d9;
-    --white-alt: #e3dbdb;
+    --white-default: #fff; /* White remains white */
+    --white-light: #d9d9d9; /* Lighter white for subtle text */
+    --white-alt: #e3dbdb; /* Alternative white */
 
     /* Fill */
-    --fill-default: #4561ff;
+    --fill-default: #4561ff; /* Fill color remains primary blue */
 
     /* Chat */
-    --chat-default: #4561ff;
+    --chat-default: #4561ff; /* Chat message color */
     --chat-replies: rgba(69, 97, 255, 0.7);
     --chat-notification: rgba(69, 97, 255, 0.8);
 
     /* Schedule */
-    --schedule-term: rgba(69, 97, 255, 0.1);
+    --schedule-term: rgba(69, 97, 255, 0.1); /* Transparent blue for schedule */
     --schedule-fill: #4561ff;
-    --schedule-nofill: #f6f6f5;
+    --schedule-nofill: #2a2a2a; /* Dark background for no fill */
 
     /* Toast */
-    --toast-success: #5a8156;
-    --toast-danger: #bb5653;
-    --toast-error: #bb5653;
-    --toast-warning: #a4603b;
-    --toast-info: #4f5fe2;
+    --toast-success: #4e9d44; /* Dark green for success */
+    --toast-danger: #c92a2a; /* Dark red for error */
+    --toast-error: #bb5653; /* Error color stays */
+    --toast-warning: #b97b1b; /* Dark orange for warnings */
+    --toast-info: #4f5fe2; /* Blue info messages */
 
     /* Info */
-    --info-default: #e8e9fb;
+    --info-default: #e8e9fb; /* Soft light blue for info messages */
 
     /* Success */
     --success-100: #f0fff4;
