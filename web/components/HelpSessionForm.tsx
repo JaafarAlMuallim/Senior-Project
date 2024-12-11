@@ -98,7 +98,7 @@ const HelpSessionForm = () => {
         <Button
           className={buttonVariants({
             variant: "outline",
-            className: "text-black",
+            className: "bg-primary-white text-primary-black hover:bg-primary-black hover:text-primary-white",
           })}
           onClick={() => setOpen(true)}
         >

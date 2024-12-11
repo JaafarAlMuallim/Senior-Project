@@ -78,13 +78,13 @@ const TutorSession = ({ session }: { session: Session }) => {
   return (
     <div
       key={session.id}
-      className="bg-white-default rounded-lg shadow-sm border border-gray-100 p-4 hover:bg-primary-light hover:text-white transition-all group cursor-pointer"
+      className="rounded-xl border bg-card text-card-foreground shadow p-4 hover:bg-primary-light hover:text-primary-white transition-all group cursor-pointer sm:w-full"
       onClick={createMeeting}
     >
       <div className="flex justify-between items-start">
         <div className="space-y-2 w-full">
           <div className="flex justify-between items-center">
-            <h4 className="text-lg font-semibold text-primary group-hover:text-primary-white uppercase">
+            <h4 className="text-lg font-semibold text-primary-black group-hover:text-white uppercase">
               {separateNameNum(session.course.code)}
             </h4>
             <UserCircle className="text-primary h-6 w-6 group-hover:text-primary-white" />

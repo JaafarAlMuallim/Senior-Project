@@ -149,7 +149,7 @@ const BookTutorDialog = () => {
           className={buttonVariants({
             variant: "outline",
             className:
-              "bg-primary-light hover:bg-primary-dark hover:text-white",
+              "bg-primary-light text-primary-white hover:bg-primary-dark hover:text-primary-white",
           })}
           onClick={() => setOpen(true)}
         >
