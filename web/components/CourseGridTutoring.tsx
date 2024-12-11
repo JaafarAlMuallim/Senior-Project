@@ -3,6 +3,9 @@ import CourseCard from "./CourseCard";
 
 const CourseGridTutoring = async () => {
   const tutorCourses = await trpc.tutors.getTutorsCourseById();
+  if (tutorCourses.length === 0) {
+    return null;
+  }
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-semibold">Tutor</h2>
