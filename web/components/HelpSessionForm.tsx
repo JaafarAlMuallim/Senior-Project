@@ -23,8 +23,9 @@ import { Button, buttonVariants } from "./ui/button";
 import { trpc } from "@/trpc/client";
 import Loader from "./Loader";
 import { useToast } from "@/hooks/use-toast";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   course: z.string(),
@@ -36,6 +37,7 @@ const HelpSessionForm = () => {
   const { data: tutorCourse, isLoading } =
     trpc.tutors.getTutorsCourse.useQuery();
   const { toast } = useToast();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,6 +46,7 @@ const HelpSessionForm = () => {
     },
   });
   const user = useAuth();
+  const [open, setOpen] = useState(false);
 
   const courses = useMemo(() => {
     return tutorCourse
@@ -59,7 +62,9 @@ const HelpSessionForm = () => {
           "Your request has been sent successfully, when the tutor accepts your request you will be notified",
         className: "bg-success-600 text-primary-white",
       });
+      setOpen(false);
       utils.sessions.getUserSessions.invalidate();
+      router.refresh();
     },
     onError: (e: any) => {
       toast({
@@ -75,6 +80,7 @@ const HelpSessionForm = () => {
       courseId: values.course,
       date: values.date!,
       requestedBy: null,
+      status: "ACCEPTED",
       time: values.date!.toISOString().split("T")[1].substring(0, 5),
       courseName: courses?.find((ct) => ct.id === values.course)?.name!,
     });
@@ -87,13 +93,14 @@ const HelpSessionForm = () => {
   }
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild id="university" className="cursor-pointer">
         <Button
           className={buttonVariants({
             variant: "outline",
             className: "text-black",
           })}
+          onClick={() => setOpen(true)}
         >
           New Help Session
         </Button>

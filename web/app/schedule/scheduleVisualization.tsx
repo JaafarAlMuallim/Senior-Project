@@ -122,7 +122,7 @@ const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
                         >
                           <div className="flex justify-between">
                             <div className="font-semibold uppercase">
-                              {section.course.code}
+                              {section.title} | {section.location}
                             </div>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -157,7 +157,7 @@ const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
                             </AlertDialog>
                           </div>
                           <div className="text-xs capitalize">
-                            {section.course.name}
+                            {section.instructor}
                           </div>
                         </div>
                       );

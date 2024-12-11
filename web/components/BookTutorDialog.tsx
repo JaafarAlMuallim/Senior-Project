@@ -70,7 +70,8 @@ const BookTutorDialog = () => {
     defaultValues: {
       tutor: "",
       course: "",
-      date: new Date(),
+      date: dateArr[0],
+      time: TIMES[0],
     },
   });
   const utils = trpc.useUtils();
