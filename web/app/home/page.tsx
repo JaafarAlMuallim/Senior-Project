@@ -23,11 +23,11 @@ const HomePage = async () => {
     .toUpperCase();
 
   const todaysCourses = schedule.filter((course) =>
-    course.section.recurrence?.includes(todayDay),
+    course.section.recurrence?.includes(todayDay)
   );
 
   const sortedCourses = [...todaysCourses].sort(
-    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime(),
+    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime()
   );
 
   return (
@@ -73,7 +73,7 @@ const HomePage = async () => {
                       <PendingSessions key={session.id} session={session} />
                     ))
                   ) : (
-                    <p className="text-primary-black">No Pending Requests</p>
+                    <p>No Pending Requests</p>
                   )}
                 </div>
               </>

@@ -29,16 +29,16 @@ const config: Config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          dark: "#3044FF",
-          light: "#4561FF",
-          white: "#FFF",
-          black: "#000",
+          dark: "var(--primary-dark)",
+          light: "var(--primary-light)",
+          white: "var(--primary-white)",
+          black: "var(--primary-black)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          main: "#9E86FF",
-          gray: "#3F3D3D",
+          main: "var(--secondary-main)",
+          gray: "var(--secondary-gray)",
           lightGray: "#D9D9D9",
         },
         black: {
