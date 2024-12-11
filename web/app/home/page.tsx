@@ -26,11 +26,7 @@ const HomePage = async () => {
   const todayRec = DAYS.options.find((day) => day.label === todayDay);
 
   const todaysCourses = schedule.filter((course) =>
-<<<<<<< HEAD
-    course.section.recurrence?.includes(todayDay)
-=======
-    course.section.recurrence?.includes(todayRec?.value!),
->>>>>>> def90ec12c0a6c5b434d6945e54311fdd4f78fd6
+    course.section.recurrence?.includes(todayRec?.value!)
   );
 
   const sortedCourses = [...todaysCourses].sort(
@@ -42,70 +38,6 @@ const HomePage = async () => {
   }
 
   return (
-<<<<<<< HEAD
-    <MaxWidthWrapper>
-      <div className="mx-auto px-4 py-8 my-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 w-full">
-          <div className="lg:col-span-3 flex flex-col gap-4">
-            <h3 className="text-2xl font-semibold text-primary">My Courses</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {schedule.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  code={course.section.course.code}
-                  name={course.section.course.name}
-                  id={course.section.course.id}
-                />
-              ))}
-            </div>
-            {tutor && (
-              <>
-                <h3 className="text-2xl font-semibold text-primary">
-                  Tutoring Sessions
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
-                  {!!sessions.length ? (
-                    sessions?.map((session) => (
-                      <TutorSession key={session.id} session={session} />
-                    ))
-                  ) : (
-                    <p>No Schedule Sessions</p>
-                  )}
-                </div>
-              </>
-            )}
-            {tutor && (
-              <>
-                <h3 className="text-2xl font-semibold text-primary">
-                  Pending Requests
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
-                  {!!requests.length ? (
-                    requests.map((session) => (
-                      <PendingSessions key={session.id} session={session} />
-                    ))
-                  ) : (
-                    <p>No Pending Requests</p>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-          <div className="flex flex-col gap-4">
-            <h3 className="text-2xl font-semibold text-primary">Schedule</h3>
-            <div className="text-sm text-gray-500">
-              Today -{" "}
-              {today.toLocaleDateString("en-US", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </div>
-            <div className="flex space-y-6 justify-center items-center">
-              {!!sortedCourses.length ? (
-                sortedCourses?.map((course, index) => (
-                  <ScheduleItem
-=======
     <>
       <Navbar />
       <MaxWidthWrapper>
@@ -118,7 +50,6 @@ const HomePage = async () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-3 gap-4">
                 {schedule.map((course) => (
                   <CourseCard
->>>>>>> def90ec12c0a6c5b434d6945e54311fdd4f78fd6
                     key={course.id}
                     code={course.section.course.code}
                     name={course.section.course.name}
