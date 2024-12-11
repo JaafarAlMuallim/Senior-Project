@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { GRADES } from "@/validators/option-validators";
 import {
   Popover,
   PopoverContent,
@@ -15,6 +14,10 @@ import {
 } from "@/components/ui/command";
 import { Check, ChevronsUpDown, UserRound } from "lucide-react";
 import { ControllerRenderProps } from "react-hook-form";
+type Data = {
+  label: string;
+  value: string;
+};
 
 export default function TutorSelect({
   field,
@@ -23,7 +26,7 @@ export default function TutorSelect({
 }: {
   field: ControllerRenderProps<any, "tutor">;
   className?: string;
-  data: any[];
+  data: Data[];
 }) {
   return (
     <Popover>
@@ -39,7 +42,8 @@ export default function TutorSelect({
         >
           <div className={cn("flex gap-2 items-center", className)}>
             <UserRound className="h-4 w-4" />
-            {field.value || "Select a Tutor"}
+            {data.find((c) => c.value === field.value)?.label ||
+              "Select a Tutor"}
           </div>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -49,19 +53,19 @@ export default function TutorSelect({
           <CommandList>
             <CommandEmpty>No Tutors Available</CommandEmpty>
             <CommandGroup>
-              {data.map((grade) => (
+              {data.map((c) => (
                 <CommandItem
-                  key={grade}
-                  value={grade}
-                  onSelect={field.onChange}
+                  key={c.label}
+                  value={c.label}
+                  onSelect={() => field.onChange(c.value)}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      grade === field.value ? "opacity-100" : "opacity-0",
+                      c.value === field.value ? "opacity-100" : "opacity-0",
                     )}
                   />
-                  {grade}
+                  {c.label}
                 </CommandItem>
               ))}
             </CommandGroup>

@@ -48,9 +48,9 @@ import { Badge } from "@/components/ui/badge";
 
 const QuizCard = ({ index }: { index: number }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-4 sm:p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
       <Pencil />
-      <span className="flex-grow font-semibold text-lg">Quiz {index}</span>
+      <span className="flex-grow font-semibold text-base sm:text-lg">Quiz {index}</span>
     </div>
   );
 };
@@ -84,7 +84,7 @@ const MaterialTabContent = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
       if (quiz.courseId !== null) {
@@ -109,19 +109,19 @@ const MaterialTabContent = () => {
 
   if (quizzesLoading || materialLoading) {
     return (
-      <TabsContent value="users" className="p-3">
+      <TabsContent value="users" className="p-3 sm:p-6">
         <Loader />
       </TabsContent>
     );
   }
 
   return (
-    <TabsContent value="quiz" className="p-3">
+    <TabsContent value="quiz" className="p-3 sm:p-6">
       <div className="flex flex-col gap-8">
-        <h1 className="text-2xl font-bold uppercase">
+        <h1 className="text-xl sm:text-2xl font-bold uppercase">
           {separateNameNum(allMaterial?.course?.code || "")}
         </h1>
-        <h2 className="text-xl">Quizzes</h2>
+        <h2 className="text-lg sm:text-xl">Quizzes</h2>
         <div className="flex justify-end w-full">
           <Dialog>
             <DialogTrigger asChild>
@@ -156,7 +156,7 @@ const MaterialTabContent = () => {
                                 variant="outline"
                                 role="combobox"
                                 className={cn(
-                                  "w-full justify-between font-normal h-auto hover:bg-white z-20",
+                                  "w-full justify-between font-normal h-auto hover:bg-white z-20 text-sm sm:text-base",
                                   {
                                     "text-muted-foreground":
                                       !field.value || !field.value.length,
@@ -189,7 +189,7 @@ const MaterialTabContent = () => {
                                 <div className="flex flex-col gap-2">
                                   <CommandInput placeholder="Search for Material" />
                                 </div>
-                                <CommandList className="max-h-[200px] px-2">
+                                <CommandList className="max-h-[200px] sm:max-h-[300px] px-2">
                                   <CommandEmpty>No Material Found</CommandEmpty>
                                   {allMaterial?.materials.map((material) => (
                                     <CommandItem
@@ -238,12 +238,12 @@ const MaterialTabContent = () => {
                       className={buttonVariants({
                         variant: "default",
                         className:
-                          "w-full bg-primary-light hover:bg-primary-dark text-white-default",
+                          "w-full bg-primary-light hover:bg-primary-dark text-white-default text-sm sm:text-base",
                       })}
                       disabled={form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                        <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                       ) : (
                         "Create Quiz"
                       )}

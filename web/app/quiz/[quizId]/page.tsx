@@ -1,4 +1,5 @@
 import Loader from "@/components/Loader";
+import Navbar from "@/components/Navbar";
 import NoDataFound from "@/components/NoDataFound";
 import Quiz from "@/components/Quiz";
 import { trpc } from "@/trpc/server";
@@ -15,9 +16,12 @@ const QuizPage = async ({
     return <NoDataFound />;
   }
   return (
-    <Suspense fallback={<Loader />}>
-      <Quiz questions={questions.Question} />
-    </Suspense>
+    <>
+      <Navbar />
+      <Suspense fallback={<Loader />}>
+        <Quiz questions={questions.Question} />
+      </Suspense>
+    </>
   );
 };
 

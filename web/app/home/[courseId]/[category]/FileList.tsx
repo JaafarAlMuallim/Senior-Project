@@ -48,7 +48,7 @@ const FileComponents = ({
   };
   return (
     <div
-      className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer w-full"
+      className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer w-full"
       onClick={() => handleClick(file)}
     >
       <FileIcon />

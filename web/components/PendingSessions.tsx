@@ -6,9 +6,11 @@ import React from "react";
 import { Button, buttonVariants } from "./ui/button";
 import { trpc } from "@/trpc/client";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const PendingSessions = ({ session }: { session: Session }) => {
   const utils = trpc.useUtils();
+  const router = useRouter();
   const { toast } = useToast();
   const time = session.date.toISOString().split("T")[1].substring(0, 5);
   const date = session.date.toISOString().split("T")[0];
@@ -26,15 +28,18 @@ const PendingSessions = ({ session }: { session: Session }) => {
         toast({
           title: "Session Status Changed",
           description: "The session status has been changed",
-          className: "bg-success-600 text-white-default",
+          className: "bg-success-600 text-primary-white",
         });
         utils.sessions.getPendingSessionTutor.invalidate();
+        utils.sessions.getAcceptedSessionTutor.invalidate();
+        utils.sessions.getUserSessions.invalidate();
+        router.refresh();
       },
       onError: (error) => {
         toast({
           title: "Error",
           description: error.message,
-          className: "bg-danger-600 text-white-default",
+          className: "bg-danger-600 text-primary-white",
         });
       },
     });

@@ -26,7 +26,7 @@ export const sessionRouter = router({
             tutorId: ctx.user?.Tutor[0].id!,
             courseId,
             startTime: date,
-            requestedBy,
+            requestedBy: requestedBy ? ctx.user?.id : null,
             date,
             title: `${courseName} - ${date.getDay()}/${
               date.getMonth() + 1
@@ -128,6 +128,52 @@ export const sessionRouter = router({
       where: {
         tutorId: ctx.user?.Tutor[0].id!,
         status: SessionStatus.ACCEPTED,
+        date: {
+          gte: new Date(),
+        },
+      },
+      include: {
+        requester: true,
+        course: true,
+      },
+    });
+    return sessions;
+  }),
+  getUserSessions: authProcedure.query(async ({ ctx }) => {
+    const reg = await ctx.postgresClient.registration.findMany({
+      where: {
+        userId: ctx.user?.id,
+      },
+      include: {
+        section: true,
+      },
+    });
+    const sessions = await ctx.postgresClient.session.findMany({
+      where: {
+        AND: [
+          {
+            OR: [
+              {
+                requestedBy: ctx.user?.id,
+              },
+              {
+                AND: [
+                  {
+                    courseId: {
+                      in: reg.map((r) => r.section.courseId),
+                    },
+                    requestedBy: null,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            tutorId: {
+              not: ctx.user?.Tutor[0] ? ctx.user.Tutor[0].id : "",
+            },
+          },
+        ],
       },
       include: {
         requester: true,

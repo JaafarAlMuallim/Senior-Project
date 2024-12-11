@@ -505,7 +505,40 @@ export const TYPES = [
 
 export const INSTRUCTORS = ["Dr. Smith", "Prof. Johnson", "Dr. Williams"];
 
-export const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+export const DAYS = {
+  name: "Days",
+  options: [
+    {
+      label: "Sunday",
+      value: "U",
+    },
+    {
+      label: "Monday",
+      value: "M",
+    },
+    {
+      label: "Tuesday",
+      value: "T",
+    },
+    {
+      label: "Wednesday",
+      value: "W",
+    },
+    {
+      label: "Thursday",
+      value: "R",
+    },
+    {
+      label: "Friday",
+      value: "F",
+    },
+    {
+      label: "Saturday",
+      value: "S",
+    },
+  ],
+};
+
 export const TIMES = ["08:00", "10:00", "12:00", "14:00", "16:00"];
 export const LOCATIONS = ["Room 101", "Room 102", "Lab A", "Lab B"];
 

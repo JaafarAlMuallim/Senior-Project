@@ -86,7 +86,7 @@ const UploadForm = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
     },
@@ -232,12 +232,12 @@ const UploadForm = () => {
                 className={buttonVariants({
                   variant: "default",
                   className:
-                    "w-full bg-primary-light hover:bg-primary-dark text-white-default",
+                    "w-full bg-primary-light hover:bg-primary-dark text-primary-white",
                 })}
                 disabled={isUploading || form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? (
-                  <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                  <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                 ) : (
                   "Upload"
                 )}

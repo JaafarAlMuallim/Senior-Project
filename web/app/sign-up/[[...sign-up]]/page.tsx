@@ -1,4 +1,5 @@
 "use client";
+import { Button, buttonVariants } from "@/components/ui/button";
 // import * as Clerk from "@clerk/elements/common";
 // import * as SignUp from "@clerk/elements/sign-up";
 // import { Button } from "@/components/ui/button";
@@ -15,12 +16,26 @@
 // import { Icons } from "@/components/ui/icons";
 // import { cn } from "@/lib/utils";
 import { SignUp } from "@clerk/nextjs";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
+  const router = useRouter();
   return (
-    <div className="grid w-full grow items-center px-4 sm:justify-center">
-      <SignUp />
-    </div>
+    <>
+      <div className="flex flex-col gap-2 w-full grow items-center px-4 sm:justify-center">
+        <SignUp />
+        <Button
+          className={buttonVariants({
+            variant: "default",
+            className:
+              "bg-primary-light text-primary-white hover:bg-primary-dark w-[400px]",
+          })}
+        >
+          Back to Home
+        </Button>
+      </div>
+    </>
   );
   // return (
   //   <div className="grid w-full grow items-center px-4 sm:justify-center">
@@ -97,7 +112,7 @@ export default function SignUpPage() {
   //                     <SignUp.Action submit asChild>
   //                       <Button
   //                         disabled={isGlobalLoading}
-  //                         className="bg-primary-light text-white-default"
+  //                         className="bg-primary-light text-primary-white"
   //                       >
   //                         <Clerk.Loading>
   //                           {(isLoading) => {

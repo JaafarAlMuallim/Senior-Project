@@ -50,7 +50,7 @@ const MeetingRoom = () => {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden pt-4 text-white-default">
+    <section className="relative h-screen w-full overflow-hidden pt-4 text-primary-white">
       <div className="relative flex size-full items-center justify-center">
         <div className=" flex size-full max-w-[1000px] items-center">
           <CallLayout />
@@ -70,10 +70,10 @@ const MeetingRoom = () => {
         <DropdownMenu>
           <div className="flex items-center">
             <DropdownMenuTrigger className="cursor-pointer rounded-2xl bg-[#19232d] px-4 py-2 hover:bg-[#4c535b]  ">
-              <LayoutList size={20} className="text-white-default" />
+              <LayoutList size={20} className="text-primary-white" />
             </DropdownMenuTrigger>
           </div>
-          <DropdownMenuContent className="border-dark-1 bg-dark-1 text-white-default">
+          <DropdownMenuContent className="border-dark-1 bg-dark-1 text-primary-white">
             {["Grid", "Speaker-Left", "Speaker-Right"].map((item, index) => (
               <div key={index}>
                 <DropdownMenuItem
@@ -91,7 +91,7 @@ const MeetingRoom = () => {
         <CallStatsButton />
         <button onClick={() => setShowParticipants((prev) => !prev)}>
           <div className=" cursor-pointer rounded-2xl bg-[#19232d] px-4 py-2 hover:bg-[#4c535b]  ">
-            <Users size={20} className="text-white-default" />
+            <Users size={20} className="text-primary-white" />
           </div>
         </button>
         {!isPersonalRoom && <EndCallButton />}

@@ -34,7 +34,7 @@ import {
 import { TabsContent } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { useParams } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Dropzone, { FileRejection } from "react-dropzone";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,8 +54,7 @@ import { Input } from "@/components/ui/input";
 import { CATEGORIES } from "@/validators/Placeholders";
 import Progress from "@/components/CustomProgress";
 import Category from "@/models/Category";
-
-// const courseId = "cm177rnwp0000119qsarlyxia";
+import Loader from "@/components/Loader";
 
 interface Folder {
   id: number;
@@ -65,7 +64,7 @@ interface Folder {
 
 const Folder = ({ folder }: { folder: Folder }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer">
       <FolderClosed />
       <span className="flex-grow font-semibold text-lg">{folder.title}</span>
     </div>
@@ -86,6 +85,10 @@ const MaterialTabContent = () => {
       category: Category.OTHER,
       name: "Untitled",
     },
+  });
+
+  const { data: course, isLoading } = trpc.courses.getCourse.useQuery({
+    id: params.courseId,
   });
 
   const { toast } = useToast();
@@ -125,7 +128,7 @@ const MaterialTabContent = () => {
       toast({
         title: "Material added",
         description: "Material has been added successfully",
-        className: "bg-success-600 text-white-default",
+        className: "bg-success-600 text-primary-white",
       });
       utils.courses.getMaterial.invalidate();
     },
@@ -148,10 +151,17 @@ const MaterialTabContent = () => {
     setIsDialogOpen(false);
   }
 
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (!course) {
+    notFound();
+  }
+
   return (
     <TabsContent value="material" className="p-3">
       <div className="flex flex-col gap-8">
-        <h1 className="text-2xl font-bold">MATH 101</h1>
+        <h1 className="text-2xl font-bold capitalize">{course?.name}</h1>
         <h2 className="text-xl">Folders</h2>
         <div className="flex justify-end w-full">
           <Dialog open={isDialogOpen}>
@@ -346,12 +356,12 @@ const MaterialTabContent = () => {
                       className={buttonVariants({
                         variant: "default",
                         className:
-                          "w-full bg-primary-light hover:bg-primary-dark text-white-default",
+                          "w-full bg-primary-light hover:bg-primary-dark text-primary-white",
                       })}
                       disabled={isUploading || form.formState.isSubmitting}
                     >
                       {form.formState.isSubmitting ? (
-                        <Loader2 className="animate-spin h-6 w-6 text-white-default" />
+                        <Loader2 className="animate-spin h-6 w-6 text-primary-white" />
                       ) : (
                         "Upload"
                       )}

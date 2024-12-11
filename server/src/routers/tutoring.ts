@@ -85,6 +85,11 @@ export const tutorRouter = router({
       },
       include: {
         course: true,
+        tutor: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
     return tutorCourses;
