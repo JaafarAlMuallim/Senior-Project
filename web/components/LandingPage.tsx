@@ -13,11 +13,7 @@ const LandingContent = () => {
           transition={{ duration: 0.8 }}
           className="max-w-xl"
         >
-<<<<<<< HEAD
           <h1 className="text-center mb-6 bg-gradient-to-r from-primary-light to-primary-white text-transparent bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight sm:text-7xl md:text-left">
-=======
-          <h1 className="text-center mb-6 bg-gradient-to-r from-primary-light to-primary-white text-transparent from-foreground to-foreground/80 bg-clip-text text-6xl font-bold leading-[1.1] tracking-tight sm:text-7xl md:text-left">
->>>>>>> 572b801c2489df411dd2367c14d93013528ea8af
             EduLink
           </h1>
           <p className="text-center mb-8 text-xl text-muted-foreground md:text-left">

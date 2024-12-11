@@ -26,11 +26,11 @@ const HomePage = async () => {
   const todayRec = DAYS.options.find((day) => day.label === todayDay);
 
   const todaysCourses = schedule.filter((course) =>
-    course.section.recurrence?.includes(todayRec?.value!),
+    course.section.recurrence?.includes(todayRec?.value!)
   );
 
   const sortedCourses = [...todaysCourses].sort(
-    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime(),
+    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime()
   );
 
   if (schedule.length === 0) {

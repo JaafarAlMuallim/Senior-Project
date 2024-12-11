@@ -70,7 +70,8 @@ const BookTutorDialog = () => {
     defaultValues: {
       tutor: "",
       course: "",
-      date: new Date(),
+      date: dateArr[0],
+      time: TIMES[0],
     },
   });
   const utils = trpc.useUtils();
@@ -148,7 +149,7 @@ const BookTutorDialog = () => {
           className={buttonVariants({
             variant: "outline",
             className:
-              "bg-primary-light hover:bg-primary-dark hover:text-white",
+              "bg-primary-light text-primary-white hover:bg-primary-dark hover:text-primary-white",
           })}
           onClick={() => setOpen(true)}
         >
