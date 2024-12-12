@@ -4,7 +4,7 @@ import { format, formatDistanceToNow, isToday } from "date-fns";
 import { trpc } from "@/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import AddAIMessageForm from "./AIChatMessageForm";
 import { useSearchParams } from "next/navigation";

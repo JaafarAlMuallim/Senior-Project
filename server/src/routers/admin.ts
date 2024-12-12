@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  authProcedure,
-  router,
-  adminProcedure,
-  publicProcedure,
-} from "../trpc";
+import { router, adminProcedure, publicProcedure } from "../trpc";
 import { clerkClient } from "@clerk/express";
 
 export const adminRouter = router({
@@ -61,19 +56,22 @@ export const adminRouter = router({
           }),
           ctx.postgresClient.report.count({
             where: {
-              status: false,
+              status: true,
             },
           }),
           ctx.postgresClient.report.findMany(),
           ctx.postgresClient.report.groupBy({
             by: ["category"],
+            _count: {
+              category: true,
+            },
           }),
         ]);
 
       type ReportByCategory = Record<string, number>;
       const allByCategory = byCategory.reduce(
-        (acc, curr: { category: string }) => {
-          acc[curr.category] = curr.category.length;
+        (acc, curr: { category: string; _count: { category: number } }) => {
+          acc[curr.category] = curr._count.category; // Use the count provided by the groupBy
           return acc;
         },
         {} as ReportByCategory

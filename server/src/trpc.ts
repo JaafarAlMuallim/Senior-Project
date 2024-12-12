@@ -17,7 +17,6 @@ type ContextOptions = {
 
 export const createContext = async (opts?: ContextOptions) => {
   const token = opts?.req.headers.authorization?.split(" ")[1];
-  console.log(opts?.req.headers);
   const user = await getSession(token!);
   return {
     req: opts?.req,

@@ -64,11 +64,19 @@ export const reportColumns: ColumnDef<Report>[] = [
   },
   {
     header: "Date",
-    accessorKey: "date",
+    cell: ({ row }) => {
+      return <p className="">{row.original.createdAt.toLocaleDateString()}</p>;
+    },
   },
   {
     header: "Status",
-    accessorKey: "status",
+    cell: ({ row }) => {
+      return (
+        <p className={row.original.status ? "text-green-500" : "text-red-500"}>
+          {row.original.status ? "Closed" : "Open"}
+        </p>
+      );
+    },
   },
   {
     id: "actions",
@@ -112,8 +120,8 @@ export const reportColumns: ColumnDef<Report>[] = [
               <DialogHeader>
                 <DialogTitle>Report #{report.id}</DialogTitle>
               </DialogHeader>
-              <div className="mx-4 border-2 rounded-md">
-                <div className="flex flex-col gap-12">
+              <div className="mx-4 border-2 rounded-md p-4">
+                <div className="flex flex-col gap-4">
                   <h4 className="text-xl font-semibold">
                     {report.title} - {report.category}
                   </h4>

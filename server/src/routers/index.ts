@@ -1,5 +1,4 @@
-import { z } from "zod";
-import { authProcedure, createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter } from "../trpc";
 import { authRouter } from "./auth";
 import { courseRouter } from "./courses";
 import { groupRouter } from "./groups";
@@ -9,6 +8,7 @@ import { scheduleRouter } from "./schedule";
 import { sessionRouter } from "./session";
 import { tutorRouter } from "./tutoring";
 import { adminRouter } from "./admin";
+import { reportRouter } from "./report";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -19,18 +19,7 @@ export const appRouter = createTRPCRouter({
   schedule: scheduleRouter,
   groups: groupRouter,
   messages: messageRouter,
-
-  hello: publicProcedure
-    .input(
-      z.object({
-        text: z.string(),
-      })
-    )
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      };
-    }),
+  report: reportRouter,
   admin: adminRouter,
 });
 

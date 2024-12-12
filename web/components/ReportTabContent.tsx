@@ -25,6 +25,7 @@ import {
   MessageSquareWarning,
   FileStack,
   FileCheck,
+  Minus,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { useState } from "react";
@@ -75,12 +76,47 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
       fill: `var(--color-${report.value})`,
     };
   });
+  console.log(data);
   console.log(allByCategoryArr);
 
   const mostReportedCategory =
     allByCategoryArr.length > 0
       ? allByCategoryArr.reduce((a, b) => (a.count > b.count ? a : b))
       : { category: "None", count: 0 };
+
+  const percentagFormat = (count: number, mostCount: number) => {
+    const denominator = count - mostCount;
+    if (denominator <= 0 || isNaN(denominator) || mostCount === 0) {
+      return (
+        <div className="flex items-center gap-2">
+          <Minus color="black" />
+          0% from last month
+        </div>
+      );
+    }
+    const percentage = (mostCount / denominator) * 100;
+    return (
+      <div className="flex items-center gap-2">
+        {percentage > 0 ? (
+          <TrendingUp color="#5A8156" />
+        ) : (
+          <TrendingDown color="#BB5653" />
+        )}
+        {percentage.toFixed(2)}% from last month
+      </div>
+    );
+  };
+
+  // {
+  //   (() => {
+  //     const denominator = reportCount - mostReportedCategory.count;
+  //     if (denominator <= 0 || isNaN(denominator)) {
+  //       return null;
+  //     }
+  //     const percentage = (mostReportedCategory.count / denominator) * 100;
+  //     return `${percentage.toFixed(2)}% from last month`;
+  //   })()
+  // }
 
   return (
     <TabsContent value="reports" className="p-3">
@@ -102,12 +138,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {monthReports > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((monthReports / (reportCount - monthReports)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, monthReports)}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -126,12 +157,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {closedReports / (reportCount - closedReports) > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((closedReports / (reportCount - closedReports)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, closedReports)}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -150,12 +176,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {mostReportedCategory.count > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((mostReportedCategory.count / (reportCount - mostReportedCategory.count)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, mostReportedCategory.count)}
                   </CardDescription>
                 </CardFooter>
               </Card>
