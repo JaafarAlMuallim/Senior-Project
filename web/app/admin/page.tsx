@@ -12,26 +12,29 @@ const MainDashboard = async () => {
   const reportData = await trpc.admin.reportsData();
 
   return (
-    <MaxWidthWrapper className="px-24">
-      <Tabs defaultValue={"users"} className="w-full my-4">
-        <MaxWidthWrapper>
-          <TabsList className="grid grid-cols-3 w-full">
-            <TabsTrigger value="users" className="flex gap-2">
-              <User /> Users
-            </TabsTrigger>
-            <TabsTrigger value="groups" className="flex gap-2">
-              <Users /> Groups
-            </TabsTrigger>
-            <TabsTrigger value="reports" className="flex gap-2">
-              <ClipboardList /> Reports
-            </TabsTrigger>
-          </TabsList>
-        </MaxWidthWrapper>
-        <UserTabContent data={userData} />
-        <GroupTabContent data={groupData} />
-        <ReportTabContent data={reportData} />
-      </Tabs>
-    </MaxWidthWrapper>
+    <>
+      <Navbar />
+      <MaxWidthWrapper className="px-24">
+        <Tabs defaultValue={"users"} className="w-full my-4">
+          <MaxWidthWrapper>
+            <TabsList className="grid grid-cols-3 w-full">
+              <TabsTrigger value="users" className="flex gap-2">
+                <User /> Users
+              </TabsTrigger>
+              <TabsTrigger value="groups" className="flex gap-2">
+                <Users /> Groups
+              </TabsTrigger>
+              <TabsTrigger value="reports" className="flex gap-2">
+                <ClipboardList /> Reports
+              </TabsTrigger>
+            </TabsList>
+          </MaxWidthWrapper>
+          <UserTabContent data={userData} />
+          <GroupTabContent data={groupData} />
+          <ReportTabContent data={reportData} />
+        </Tabs>
+      </MaxWidthWrapper>
+    </>
   );
 };
 
