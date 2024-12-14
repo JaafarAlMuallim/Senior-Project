@@ -7,6 +7,7 @@ import { trpc } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import {
   AlertCircle,
+  BadgeHelp,
   Calendar,
   HomeIcon,
   LogIn,
@@ -35,6 +36,11 @@ const ITEMS_AUTH = [
     title: "Schedule",
     href: "/schedule",
     icon: Calendar,
+  },
+  {
+    title: "Support",
+    href: "/support",
+    icon: BadgeHelp,
   },
   {
     title: "Admin",
@@ -67,6 +73,12 @@ const ITEMS_UNAUTH = [
   {
     title: "Start Learning",
     href: "#start",
+    icon: UserCog,
+  },
+
+  {
+    title: "Support Learning",
+    href: "/support",
     icon: UserCog,
   },
   {

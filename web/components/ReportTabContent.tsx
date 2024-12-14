@@ -72,12 +72,10 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
   const reportChart = REPORT.options.map((report) => {
     return {
       category: report.label,
-      reports: allByCategory[report.value] || 0,
+      reports: allByCategory[report.value.toUpperCase()] || 0,
       fill: `var(--color-${report.value})`,
     };
   });
-  console.log(data);
-  console.log(allByCategoryArr);
 
   const mostReportedCategory =
     allByCategoryArr.length > 0
@@ -106,17 +104,6 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
       </div>
     );
   };
-
-  // {
-  //   (() => {
-  //     const denominator = reportCount - mostReportedCategory.count;
-  //     if (denominator <= 0 || isNaN(denominator)) {
-  //       return null;
-  //     }
-  //     const percentage = (mostReportedCategory.count / denominator) * 100;
-  //     return `${percentage.toFixed(2)}% from last month`;
-  //   })()
-  // }
 
   return (
     <TabsContent value="reports" className="p-3">
@@ -196,7 +183,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
               <CardHeader>
                 <CardTitle>Reports of each category</CardTitle>
                 <CardDescription>
-                  Amount of reports submitted to each categiry
+                  Amount of reports submitted to each category
                 </CardDescription>
               </CardHeader>
               <CardContent>

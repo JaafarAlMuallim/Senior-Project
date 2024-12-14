@@ -68,15 +68,21 @@ const Quiz = ({ questions }: { questions: Question[] }) => {
     <MaxWidthWrapper className="flex flex-col items-center sm:p-6 min-h-screen justify-center w-full">
       {isQuizCompleted ? (
         <div className="bg-white p-4 sm:p-6 rounded shadow-md w-full max-w-2xl">
-          <h2 className="text-xl sm:text-2xl font-semibold mb-4">Quiz Completed!</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4">
+            Quiz Completed!
+          </h2>
           <p className="text-base sm:text-lg mb-4">
             Your score: {score} out of {questions.length}
           </p>
-          <h3 className="text-lg sm:text-xl font-semibold mb-4">Review Your Answers:</h3>
+          <h3 className="text-lg sm:text-xl font-semibold mb-4">
+            Review Your Answers:
+          </h3>
           <div className="space-y-4">
             {questions.map((question, index) => (
               <div key={index} className="border-b border-gray-300 pb-4">
-                <p className="font-semibold text-base sm:text-lg">{question.question}</p>
+                <p className="font-semibold text-base sm:text-lg">
+                  {question.question}
+                </p>
                 <ul className="ml-5 list-none">
                   {question.options.map((option, optionIndex) => (
                     <li
@@ -100,7 +106,7 @@ const Quiz = ({ questions }: { questions: Question[] }) => {
               </div>
             ))}
           </div>
-          <div className="flex flex-col sm:flex-row">
+          <div className="flex flex-col gap-4 my-4 sm:flex-row">
             <Button
               onClick={restartQuiz}
               className="bg-primary-light text-primary-white hover:bg-primary-dark"
@@ -118,7 +124,7 @@ const Quiz = ({ questions }: { questions: Question[] }) => {
           </div>
         </div>
       ) : (
-        <Card className="w-full max-w-md sm:max-w-lg">
+        <Card className="w-full md:w-[680px] ">
           <CardContent className="p-4 sm:p-6">
             <Questions question={questions[currentQuestionIndex].question} />
             <Options
@@ -137,6 +143,7 @@ const Quiz = ({ questions }: { questions: Question[] }) => {
               <Button
                 onClick={() => handleQuestions(1)}
                 className="bg-primary-light text-primary-white sm:w-auto"
+                disabled={userAnswers[currentQuestionIndex] === null}
               >
                 {currentQuestionIndex === questions.length - 1
                   ? "Submit"

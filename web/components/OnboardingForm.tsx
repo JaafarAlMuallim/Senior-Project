@@ -57,7 +57,7 @@ const OnBoarding = () => {
   const { toast } = useToast();
   const { mutateAsync: updateProfile } = trpc.profiles.update.useMutation({
     onSuccess: () => {
-      router.push("/home");
+      router.push("/schedule");
     },
     onError: (error) => {
       toast({

@@ -93,6 +93,7 @@ export const messageRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { groupId, agent, text } = input;
       let ai = null;
+      console.log(agent);
       console.log(agent, groupId);
       let context: Array<{
         role: "user" | "assistant";
@@ -153,6 +154,7 @@ export const messageRouter = router({
         });
         if (res.ok) {
           const answer = (await res.json()) as { answer: string };
+          console.log(ai);
 
           const response = await ctx.mongoClient.message.create({
             data: {

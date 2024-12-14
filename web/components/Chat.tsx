@@ -164,7 +164,7 @@ const Chat = ({ groupId }: { groupId: string }) => {
             </Button>
           </div>
           {[...(liveMessages.messages || [])].reverse().map((item) => {
-            const isMe = item.user.name === currentUser?.name;
+            const isMe = item.user?.userId === currentUser?.id;
 
             return (
               <div

@@ -168,11 +168,14 @@ export const adminRouter = router({
         });
       const messageCountByGroup = Object.values(
         allMsgs.reduce((acc, msg) => {
-          const groupId = msg.group.id;
+          const groupId = msg.group?.id;
+          if (!groupId) {
+            return acc;
+          }
           if (!acc[groupId]) {
             acc[groupId] = {
-              groupName: msg.group.name,
-              type: msg.group.type,
+              groupName: msg.group?.name!,
+              type: msg.group?.type!,
               messageCount: 0,
               lastMsgDate: new Date(0), // Start with the earliest possible date
             };
@@ -201,7 +204,7 @@ export const adminRouter = router({
       throw error;
     }
   }),
-  updateReport: adminProcedure
+  updateReport: publicProcedure
     .input(
       z.object({
         status: z.boolean(),

@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/trpc/client";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export type Report = {
   id: string;
@@ -82,7 +85,35 @@ export const reportColumns: ColumnDef<Report>[] = [
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
+      const { toast } = useToast();
+      const utils = trpc.useUtils();
+
       const report = row.original;
+      const { mutateAsync: closeReport } = trpc.admin.updateReport.useMutation({
+        onSuccess: () => {
+          toast({
+            title: "Report Closed",
+            description: "The report has been closed successfully.",
+            className: "bg-success-600 text-primary-white",
+          });
+          utils.admin.reportsData.invalidate();
+        },
+        onError: (e: any) => {
+          toast({
+            title: "Error",
+            description: e.message,
+            variant: "destructive",
+          });
+        },
+      });
+
+      const onCloseReport = async ({}) => {
+        await closeReport({
+          reportId: row.original.id,
+          status: true,
+        });
+      };
+
       return (
         <Dialog>
           <DropdownMenu>
@@ -107,9 +138,7 @@ export const reportColumns: ColumnDef<Report>[] = [
                 <DialogTrigger asChild>
                   <DropdownMenuItem>Details</DropdownMenuItem>
                 </DialogTrigger>
-                <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(report.id)}
-                >
+                <DropdownMenuItem onClick={onCloseReport}>
                   <Button variant={"destructive"}>Close Report</Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>

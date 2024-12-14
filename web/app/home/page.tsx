@@ -20,6 +20,7 @@ const HomePage = async () => {
   const sessions = await trpc.sessions.getAcceptedSessionTutor();
   const helpSessions = await trpc.sessions.getUserSessions();
   const requests = await trpc.sessions.getPendingSessionTutor();
+  const help = helpSessions.filter((session) => session.date > new Date());
 
   const today = new Date();
   const todayDay = today.toLocaleDateString("en-US", { weekday: "long" });
@@ -76,8 +77,8 @@ const HomePage = async () => {
                     Help Sessions
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
-                    {helpSessions.length > 0 ? (
-                      helpSessions?.map((session) => (
+                    {help.length > 0 ? (
+                      help?.map((session) => (
                         <TutorSession key={session.id} session={session} />
                       ))
                     ) : (
@@ -128,9 +129,9 @@ const HomePage = async () => {
                 )}
               </div>
               <BookTutorDialog />
-              <HelpSessionForm />
-              <ReportForm />
-              {!roles.tutor && <ApplyTutorForm />}
+              {!!!roles.tutor && <ApplyTutorForm />}
+              {!!roles.tutor && <HelpSessionForm />}
+              <ReportForm showText={true} />
             </div>
           </div>
         </div>

@@ -89,16 +89,16 @@ const ReportForm = ({ showText }: { showText: boolean }) => {
         <Button
           className={buttonVariants({
             variant: "outline",
-            size: "icon",
+            size: `${showText ? "default" : "icon"}`,
             className: cn(
-              "bg-primary-white text-primary-black hover:bg-primary-black hover:text-primary-white border-0 shadow-none",
+              "bg-primary-white text-primary-black hover:bg-primary-black hover:text-primary-white shadow-none",
               !showText &&
-                "bg-transparent hover:bg-transparent group-hover:text-primary-white",
+                "bg-transparent hover:bg-transparent group-hover:text-primary-white border-0",
             ),
           })}
           onClick={() => setOpen(true)}
         >
-          {showText ? "New Report" : <MessageSquareWarning />}
+          {showText ? "Issue a report" : <MessageSquareWarning />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
