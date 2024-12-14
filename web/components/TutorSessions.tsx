@@ -88,9 +88,9 @@ const TutorSession = ({ session }: { session: Session }) => {
     >
       <CardHeader>
         <CardTitle className="uppercase">
-          <div className="flex justify-between items-center text-primary-black group-hover:text-primary-white">
+          <div className="flex justify-between items-center text-primary-black group-hover:text-white-default">
             {session.course.code}
-            <UserCircle className="text-primary h-6 w-6 group-hover:text-primary-white" />
+            <UserCircle className="text-primary h-6 w-6 group-hover:text-white-default" />
           </div>
         </CardTitle>
         <CardDescription className="flex flex-col gap-2 group-hover:text-secondary-lightGray">

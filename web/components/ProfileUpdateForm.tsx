@@ -125,7 +125,7 @@ export const ProfileUpdateForm = ({ onClose }: { onClose: () => void }) => {
             type="submit"
             className={buttonVariants({
               variant: "default",
-              className: "bg-primary-light",
+              className: "bg-primary-light text-primary-white hover:bg-primary-dark hover:text-white-default ",
             })}
             disabled={form.formState.isSubmitting}
           >

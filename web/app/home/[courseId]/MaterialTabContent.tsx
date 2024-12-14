@@ -64,9 +64,9 @@ interface Folder {
 
 const Folder = ({ folder }: { folder: Folder }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer">
+    <div className="flex items-center gap-2 shadow-md rounded-lg p-4 sm:p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
       <FolderClosed />
-      <span className="flex-grow font-semibold text-lg">{folder.title}</span>
+      <span className="flex-grow font-semibold text-base sm:text-lg">{folder.title}</span>
     </div>
   );
 };

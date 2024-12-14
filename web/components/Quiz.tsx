@@ -136,7 +136,7 @@ const Quiz = ({ questions }: { questions: Question[] }) => {
               </Button>
               <Button
                 onClick={() => handleQuestions(1)}
-                className="bg-primary-light text-primary-white sm:w-auto"
+                className="bg-primary-light text-white-default hover:bg-primary-dark sm:w-auto"
               >
                 {currentQuestionIndex === questions.length - 1
                   ? "Submit"
