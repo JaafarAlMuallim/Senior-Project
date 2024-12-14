@@ -124,6 +124,9 @@ const config: Config = {
           replies: "var(--chat-replies)",
           notification: "var(--chat-notification)",
         },
+        option: {
+          default:"var(--option-default)"
+        },
         schedule: {
           term: "var(--schedule-term)",
           fill: "var(--schedule-fill)",

@@ -113,7 +113,7 @@ const ScheduleVisualization = ({ schedule }: { schedule: Schedule[] }) => {
                         <div
                           key={courseIdx}
                           className={cn(
-                            "absolute w-full text-primary-white text-xs overflow-hidden bg-primary-light rounded-lg px-2 flex flex-col justify-around z-10",
+                            "absolute w-full text-white-default text-xs overflow-hidden bg-primary-light rounded-lg px-2 flex flex-col justify-around z-10",
                           )}
                           style={{
                             top: `${(start % 1) * 100}%`,

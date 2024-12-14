@@ -213,6 +213,7 @@ export const ScheduleTable = ({
                 <TableCell>
                   <Button
                     variant="outline"
+                    className=" text-primary-black hover:bg-primary-light hover:text-white-default"
                     size="sm"
                     onClick={() => {
                       addSection(section);

@@ -19,7 +19,7 @@ export const ProfileUpdateDialog = () => {
         <Button
           className={buttonVariants({
             variant: "default",
-            className: "w-full bg-primary-light text-primary-white",
+            className: "w-full bg-primary-light text-primary-white hover:bg-primary-dark hover:text-white-default",
           })}
           onClick={() => setIsOpen(true)}
         >

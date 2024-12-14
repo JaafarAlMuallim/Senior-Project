@@ -48,7 +48,7 @@ import { Badge } from "@/components/ui/badge";
 
 const QuizCard = ({ index }: { index: number }) => {
   return (
-    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-4 sm:p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
+    <div className="flex items-center gap-2 shadow-md rounded-lg p-4 sm:p-6 hover:shadow-lg hover:bg-primary-light hover:text-white-default cursor-pointer">
       <Pencil />
       <span className="flex-grow font-semibold text-base sm:text-lg">Quiz {index}</span>
     </div>

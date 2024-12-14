@@ -5,6 +5,7 @@ import GroupTabContent from "@/components/GroupTabContent";
 import ReportTabContent from "@/components/ReportTabContent";
 import { ClipboardList, User, Users } from "lucide-react";
 import { trpc } from "@/trpc/server";
+import Navbar from "@/components/Navbar";
 
 const MainDashboard = async () => {
   const userData = await trpc.admin.userData();
