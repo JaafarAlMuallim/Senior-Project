@@ -142,6 +142,8 @@ body {
     --white-light: #d9d9d9;
     --white-alt: #e3dbdb;
 
+    /* Option (Light Theme) */
+    --option-default: #d9d9d9;
     /* Fill */
     --fill-default: #4561ff;
 
@@ -237,10 +239,9 @@ body {
 
     /* Primary */
     --primary-dark: #3044ff; /* Dark primary color */
-    --primary-light: #4561ff; /* Lighter primary color */
+    --primary-light: #3e5bff; /* Lighter primary color */
     --primary-white: #000; /* White background remains white */
     --primary-black: #fff; /* Black remains black */
-    
 
     /* Secondary */
     --secondary-main: #9e86ff; /* Lighter purple still works well in dark mode */
@@ -283,6 +284,9 @@ body {
     --white-default: #fff; /* White remains white */
     --white-light: #d9d9d9; /* Lighter white for subtle text */
     --white-alt: #e3dbdb; /* Alternative white */
+
+    /* Option */
+    --option-default: #0d166b;
 
     /* Fill */
     --fill-default: #4561ff; /* Fill color remains primary blue */

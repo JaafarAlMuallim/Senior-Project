@@ -19,9 +19,9 @@ const Options = ({
           key={index}
           onClick={() => handleAnswer(option)}
           className={cn(
-            "mx-0 flex justify-start items-center bg-white-light text-primary-black hover:bg-primary-light hover:text-primary-white text-left",
+            "mx-0 flex justify-start items-center bg-option-default text-primary-black hover:bg-primary-light hover:text-white-default text-left",
             selectedOption === option
-              ? "bg-primary-light text-primary-white"
+              ? "bg-primary-light text-white-default"
               : "",
           )}
         >
