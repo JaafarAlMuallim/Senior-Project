@@ -10,6 +10,9 @@ npm-debug.*
 *.orig.*
 web-build/
 **/android
+ai/__pycache__
+
+
 
 # macOS
 .DS_Store

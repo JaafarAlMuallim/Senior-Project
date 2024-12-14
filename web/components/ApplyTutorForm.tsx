@@ -11,9 +11,13 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const ApplyTutorForm = () => {
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -24,27 +28,36 @@ const ApplyTutorForm = () => {
   });
 
   const onSubmit = (values: FormValues) => {
-    console.log("submitted");
+    toast({
+      title: "Application Sent",
+      description: "Your tutor application has been sent successfully.",
+      className: "bg-success-600 text-primary-white",
+    });
+    setOpen(false);
     console.log(values);
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild id="apply" className="cursor-pointer">
-        <Button variant="outline">Start Teaching Students!</Button>
+        <Button onClick={() => setOpen(true)} variant="outline">
+          Start Teaching Students!
+        </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-[440px]">
         <DialogTitle>Start Tutoring</DialogTitle>
         <DialogDescription>
           Apply to be a tutor and help students in your community.
         </DialogDescription>
-        <TutorProfileCard
-          name="Jaafar Al Muallim"
-          email="email@EduLink.com"
-          phone="+966 50 000 0000"
-          institution="KFUPM - SWE"
-        />
-        <TutorForm form={form} onSubmit={onSubmit} />
+        <div className="flex flex-col justify-center items-center gap-4">
+          <TutorProfileCard
+            name="Jaafar Al Muallim"
+            email="email@EduLink.com"
+            phone="+966 50 000 0000"
+            institution="KFUPM - SWE"
+          />
+          <TutorForm form={form} onSubmit={onSubmit} />
+        </div>
       </DialogContent>
     </Dialog>
   );

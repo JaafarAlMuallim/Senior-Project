@@ -206,7 +206,7 @@ const LandingContent = () => {
             </div>
           </div>
           <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-            Â© {new Date().getFullYear()} EduLink. All rights reserved.
+            {new Date().getFullYear()} EduLink. All rights reserved.
           </div>
         </div>
       </footer>
@@ -229,7 +229,7 @@ const features = [
   },
   {
     icon: <BrainIcon className="h-12 w-12 text-primary" />,
-    title: "AI-Powered Learnig",
+    title: "AI-Powered Learning",
     description: "Leverage AI to improve your learning experience.",
   },
   {

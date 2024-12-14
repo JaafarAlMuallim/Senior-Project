@@ -10,6 +10,7 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import Navbar from "@/components/Navbar";
 import { DAYS } from "@/validators/Placeholders";
 import { redirect } from "next/navigation";
+import ReportForm from "@/components/ReportPopover";
 
 const HomePage = async () => {
   const schedule = await trpc.schedule.getSchedule({
@@ -19,6 +20,7 @@ const HomePage = async () => {
   const sessions = await trpc.sessions.getAcceptedSessionTutor();
   const helpSessions = await trpc.sessions.getUserSessions();
   const requests = await trpc.sessions.getPendingSessionTutor();
+  const help = helpSessions.filter((session) => session.date > new Date());
 
   const today = new Date();
   const todayDay = today.toLocaleDateString("en-US", { weekday: "long" });
@@ -26,11 +28,11 @@ const HomePage = async () => {
   const todayRec = DAYS.options.find((day) => day.label === todayDay);
 
   const todaysCourses = schedule.filter((course) =>
-    course.section.recurrence?.includes(todayRec?.value!)
+    course.section.recurrence?.includes(todayRec?.value!),
   );
 
   const sortedCourses = [...todaysCourses].sort(
-    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime()
+    (a, b) => a.section.startTime.getTime() - b.section.startTime.getTime(),
   );
 
   if (schedule.length === 0) {
@@ -75,8 +77,8 @@ const HomePage = async () => {
                     Help Sessions
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 justify-center items-center">
-                    {helpSessions.length > 0 ? (
-                      helpSessions?.map((session) => (
+                    {help.length > 0 ? (
+                      help?.map((session) => (
                         <TutorSession key={session.id} session={session} />
                       ))
                     ) : (
@@ -127,8 +129,9 @@ const HomePage = async () => {
                 )}
               </div>
               <BookTutorDialog />
-              <HelpSessionForm />
-              {!roles.tutor && <ApplyTutorForm />}
+              {!!!roles.tutor && <ApplyTutorForm />}
+              {!!roles.tutor && <HelpSessionForm />}
+              <ReportForm showText={true} />
             </div>
           </div>
         </div>

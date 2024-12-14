@@ -23,6 +23,10 @@ export const REPORT_CHART = {
     label: "Fix",
     color: "hsl(var(--chart-6))",
   },
+  inappropiate: {
+    label: "Inappropiate",
+    color: "hsl(var(--chart-7))",
+  },
 };
 export const USER_CHART = {
   student: {

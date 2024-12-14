@@ -5,3 +5,4 @@ __pycache__
 .deepeval-cache.json
 myenv
 desktop.ini
+__pycache__

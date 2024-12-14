@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  authProcedure,
-  router,
-  adminProcedure,
-  publicProcedure,
-} from "../trpc";
+import { router, adminProcedure, publicProcedure } from "../trpc";
 import { clerkClient } from "@clerk/express";
 
 export const adminRouter = router({
@@ -61,19 +56,22 @@ export const adminRouter = router({
           }),
           ctx.postgresClient.report.count({
             where: {
-              status: false,
+              status: true,
             },
           }),
           ctx.postgresClient.report.findMany(),
           ctx.postgresClient.report.groupBy({
             by: ["category"],
+            _count: {
+              category: true,
+            },
           }),
         ]);
 
       type ReportByCategory = Record<string, number>;
       const allByCategory = byCategory.reduce(
-        (acc, curr: { category: string }) => {
-          acc[curr.category] = curr.category.length;
+        (acc, curr: { category: string; _count: { category: number } }) => {
+          acc[curr.category] = curr._count.category; // Use the count provided by the groupBy
           return acc;
         },
         {} as ReportByCategory
@@ -170,11 +168,14 @@ export const adminRouter = router({
         });
       const messageCountByGroup = Object.values(
         allMsgs.reduce((acc, msg) => {
-          const groupId = msg.group.id;
+          const groupId = msg.group?.id;
+          if (!groupId) {
+            return acc;
+          }
           if (!acc[groupId]) {
             acc[groupId] = {
-              groupName: msg.group.name,
-              type: msg.group.type,
+              groupName: msg.group?.name!,
+              type: msg.group?.type!,
               messageCount: 0,
               lastMsgDate: new Date(0), // Start with the earliest possible date
             };
@@ -203,7 +204,7 @@ export const adminRouter = router({
       throw error;
     }
   }),
-  updateReport: adminProcedure
+  updateReport: publicProcedure
     .input(
       z.object({
         status: z.boolean(),

@@ -4,7 +4,7 @@ import { format, formatDistanceToNow, isToday } from "date-fns";
 import { trpc } from "@/trpc/client";
 import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import AddAIMessageForm from "./AIChatMessageForm";
 import { useSearchParams } from "next/navigation";
@@ -43,13 +43,18 @@ const AIChat = ({ groupId }: { groupId: string }) => {
     scrollToBottom();
   }, [groupId]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, []);
+  console.log(user?.id);
+
   return (
     <section className="flex flex-col h-screen overflow-hidden">
       <div className="relative flex items-center justify-center gap-2 p-4 sm:p-6 lg:p-8"></div>
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8" ref={scrollRef}>
         <div className="grid gap-4">
           {[...(messages || [])].reverse().map((item) => {
-            const isMe = item.user.name === currentUser?.name;
+            const isMe = item.user.userId === currentUser?.id;
 
             return (
               <div

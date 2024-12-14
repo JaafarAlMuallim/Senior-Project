@@ -60,11 +60,7 @@ const ChatSidebarContent = ({
                 <SidebarMenuItem
                   key={chat.group.groupId}
                   onClick={() =>
-                    handleChatClick(
-                      chat.group.groupId,
-                      "AI",
-                      separateNameNum(chat.group.name).toUpperCase(),
-                    )
+                    handleChatClick(chat.group.groupId, "AI", chat.group.name)
                   }
                 >
                   <AIChatCard chat={chat} selectedChat={selectedChat} />

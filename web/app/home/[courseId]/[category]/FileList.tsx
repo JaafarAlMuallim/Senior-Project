@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { FileIcon, Download } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { PDFViewerDialog } from "./PDFViewerDialog";
 import Material from "@/models/material";
+import ReportForm from "@/components/ReportPopover";
 
 export function FileList({ materials }: { materials: Material[] }) {
   const [selectedFile, setSelectedFile] = useState<Material | null>(null);
@@ -47,13 +47,16 @@ const FileComponents = ({
     window.open(file.url, "_blank", "noopener,noreferrer");
   };
   return (
-    <div
-      className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6 transition-transform transform hover:scale-105 hover:shadow-lg hover:bg-primary-light hover:text-primary-white cursor-pointer w-full"
-      onClick={() => handleClick(file)}
-    >
+    <div className="flex items-center gap-2 bg-white-default shadow-md rounded-lg p-6  hover:bg-primary-light hover:text-primary-white cursor-pointer w-full group">
       <FileIcon />
-      <span className="flex-grow font-semibold text-lg">{file.name}</span>
+      <span
+        className="flex-grow font-semibold text-lg"
+        onClick={() => handleClick(file)}
+      >
+        {file.name}
+      </span>
       <Download onClick={(e) => handleDownload(e, file)} />
+      <ReportForm showText={false} />
     </div>
   );
 };

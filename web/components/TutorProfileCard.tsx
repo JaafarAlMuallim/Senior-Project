@@ -14,13 +14,13 @@ type TutorProfileCardProps = {
   institution: string;
 };
 
-export const TutorProfileCard = ({ 
-  name, 
-  email, 
-  phone, 
-  institution 
+export const TutorProfileCard = ({
+  name,
+  email,
+  phone,
+  institution,
 }: TutorProfileCardProps) => (
-  <Card className="w-[380px] bg-primary-light text-white">
+  <Card className="w-[380px] bg-primary-light text-primary-white">
     <CardHeader className="pb-2">
       <CardTitle>{name}</CardTitle>
       <CardDescription className="text-secondary-lightGray flex justify-between items-center">
@@ -35,3 +35,4 @@ export const TutorProfileCard = ({
     </CardContent>
   </Card>
 );
+

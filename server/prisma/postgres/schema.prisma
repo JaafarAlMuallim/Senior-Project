@@ -36,6 +36,7 @@ enum SessionStatus {
 enum ReportCategory {
     BUG
     FEATURE
+    INAPPROPRIATE
     OTHER
 }
 

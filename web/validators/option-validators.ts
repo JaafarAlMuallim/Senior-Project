@@ -25,6 +25,10 @@ export const REPORT = {
       label: "Fix",
       value: "fix",
     },
+    {
+      label: "Inappropiate",
+      value: "inappropiate",
+    },
   ],
 };
 export const USER = {

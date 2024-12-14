@@ -21,6 +21,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/trpc/client";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export type Report = {
   id: string;
@@ -64,17 +67,53 @@ export const reportColumns: ColumnDef<Report>[] = [
   },
   {
     header: "Date",
-    accessorKey: "date",
+    cell: ({ row }) => {
+      return <p className="">{row.original.createdAt.toLocaleDateString()}</p>;
+    },
   },
   {
     header: "Status",
-    accessorKey: "status",
+    cell: ({ row }) => {
+      return (
+        <p className={row.original.status ? "text-green-500" : "text-red-500"}>
+          {row.original.status ? "Closed" : "Open"}
+        </p>
+      );
+    },
   },
   {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
+      const { toast } = useToast();
+      const utils = trpc.useUtils();
+
       const report = row.original;
+      const { mutateAsync: closeReport } = trpc.admin.updateReport.useMutation({
+        onSuccess: () => {
+          toast({
+            title: "Report Closed",
+            description: "The report has been closed successfully.",
+            className: "bg-success-600 text-primary-white",
+          });
+          utils.admin.reportsData.invalidate();
+        },
+        onError: (e: any) => {
+          toast({
+            title: "Error",
+            description: e.message,
+            variant: "destructive",
+          });
+        },
+      });
+
+      const onCloseReport = async ({}) => {
+        await closeReport({
+          reportId: row.original.id,
+          status: true,
+        });
+      };
+
       return (
         <Dialog>
           <DropdownMenu>
@@ -99,9 +138,7 @@ export const reportColumns: ColumnDef<Report>[] = [
                 <DialogTrigger asChild>
                   <DropdownMenuItem>Details</DropdownMenuItem>
                 </DialogTrigger>
-                <DropdownMenuItem
-                  onClick={() => navigator.clipboard.writeText(report.id)}
-                >
+                <DropdownMenuItem onClick={onCloseReport}>
                   <Button variant={"destructive"}>Close Report</Button>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -112,8 +149,8 @@ export const reportColumns: ColumnDef<Report>[] = [
               <DialogHeader>
                 <DialogTitle>Report #{report.id}</DialogTitle>
               </DialogHeader>
-              <div className="mx-4 border-2 rounded-md">
-                <div className="flex flex-col gap-12">
+              <div className="mx-4 border-2 rounded-md p-4">
+                <div className="flex flex-col gap-4">
                   <h4 className="text-xl font-semibold">
                     {report.title} - {report.category}
                   </h4>

@@ -91,13 +91,13 @@ const config: Config = {
         },
         blue: {
           default: "#304FFE",
-          def50:  "var(--blue-def50)",
+          def50: "var(--blue-def50)",
           def100: "var(--blue-def100)",
           def200: "var(--blue-def200)",
           def300: "var(--blue-def300)",
           def400: "var(--blue-def400)",
           def500: "var(--blue-def500)",
-          def600: "var(--blue-def600)"
+          def600: "var(--blue-def600)",
         },
         violet: {
           default: "var(--violet-default)",
@@ -123,6 +123,9 @@ const config: Config = {
           default: "var(--chat-default)",
           replies: "var(--chat-replies)",
           notification: "var(--chat-notification)",
+        },
+        option: {
+          default: "var(--option-default)",
         },
         schedule: {
           term: "var(--schedule-term)",
@@ -173,7 +176,7 @@ const config: Config = {
           "700": "var(--warning-700)",
           "800": "var(--warning-800)",
           "900": "var(--warning-900)",
-          default: "var(--warning-default)"
+          default: "var(--warning-default)",
         },
       },
     },

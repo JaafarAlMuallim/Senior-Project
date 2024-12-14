@@ -25,6 +25,7 @@ import {
   MessageSquareWarning,
   FileStack,
   FileCheck,
+  Minus,
 } from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { useState } from "react";
@@ -71,16 +72,38 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
   const reportChart = REPORT.options.map((report) => {
     return {
       category: report.label,
-      reports: allByCategory[report.value] || 0,
+      reports: allByCategory[report.value.toUpperCase()] || 0,
       fill: `var(--color-${report.value})`,
     };
   });
-  console.log(allByCategoryArr);
 
   const mostReportedCategory =
     allByCategoryArr.length > 0
       ? allByCategoryArr.reduce((a, b) => (a.count > b.count ? a : b))
       : { category: "None", count: 0 };
+
+  const percentagFormat = (count: number, mostCount: number) => {
+    const denominator = count - mostCount;
+    if (denominator <= 0 || isNaN(denominator) || mostCount === 0) {
+      return (
+        <div className="flex items-center gap-2">
+          <Minus color="black" />
+          0% from last month
+        </div>
+      );
+    }
+    const percentage = (mostCount / denominator) * 100;
+    return (
+      <div className="flex items-center gap-2">
+        {percentage > 0 ? (
+          <TrendingUp color="#5A8156" />
+        ) : (
+          <TrendingDown color="#BB5653" />
+        )}
+        {percentage.toFixed(2)}% from last month
+      </div>
+    );
+  };
 
   return (
     <TabsContent value="reports" className="p-3">
@@ -102,12 +125,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {monthReports > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((monthReports / (reportCount - monthReports)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, monthReports)}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -126,12 +144,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {closedReports / (reportCount - closedReports) > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((closedReports / (reportCount - closedReports)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, closedReports)}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -150,12 +163,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
                 </CardContent>
                 <CardFooter className="flex items-center justify-between">
                   <CardDescription className="flex items-center gap-2">
-                    {mostReportedCategory.count > 0 ? (
-                      <TrendingUp color="#5A8156" />
-                    ) : (
-                      <TrendingDown color="#BB5653" />
-                    )}
-                    {`${((mostReportedCategory.count / (reportCount - mostReportedCategory.count)) * 100).toFixed(2)}% from last month`}
+                    {percentagFormat(reportCount, mostReportedCategory.count)}
                   </CardDescription>
                 </CardFooter>
               </Card>
@@ -175,7 +183,7 @@ const ReportTabContent = ({ data }: { data: ReportData }) => {
               <CardHeader>
                 <CardTitle>Reports of each category</CardTitle>
                 <CardDescription>
-                  Amount of reports submitted to each categiry
+                  Amount of reports submitted to each category
                 </CardDescription>
               </CardHeader>
               <CardContent>
