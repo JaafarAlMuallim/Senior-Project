@@ -14,11 +14,15 @@
 
    ```bash
    cd app/
-   npm install
+   npm i
    yarn i
    pnpm i
    cd ../server
-   npm install
+   npm i
+   yarn i
+   pnpm i
+   cd ../web
+   npm i
    yarn i
    pnpm i
    ```
@@ -30,9 +34,6 @@
    ```bash
    cd app/
    npx expo start
-   npm run dev
-   yarn run dev
-   pnpm run dev
    ```
 
    To remove the cache and start fresh, use the following command:
@@ -40,6 +41,19 @@
    ```bash
    npx expo start -c
    ```
+
+ ```bash
+   cd web/
+   npm run dev
+   yarn run dev
+   pnpm run dev
+   ```
+For AI directory, you have to create new virtual environment, install requirements, and run it.
+```bash
+python -m venv /path/to/virtual-env
+pip install -r requirements.txt\
+fastapi run api.py
+```
 
 4. Start the server using npm, yarn or pnpm from the main directory
 
@@ -72,18 +86,7 @@
 - [React Native Reusable](https://rnr-docs.vercel.app/getting-started/introduction/)
 - [tRPC](https://trpc.io/docs/quick-start)
 
-## Standards
-
-#### Workflow
-
-- Each feature should be developed in a separate branch
-- Each feature should have some tests before merging to the main branch
-- Try to make commits descriptive and concise.
-- Try to make commits atomic
-- Each PR should have a breif description of which feature is being added or fixed, changed files, issue number if available.
-- After submitting a PR, assign [@JaafarAlMuallim](https://www.github.com/JaafarAlMuallim) as a reviewer.
-
-#### Branching
+## Branching
 
 - Branches should be named in the following format: `type/feature-fe|be-description`.
 - Type Includes: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`.
